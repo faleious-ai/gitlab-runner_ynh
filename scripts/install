@@ -1,18 +1,12 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
-ynh_script_progression --message="Validating installation parameters..."
+ynh_script_progression "Validating installation parameters..."
 
 # By default, the runner will use docker to run your builds. PR are welcomes to implement more executors
 executor="docker"
@@ -35,32 +29,32 @@ fi
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_script_progression --message="Storing installation settings..."
+ynh_script_progression "Storing installation settings..."
 
-ynh_app_setting_set --app=$app --key=executor --value=$executor
+ynh_app_setting_set --key=executor --value=$executor
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Setting up source files..."
+ynh_script_progression "Setting up source files..."
 
 # Make sure docker is running before installing gitlab-runner
 if ! systemctl is-active --quiet docker; then
-    ynh_systemd_action --service_name=docker --action=restart --line_match="API listen on /run/docker.sock"
+    ynh_systemctl --service=docker --action=restart --wait_until="API listen on /run/docker.sock"
 fi
 
 tempdir="$(mktemp -d)"
 ynh_setup_source --dest_dir=$tempdir
 ynh_setup_source --dest_dir=$tempdir --source_id="images"
 dpkg -i $tempdir/gitlab-runner-images.deb $tempdir/gitlab-runner.deb
-ynh_secure_remove --file="$tempdir"
+ynh_safe_rm "$tempdir"
 
 #=================================================
 # SPECIFIC SETUP
 #=================================================
 # SETUP GITLAB RUNNER
 #=================================================
-ynh_script_progression --message="Configuring GitLab Runner..."
+ynh_script_progression "Configuring GitLab Runner..."
 
 # Can be registered several time, to do this give a list of gitlab_url, token and docker_image separated by a comma.
 split_char=","
@@ -73,7 +67,7 @@ for i in $(seq $nb_to_register); do
     docker_img=$(echo $docker_image | cut -d$split_char -f$i)
 
     # Register the runner
-    ynh_exec_warn_less $app register \
+    ynh_hide_warnings $app register \
         --non-interactive \
         --url "$url" \
         --token "$tok" \
@@ -89,11 +83,9 @@ done
 ynh_store_file_checksum "/etc/$app/config.toml"
 
 #=================================================
-# GENERIC FINALIZATION
-#=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-ynh_script_progression --message="Integrating service in YunoHost..."
+ynh_script_progression "Integrating service in YunoHost..."
 
 yunohost service add $app
 
@@ -101,4 +93,4 @@ yunohost service add $app
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Installation of $app completed" --last
+ynh_script_progression "Installation of $app completed"

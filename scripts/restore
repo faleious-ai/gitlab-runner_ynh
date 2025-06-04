@@ -5,11 +5,6 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# CHECK IF THE APP CAN BE RESTORED
-#=================================================
-ynh_script_progression "Validating restoration parameters..."
-
-#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression "Reinstalling GitLab Runner..."
@@ -25,7 +20,7 @@ ynh_safe_rm "$tempdir"
 #=================================================
 # SETUP GITLAB RUNNER
 #=================================================
-ynh_script_progression "Configuring Gitlab Runner..."
+ynh_script_progression "Configuring GitLab Runner..."
 
 # Can be registered several time, to do this give a list of gitlab_url, token and docker_image separated by a comma.
 split_char=","

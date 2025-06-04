@@ -50,8 +50,6 @@ dpkg -i $tempdir/gitlab-runner-images.deb $tempdir/gitlab-runner.deb
 ynh_safe_rm "$tempdir"
 
 #=================================================
-# SPECIFIC SETUP
-#=================================================
 # SETUP GITLAB RUNNER
 #=================================================
 ynh_script_progression "Configuring GitLab Runner..."

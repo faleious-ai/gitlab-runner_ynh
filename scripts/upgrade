@@ -15,23 +15,23 @@ ynh_app_setting_delete --key=$YNH_ARCH
 #=================================================
 ynh_script_progression "Upgrading source files..."
 
-    # Make sure docker is running before installing gitlab-runner
-    if ! systemctl is-active --quiet docker; then
-        ynh_systemctl --service=docker --action=restart --wait_until="API listen on /run/docker.sock"
-    fi
+# Make sure docker is running before installing gitlab-runner
+if ! systemctl is-active --quiet docker; then
+    ynh_systemctl --service=docker --action=restart --wait_until="API listen on /run/docker.sock"
+fi
 
-    tempdir="$(mktemp -d)"
-    ynh_setup_source --dest_dir=$tempdir
-    ynh_setup_source --dest_dir=$tempdir --source_id="images"
-    # Issue during the upgrade from version < 17.7.0
-    # https://forum.gitlab.com/t/broken-gitlab-runner-debian-packaging/118707
-    force_overwrite=""
-    current_version="$(dpkg -s gitlab-runner | grep ^Version: | cut -d' ' -f2)"
-    if dpkg --compare-versions "$current_version" "lt" "17.7.0"; then
-        force_overwrite="--force-overwrite"
-    fi
-    dpkg $force_overwrite -i $tempdir/gitlab-runner-images.deb $tempdir/gitlab-runner.deb
-    ynh_safe_rm "$tempdir"
+tempdir="$(mktemp -d)"
+ynh_setup_source --dest_dir=$tempdir
+ynh_setup_source --dest_dir=$tempdir --source_id="images"
+# Issue during the upgrade from version < 17.7.0
+# https://forum.gitlab.com/t/broken-gitlab-runner-debian-packaging/118707
+force_overwrite=""
+current_version="$(dpkg -s gitlab-runner | grep ^Version: | cut -d' ' -f2)"
+if dpkg --compare-versions "$current_version" "lt" "17.7.0"; then
+    force_overwrite="--force-overwrite"
+fi
+dpkg $force_overwrite -i $tempdir/gitlab-runner-images.deb $tempdir/gitlab-runner.deb
+ynh_safe_rm "$tempdir"
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST

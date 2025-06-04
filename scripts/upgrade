@@ -13,10 +13,7 @@ ynh_app_setting_delete --key=$YNH_ARCH
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-
-# FIXME: this is still supported but the recommendation is now to *always* re-setup the app sources wether or not the upstream sources changed
-if ynh_app_upstream_version_changed; then
-    ynh_script_progression "Upgrading source files..."
+ynh_script_progression "Upgrading source files..."
 
     # Make sure docker is running before installing gitlab-runner
     if ! systemctl is-active --quiet docker; then
@@ -35,7 +32,6 @@ if ynh_app_upstream_version_changed; then
     fi
     dpkg $force_overwrite -i $tempdir/gitlab-runner-images.deb $tempdir/gitlab-runner.deb
     ynh_safe_rm "$tempdir"
-fi
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST

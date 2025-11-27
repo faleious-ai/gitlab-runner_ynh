@@ -29,8 +29,8 @@
                     "fr": "Veuillez entrer le jeton gitlab-ci pour ce runner"
                 },
                 "help": {
-                    "en": "This token can be retrived at this location: Gitlab Project->Settings->Runner",
-                    "fr": "Ce token peut être récupéré à cet emplacement : Projet Gitlab->Settings->Runner"
+                    "en": "This token can be retrived at this location: GitLab Project->Settings->Runner",
+                    "fr": "Ce token peut être récupéré à cet emplacement : GitLab Projet->Settings->Runner"
                 },
                 "example": "xxx"
             },

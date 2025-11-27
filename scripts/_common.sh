@@ -1,11 +1,7 @@
 #!/bin/bash
 
 #=================================================
-# COMMON VARIABLES
-#=================================================
-
-#=================================================
-# PERSONAL HELPERS
+# COMMON VARIABLES AND CUSTOM HELPERS
 #=================================================
 
 # Restore a previous backup if the action process failed
@@ -16,7 +12,8 @@ ynh_restore_actionbackup () {
   	NO_BACKUP_ACTION=${NO_BACKUP_ACTION:-0}
 
 	if [ $NO_BACKUP_ACTION -eq "0" ]
-	then	
+	then
+
 		# Check if an existing backup can be found before removing and restoring the application.
 		if yunohost backup list | grep -q $app_bck-pre-action$backup_number
 		then
@@ -24,7 +21,7 @@ ynh_restore_actionbackup () {
 			yunohost app remove $app
 			# Restore the backup
 			yunohost backup restore $app_bck-pre-action$backup_number --apps $app --force --debug
-			ynh_die --message="The app was restored to the way it was before the failed action."
+			ynh_die "The app was restored to the way it was before the failed action."
 		fi
 	else
       		echo "\$NO_BACKUP_ACTION is set, that means there's no backup to restore. You have to fix this action by yourself !" >&2
@@ -64,17 +61,9 @@ ynh_backup_before_action () {
 				yunohost backup delete $app_bck-pre-action$old_backup_number > /dev/null
 			fi
 		else
-			ynh_die --message="Backup failed, the action process was aborted."
+			ynh_die "Backup failed, the action process was aborted."
 		fi
 	else
 			echo "\$NO_BACKUP_ACTION is set, backup will be avoided. Be careful, this action is going to be operated without a security backup"
 	fi
 }
-
-#=================================================
-# EXPERIMENTAL HELPERS
-#=================================================
-
-#=================================================
-# FUTURE OFFICIAL HELPERS
-#=================================================

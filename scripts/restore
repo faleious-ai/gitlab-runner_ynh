@@ -1,37 +1,26 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 # Keep this path for calling _common.sh inside the execution's context of backup and restore scripts
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# CHECK IF THE APP CAN BE RESTORED
-#=================================================
-ynh_script_progression --message="Validating restoration parameters..."
-
-#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Reinstalling GitLab Runner..."
+ynh_script_progression "Reinstalling GitLab Runner..."
 
 tempdir="$(mktemp -d)"
 ynh_setup_source --dest_dir=$tempdir
 ynh_setup_source --dest_dir=$tempdir --source_id="images"
 dpkg -i $tempdir/gitlab-runner-images.deb $tempdir/gitlab-runner.deb
-ynh_secure_remove --file="$tempdir"
+ynh_safe_rm "$tempdir"
 
 #=================================================
 # SPECIFIC SETUP
 #=================================================
 # SETUP GITLAB RUNNER
 #=================================================
-ynh_script_progression --message="Configuring Gitlab Runner..."
+ynh_script_progression "Configuring GitLab Runner..."
 
 # Can be registered several time, to do this give a list of gitlab_url, token and docker_image separated by a comma.
 split_char=","
@@ -44,7 +33,7 @@ for i in $(seq $nb_to_register); do
     docker_img=$(echo $docker_image | cut -d$split_char -f$i)
 
     # Register the runner
-    ynh_exec_warn_less $app register \
+    ynh_hide_warnings $app register \
         --non-interactive \
         --url "$url" \
         --token "$tok" \
@@ -62,7 +51,7 @@ ynh_store_file_checksum "/etc/$app/config.toml"
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-ynh_script_progression --message="Integrating service in YunoHost..."
+ynh_script_progression "Integrating service in YunoHost..."
 
 yunohost service add $app
 
@@ -70,4 +59,4 @@ yunohost service add $app
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Restoration completed for $app" --last
+ynh_script_progression "Restoration completed for $app"

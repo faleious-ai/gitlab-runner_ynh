@@ -7,7 +7,7 @@ name = "GitLab Runner"
 description.en = "Continuous integration tool to use with a GitLab instance (YNH or not)"
 description.fr = "Outil d'intégration continue à utiliser avec une instance GitLab (YNH ou non)"
 
-version = "17.9.0~ynh2"
+version = "18.6.2~ynh1"
 
 maintainers = ["kay0u"]
 
@@ -18,13 +18,12 @@ admindoc = "https://docs.gitlab.com/runner/"
 code = "https://gitlab.com/gitlab-org/gitlab-runner"
 
 [integration]
-yunohost = ">= 12.0.9"
+yunohost = ">= 12.1.17"
 helpers_version = "2.1"
 architectures = ["amd64", "armhf", "arm64"]
 multi_instance = false
 
 ldap = "not_relevant"
-
 sso = "not_relevant"
 
 disk = "50M"
@@ -58,12 +57,12 @@ ram.runtime = "50M"
 [resources]
     [resources.sources.main]
     rename = "gitlab-runner.deb"
-    amd64.url = "https://gitlab-runner-downloads.s3.amazonaws.com/v17.9.0/deb/gitlab-runner_amd64.deb"
-    amd64.sha256 = "4f9208dda63b4a589e2024ef697da41f1439d4262402dbde7c0fa4ce4fd5a388"
-    arm64.url = "https://gitlab-runner-downloads.s3.amazonaws.com/v17.9.0/deb/gitlab-runner_arm64.deb"
-    arm64.sha256 = "a1e1fd3110b5dd2ef4e585af2b3848ce0b32cc3c8164e98e4e96e74d144447e2"
-    armhf.url = "https://gitlab-runner-downloads.s3.amazonaws.com/v17.9.0/deb/gitlab-runner_armhf.deb"
-    armhf.sha256 = "5e441f10a69ae7ca38039a5734b6cefd54bcfbc0808e2f168bdf1c3cffbafd1e"
+    amd64.url = "https://gitlab-runner-downloads.s3.amazonaws.com/v18.6.2/deb/gitlab-runner_amd64.deb"
+    amd64.sha256 = "a8667f6ec5430c800973d8611ca3ba88351a2901ffbd9755980a7927464351f5"
+    arm64.url = "https://gitlab-runner-downloads.s3.amazonaws.com/v18.6.2/deb/gitlab-runner_arm64.deb"
+    arm64.sha256 = "ef9e1af7fe6c4f484c4e43578cffb2aaaa3897ea284961c45500d535af2e1fd6"
+    armhf.url = "https://gitlab-runner-downloads.s3.amazonaws.com/v18.6.2/deb/gitlab-runner_armhf.deb"
+    armhf.sha256 = "4f73835da80b31921bca8a5999f5bf4708035863d4685b0035e46240dd203dec"
 
     # autoupdate.upstream = "https://gitlab.com/gitlab-org/gitlab-runner"
     # autoupdate.strategy = "latest_gitlab_release"
@@ -74,9 +73,9 @@ ram.runtime = "50M"
     # update when the above updates
     [resources.sources.images]
     rename = "gitlab-runner-images.deb"
-    url = "https://s3.amazonaws.com/gitlab-runner-downloads/v17.9.0/deb/gitlab-runner-helper-images.deb"
+    url = "https://s3.amazonaws.com/gitlab-runner-downloads/v18.6.2/deb/gitlab-runner-helper-images.deb"
     # IDK how to autoupdate this
-    sha256 = "aeb2abccad2e9d3a289f294bc537179696b7f532ddb4513219dd88df51655ac1"
+    sha256 = "3de4a5a2e6b3066929d3534ec14282b803bab9ea6dbf0bf11ef46ceba7ccbc83"
     format = "whatever"
     extract = false
 

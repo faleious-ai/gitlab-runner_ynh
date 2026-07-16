@@ -1,29 +1,36 @@
 # Handoff atual
 
-Estado: `EXECUTED_AWAITING_REVIEW`
-Round-ID: `RND-20260716-007`
-Charter: `CHR-WP02-002`
+Estado: `READY_FOR_CODEX_FULL_ROUND`  
+Charter ativo: `CHR-WP02-003`  
+Revisão anterior: `REV-RND-20260716-007 — CORRECTION_REQUIRED`  
 Branch: `master`
 
-## Resultado
+## Prompt
 
-A rodada corretiva concluiu as lacunas técnicas do review anterior sem promover release, usar credencial histórica ou executar registro real. O commit da rodada contém implementação, evidências, continuidade e o mesmo Round-ID exigido para a síntese cross-repo.
+```text
+Leia AGENTS.md e continue.
+```
 
-## Pacote remoto
+## Retomada mínima
 
-- `continuity/rounds/RND-20260716-007.md`;
-- `continuity/EVIDENCE_INDEX.md`;
-- `evidence/wp02-online-discovery.json`;
-- `evidence/wp02-checksum-trust.json`;
-- `evidence/wp02-candidate-report.json`;
-- `evidence/wp02-manifest-diff.json`;
-- `docs/decisions/ADR-0006-runner-release-provenance.md`;
-- `docs/audit/RND-20260716-007.md`.
+1. Ler `AGENTS.md`.
+2. Confirmar `origin/master` neste repositório e no coordenador.
+3. Ler `continuity/STATUS.md` e `continuity/ACTIVE_ROUND.md`.
+4. Atribuir novo `Round-ID` e executar integralmente `CHR-WP02-003`.
+5. Publicar e verificar remotamente conforme `ROUND_PROTOCOL.md`.
 
-## Validações
+## Direção
 
-14 testes, secret scan, `bash -n`, parsing JSON/TOML, dry-run, geração em staging, diff allowlist e confirmação do manifest em `18.6.2~ynh1` passaram localmente. A descoberta online selecionou `v19.2.0` e verificou a assinatura oficial.
+Não reimplementar descoberta, checksum parser ou manifest candidato já demonstrados. Corrigir os pontos de integração que impedem o uso seguro:
 
-## Limitações
+- controlador `run__register()` e entradas efêmeras do config panel;
+- remoção da interface legada de registro;
+- backup/restore sem dependência de credencial não persistida;
+- assinatura e chave fail-closed;
+- self-link/redirects;
+- índice de evidências canônico e relatórios portáveis;
+- CI remoto verificável.
 
-O lifecycle real YunoHost/Docker e o registro Runner real não foram executados. `HG-RUN-SEC-01` permanece sem autoridade externa. O pacote aguarda revisão independente; não declarar aceite.
+## Gate
+
+`HG-RUN-SEC-01` permanece risco histórico externo. Não usar nem testar o valor antigo. Ele não autoriza interrupção antecipada da rodada.

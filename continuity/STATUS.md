@@ -2,33 +2,43 @@
 
 Atualizado em: 2026-07-16  
 Branch autorizada: `master`  
-Última rodada executada pelo Codex: `RND-20260716-007`
-Última rodada do orquestrador: `RND-20260716-006`
+Última rodada executada pelo Codex: `RND-20260716-007`  
+Última rodada do orquestrador: `RND-20260716-008`
 
 ## Fase
 
-`WP02_EXECUTED_AWAITING_REVIEW`
+`WP02_CORRECTION_REQUIRED_CHR003_READY`
 
-`CHR-WP02-002` foi executado no repositório funcional primário. O resultado permanece aguardando revisão independente; não é `ACCEPTED`.
+A revisão independente de `CHR-WP02-002` resultou em `CORRECTION_REQUIRED`. A base de descoberta/checksums/manifest candidato é preservada, mas action, lifecycle, trust criptográfico, evidência canônica e CI remoto ainda não atendem ao contrato.
 
-## Entregas
+Registro: `continuity/reviews/REV-RND-20260716-007.md`.
 
-- descoberta online paginada pela Releases API oficial, com allowlist de projeto, release page, downloads e redirects;
-- seleção corrente `v19.2.0`, com observação UTC, tamanhos e origem registrados;
-- fixture `v19.0.1` identificada como snapshot offline, com quatro hashes confrontados ao documento oficial;
-- assinatura `release.sha256.asc` verificada com a chave oficial e fingerprint registrado;
-- gerador de cópia completa do manifest com diff determinístico e allowlist de nove campos;
-- `manifest.toml` preservado em `18.6.2~ynh1`;
-- token fora de `argv`, stdout e stderr no fake, através de `CI_SERVER_URL`, `CI_SERVER_TOKEN` e `REGISTER_NON_INTERACTIVE`;
-- action atual YunoHost em `config_panel.toml`/`scripts/config`, mantendo `_register.sh` compartilhado;
-- workflow com `workflow_dispatch`, permissões read-only, actions por SHA completo e guardas de diff.
+## Charter ativo
 
-## Validações locais
+`CHR-WP02-003 — Action, trust fail-closed e lifecycle seguro`.
 
-`14/14` testes: PASS; secret scan: clean; Bash: PASS; JSON/TOML: PASS; dry-run e diff guard: PASS; manifest: `18.6.2~ynh1`; assinatura online: VERIFIED.
+Estado: `READY`.
 
-O workflow remoto foi preparado para execução após publicação; qualquer estado remoto será reportado sem ser inferido do CI local.
+## Correções obrigatórias
+
+- implementar controlador YunoHost `run__register()` com entradas efêmeras;
+- remover a interface legada que aceita credencial por argumentos;
+- preservar configuração/identidade em backup/restore sem re-registro;
+- falhar fechado em assinatura ou chave inválida/expirada/revogada;
+- validar self-link/origem/redirects;
+- restaurar `evidence/EVIDENCE_INDEX.md` como único índice canônico;
+- remover paths locais dos relatórios;
+- obter CI remoto verificável ou registrar bloqueio objetivo.
+
+## Componentes preservados
+
+- descoberta API paginada e stable-only;
+- parser/confronto de checksums;
+- manifest candidato completo e diff allowlist;
+- ambiente do subprocesso principal sem credencial em argv;
+- workflow read-only com actions por SHA;
+- manifest `18.6.2~ynh1`, sem promoção.
 
 ## Gate humano
 
-`HG-RUN-SEC-01` permanece `UNRESOLVED_NO_AUTHORITY` e não foi exercitado.
+`HG-RUN-SEC-01` permanece `UNRESOLVED_NO_AUTHORITY`. Não bloqueia `CHR-WP02-003`.

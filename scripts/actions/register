@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=../_register.sh
+source "$SCRIPT_DIR/../_register.sh"
+
+usage() {
+    printf 'Usage: %s --gitlab_url URL[,URL] --token TOKEN[,TOKEN] --docker_image IMAGE[,IMAGE]\n' "$0" >&2
+}
+
+gitlab_url=""
+token=""
+docker_image=""
+declare -a positional=()
+
+while (($#)); do
+    case "$1" in
+        --gitlab_url|--gitlab-url)
+            (($# >= 2)) || { usage; exit 2; }
+            gitlab_url=$2
+            shift 2
+            ;;
+        --gitlab_url=*|--gitlab-url=*) gitlab_url=${1#*=}; shift ;;
+        --token)
+            (($# >= 2)) || { usage; exit 2; }
+            token=$2
+            shift 2
+            ;;
+        --token=*) token=${1#*=}; shift ;;
+        --docker_image|--docker-image)
+            (($# >= 2)) || { usage; exit 2; }
+            docker_image=$2
+            shift 2
+            ;;
+        --docker_image=*|--docker-image=*) docker_image=${1#*=}; shift ;;
+        --help|-h) usage; exit 0 ;;
+        --*) printf 'unknown registration option\n' >&2; usage; exit 2 ;;
+        *) positional+=("$1"); shift ;;
+    esac
+done
+
+if [[ -z "$gitlab_url" && -z "$token" && -z "$docker_image" && ${#positional[@]} -eq 3 ]]; then
+    gitlab_url=${positional[0]}
+    token=${positional[1]}
+    docker_image=${positional[2]}
+elif ((${#positional[@]} != 0)); then
+    printf 'registration arguments must use named options or exactly three positional values\n' >&2
+    usage
+    exit 2
+fi
+
+register_runner_set "$gitlab_url" "$token" "$docker_image" "${RUNNER_BIN:-gitlab-runner}"

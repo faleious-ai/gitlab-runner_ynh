@@ -14,6 +14,15 @@ Estado: baseline auditado estaticamente
 | Remove | scripts/remove | remove serviço, unregister all-runners, pacote e /etc/gitlab-runner | não executado por ser destrutivo |
 | Ação register | actions.json | chama scripts/actions/register como root | FAILED: arquivo ausente |
 
+## Delta WP-02 — estado após RND-20260716-005
+
+O literal credential-like da fixture foi removido e substituído por um
+placeholder não funcional. `scripts/secret_scan.py` cobre a árvore atual e
+`scripts/_register.sh` redige tokens em diagnósticos. A ação agora possui
+target, valida cardinalidade antes do primeiro registro e é reutilizada por
+install e restore. O lifecycle real e a validade do valor histórico continuam
+sem prova; `HG-RUN-SEC-01` permanece aberto.
+
 ## Fluxo de credenciais
 
 1. manifest.toml solicita gitlab_url, token e docker_image; token está tipado

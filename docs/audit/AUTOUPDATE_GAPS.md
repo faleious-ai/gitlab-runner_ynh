@@ -3,6 +3,11 @@
 Round-ID: RND-20260716-003
 Estado: baseline; nenhuma correção implementada
 
+As observações desta seção registram o baseline anterior à rodada
+`RND-20260716-005`. O delta executado e suas provas estão em
+`docs/autoupdate/README.md`, `evidence/wp02-candidate-report.json` e no índice
+de evidências.
+
 ## Mecanismo atual
 
 Não existe .github/workflows, script updater ou gerador ativo no snapshot.

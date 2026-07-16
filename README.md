@@ -28,15 +28,15 @@ Continuous integration tool to use with a GitLab instance (YNH or not)
 
 🛠️ Upstream GitLab Runner repository: <https://gitlab.com/gitlab-org/gitlab-runner>
 
-Pull request are welcome and should target the [`testing` branch](https://github.com/YunoHost-Apps/gitlab-runner_ynh/tree/testing).
+Pull request are welcome and should target the [`master` branch](https://github.com/faleious-ai/gitlab-runner_ynh/tree/master).
 
-The `testing` branch can be tested using:
+The `master` branch can be tested using:
 ```
 # fresh install:
-sudo yunohost app install https://github.com/YunoHost-Apps/gitlab-runner_ynh/tree/testing
+sudo yunohost app install https://github.com/faleious-ai/gitlab-runner_ynh/tree/master
 
 # upgrade an existing install:
-sudo yunohost app upgrade gitlab-runner -u https://github.com/YunoHost-Apps/gitlab-runner_ynh/tree/testing
+sudo yunohost app upgrade gitlab-runner -u https://github.com/faleious-ai/gitlab-runner_ynh/tree/master
 ```
 
 ### 📚 App packaging documentation

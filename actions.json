@@ -42,7 +42,7 @@
                     "fr": "Veuillez entrer l'image du Docker"
                 },
                 "example": "ruby:2.1",
-                "default": "alpine:latest"
+                "default": "alpine:3.20"
             }
         ]
     }

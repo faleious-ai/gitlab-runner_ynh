@@ -44,7 +44,7 @@ ram.runtime = "50M"
     ask.fr = "Veuillez entrer le jeton GitLab-CI pour ce Runner"
     help.en = "This token can be retrieved at this location: GitLab Project->Settings->Runner or: Admin Area->Overview->Runners"
     help.fr = "Ce token peut être récupéré à cet emplacement : Projet GitLab->Settings->Runner ou : Admin Area->Overview->Runners"
-    type = "string"
+    type = "password"
     example = "xxx"
 
     [install.docker_image]
@@ -52,7 +52,7 @@ ram.runtime = "50M"
     ask.fr = "Veuillez entrer l'image du Docker"
     type = "string"
     example = "ruby:2.1"
-    default = "alpine:latest"
+    default = "alpine:3.20"
 
 [resources]
     [resources.sources.main]

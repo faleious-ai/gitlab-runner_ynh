@@ -1,0 +1,41 @@
+name: Validation
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile Python sources
+        run: python -m py_compile scripts/autoupdate.py scripts/secret_scan.py tests/test_autoupdate.py
+      - name: Run unit and negative tests
+        run: python -m unittest discover -s tests -v
+      - name: Scan current tree for credential-like values
+        run: python scripts/secret_scan.py .
+      - name: Validate release fixture without network
+        run: >-
+          python scripts/autoupdate.py check
+          --fixture scripts/autoupdate/fixtures/release-v19.0.1.json
+          --manifest manifest.toml
+          --report "$RUNNER_TEMP/gitlab-runner-candidate.json"
+      - name: Generate candidate outside the repository
+        run: >-
+          python scripts/autoupdate.py generate
+          --fixture scripts/autoupdate/fixtures/release-v19.0.1.json
+          --output "$RUNNER_TEMP/gitlab-runner-candidate.toml"
+          --write
+      - name: Confirm dry-run did not promote the manifest
+        run: git diff --exit-code -- manifest.toml

@@ -1,0 +1,57 @@
+{
+  "source": {
+    "api": "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-runner/releases",
+    "project": "gitlab-org/gitlab-runner",
+    "download_base": "https://gitlab-runner-downloads.s3.amazonaws.com",
+    "fixture_kind": "offline-release-snapshot"
+  },
+  "releases": [
+    {
+      "tag_name": "v19.0.1",
+      "stable": true,
+      "released_at": "2026-06-01T02:18:27.725Z",
+      "release_url": "https://gitlab.com/gitlab-org/gitlab-runner/-/releases/v19.0.1",
+      "checksum_url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/release.sha256",
+      "runner_assets": [
+        {
+          "architecture": "amd64",
+          "filename": "gitlab-runner_amd64.deb",
+          "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/deb/gitlab-runner_amd64.deb",
+          "sha256": "862abf6022dc02ad2b16ed3dfc026fe0ed88c9962f90c6a32988ec0515f70548",
+          "size": 30140968
+        },
+        {
+          "architecture": "arm64",
+          "filename": "gitlab-runner_arm64.deb",
+          "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/deb/gitlab-runner_arm64.deb",
+          "sha256": "eb69b652890c57bfc13264a5808e88c30a14397287cff3ae12698167e475ef16",
+          "size": 26939556
+        },
+        {
+          "architecture": "armhf",
+          "filename": "gitlab-runner_armhf.deb",
+          "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/deb/gitlab-runner_armhf.deb",
+          "sha256": "693ecf7db27be0162b32d7ec1e6aba73e4b7d252d24a5057bb70d66ddea0d6c0",
+          "size": 28310422
+        }
+      ],
+      "helper_images": {
+        "version": "v19.0.1",
+        "filename": "gitlab-runner-helper-images.deb",
+        "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/deb/gitlab-runner-helper-images.deb",
+        "sha256": "9ae51f380ddec00f97f8f3abba91ebb71098020dd500cb87d3038dedab0612dc",
+        "size": 539508632,
+        "architectures": ["amd64", "arm64", "armhf"]
+      }
+    },
+    {
+      "tag_name": "v19.0.2-rc1",
+      "stable": false,
+      "released_at": "2026-06-08T00:00:00.000Z",
+      "release_url": "https://gitlab.com/gitlab-org/gitlab-runner/-/releases/v19.0.2-rc1",
+      "checksum_url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.2-rc1/release.sha256",
+      "runner_assets": [],
+      "helper_images": {}
+    }
+  ]
+}

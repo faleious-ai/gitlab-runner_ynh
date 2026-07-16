@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Keep this path for calling _common.sh inside the execution's context of backup and restore scripts
-source ../settings/scripts/_common.sh
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/_common.sh"
 source /usr/share/yunohost/helpers
+source "$SCRIPT_DIR/_register.sh"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -20,24 +21,7 @@ ynh_safe_rm "$tempdir"
 #=================================================
 ynh_script_progression "Configuring GitLab Runner..."
 
-# Can be registered several time, to do this give a list of gitlab_url, token and docker_image separated by a comma.
-split_char=","
-
-nb_to_register=$(echo "${gitlab_url}" | awk -F"${split_char}" '{print NF-1}')
-
-for i in $(seq $nb_to_register); do
-    url=$(echo $gitlab_url | cut -d$split_char -f$i)
-    tok=$(echo $token | cut -d$split_char -f$i)
-    docker_img=$(echo $docker_image | cut -d$split_char -f$i)
-
-    # Register the runner
-    ynh_hide_warnings $app register \
-        --non-interactive \
-        --url "$url" \
-        --token "$tok" \
-        --executor "$executor" \
-        --docker-image "$docker_img"
-done
+register_runner_set "$gitlab_url" "$token" "$docker_image" "${app:-gitlab-runner}"
 
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM

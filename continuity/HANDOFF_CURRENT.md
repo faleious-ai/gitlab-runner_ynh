@@ -1,51 +1,34 @@
 # Handoff atual
 
-Estado: `READY_FOR_CODEX_FULL_ROUND`  
-Charter ativo: `CHR-WP02-001`  
-Revisão anterior: `REV-RND-20260716-003 — ACCEPTED`  
+Estado: `EXECUTED_AWAITING_REVIEW`
+Charter: `CHR-WP02-001`
+Round-ID: `RND-20260716-005`
 Branch: `master`
 
-## Prompt
+## Resultado
 
-```text
-Leia AGENTS.md e continue.
-```
+O Codex executou as frentes S1, S2, U1, U2, U3 e A1. O pacote de revisão está
+em `continuity/rounds/RND-20260716-005.md`, com evidências indexadas em
+`evidence/EVIDENCE_INDEX.md`.
 
-## Retomada mínima
+O manifest continua em `18.6.2~ynh1`. `v19.0.1` é somente candidata observada
+em fixture offline e relatório dry-run; não houve promoção.
 
-1. Ler `AGENTS.md`.
-2. Confirmar HEAD de `master` neste repositório e no coordenador.
-3. Ler `continuity/STATUS.md` e `continuity/ACTIVE_ROUND.md`.
-4. Confirmar `CHR-WP02-001` em estado `READY`.
-5. Atribuir novo `Round-ID`, construir o DAG de execução e trabalhar até concluir tudo que não dependa de gate humano.
+## Próxima ação do orquestrador
 
-## Trabalho autorizado
-
-- retirar a credencial da árvore atual sem reproduzir o valor;
-- adicionar secret scan e testes de redaction;
-- reparar ou remover justificadamente a action `register` e centralizar o fluxo de registro;
-- implementar fonte, proveniência, resolver atômico e generator determinístico para Runner + helper images;
-- adicionar fixtures offline, testes negativos e CI read-only;
-- gerar relatório de candidata sem promover versão;
-- atualizar continuidade/evidência e síntese no coordenador.
-
-## Paralelismo
-
-As frentes S1, S2, U1, U2/U3 e A1 podem ser distribuídas a subagentes com ownership exclusivo de paths. O Codex mantém integração, arquivos canônicos, validação final e commit.
-
-## Restrições
-
-Não usar token histórico, não registrar Runner real, não executar `unregister --all-runners`, não promover versão, não publicar release, não criar branch/PR/worktree e não reescrever histórico.
+Reconciliar os dois commits da rodada, revisar diff, evidências, testes,
+segurança e limites do charter. Registrar `ACCEPTED`, `CORRECTION_REQUIRED`,
+`HUMAN_GATE` ou `REJECTED_UNSAFE` conforme o protocolo de revisão.
 
 ## Gate humano
 
-`HG-RUN-SEC-01`: revogação, rotação ou confirmação de expiração do valor histórico deve ser feita por quem administra o projeto GitLab do package_check.
+`HG-RUN-SEC-01` permanece aberto e fora da autoridade do Codex. Não usar o
+valor histórico nem tentar autenticação; a decisão requerida é confirmação
+externa de revogação, rotação ou expiração pelo administrador do projeto
+GitLab usado pelo package_check.
 
-O Codex não interrompe o trabalho por esse gate antes de concluir todas as tarefas técnicas independentes.
+## Restrições para retomada
 
-## Saída
-
-- `EXECUTED_AWAITING_REVIEW` quando o charter técnico estiver demonstrado e o estado do gate estiver registrado;
-- `BLOCKED_HUMAN` somente se o gate for necessário para fechar o critério de segurança, após todo o restante estar concluído.
-
-Entregar commits, testes, matriz tarefa-output-evidência, proveniência, relatório de candidata, riscos residuais e estado do gate. Não declarar `ACCEPTED`.
+Não iniciar nova implementação sob este handoff sem charter/revisão que a
+autorize. Não criar branch/PR/worktree, não promover versão e não executar
+registro ou remoção de Runner real.

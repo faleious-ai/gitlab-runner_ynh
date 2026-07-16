@@ -1,8 +1,8 @@
 # Handoff atual
 
-Estado: `EXECUTED_AWAITING_REVIEW`
-Charter executado: `CHR-WP01-001`
-Round concluído: `RND-20260716-003`
+Estado: `READY_FOR_CODEX_FULL_ROUND`  
+Charter ativo: `CHR-WP02-001`  
+Revisão anterior: `REV-RND-20260716-003 — ACCEPTED`  
 Branch: `master`
 
 ## Prompt
@@ -11,46 +11,41 @@ Branch: `master`
 Leia AGENTS.md e continue.
 ```
 
-## Retomada
+## Retomada mínima
 
 1. Ler `AGENTS.md`.
-2. Confirmar HEAD de `master` neste repositório e no coordenador quando acessível.
-3. Ler `STATUS.md` e `ACTIVE_ROUND.md`.
-4. Confirmar o estado persistido e consultar o revisor antes de abrir nova rodada.
+2. Confirmar HEAD de `master` neste repositório e no coordenador.
+3. Ler `continuity/STATUS.md` e `continuity/ACTIVE_ROUND.md`.
+4. Confirmar `CHR-WP02-001` em estado `READY`.
+5. Atribuir novo `Round-ID`, construir o DAG de execução e trabalhar até concluir tudo que não dependa de gate humano.
 
-## Trabalho executado
+## Trabalho autorizado
 
-Foram auditados manifest/sources/assets, scripts/lifecycle, service/config,
-tokens/redaction, Docker/executor/helper images, testes/workflows/docs,
-upstream/divergência, riscos e backlog.
+- retirar a credencial da árvore atual sem reproduzir o valor;
+- adicionar secret scan e testes de redaction;
+- reparar ou remover justificadamente a action `register` e centralizar o fluxo de registro;
+- implementar fonte, proveniência, resolver atômico e generator determinístico para Runner + helper images;
+- adicionar fixtures offline, testes negativos e CI read-only;
+- gerar relatório de candidata sem promover versão;
+- atualizar continuidade/evidência e síntese no coordenador.
 
-Frentes independentes devem ser paralelizadas por subagentes. Subagentes não fazem commit. O Codex integra, valida e persiste.
+## Paralelismo
 
-## Regra de parada
+As frentes S1, S2, U1, U2/U3 e A1 podem ser distribuídas a subagentes com ownership exclusivo de paths. O Codex mantém integração, arquivos canônicos, validação final e commit.
 
-Não parar para progresso, tarefa longa, pesquisa ou teste falho. Ao bloquear uma frente, continuar todas as independentes. Parar apenas após conclusão integral ou depois de concluir todo trabalho independente e registrar gate humano válido.
+## Restrições
 
-## Fora de escopo
+Não usar token histórico, não registrar Runner real, não executar `unregister --all-runners`, não promover versão, não publicar release, não criar branch/PR/worktree e não reescrever histórico.
 
-Updater, mudança de versão/hash/URL, token real, registro em produção, mirrors, ruleset ou release.
+## Gate humano
+
+`HG-RUN-SEC-01`: revogação, rotação ou confirmação de expiração do valor histórico deve ser feita por quem administra o projeto GitLab do package_check.
+
+O Codex não interrompe o trabalho por esse gate antes de concluir todas as tarefas técnicas independentes.
 
 ## Saída
 
-- quatro documentos de auditoria definidos no charter;
-- status, handoff, evidence index e round record;
-- commit em `master` e mesmo `Round-ID` cross-repo quando acessível;
-- estado `EXECUTED_AWAITING_REVIEW`;
-- pacote com commits, evidências, gaps, riscos e bloqueios.
+- `EXECUTED_AWAITING_REVIEW` quando o charter técnico estiver demonstrado e o estado do gate estiver registrado;
+- `BLOCKED_HUMAN` somente se o gate for necessário para fechar o critério de segurança, após todo o restante estar concluído.
 
-O ChatGPT deve revisar e definir aceite, correção ou gate humano.
-
-## Resultados para revisão
-
-- Baseline: docs/audit/RUNNER_PACKAGE_BASELINE.md
-- Divergência: docs/audit/UPSTREAM_DIVERGENCE.md
-- Autoupdate: docs/audit/AUTOUPDATE_GAPS.md
-- Lifecycle/segurança: docs/audit/LIFECYCLE_AND_SECURITY_MAP.md
-
-Achados principais: versão 18.6.2~ynh1, helper images sem autoupdate,
-target de ação register ausente, fixture com literal de token e operações
-Docker/registration sem demonstração runtime.
+Entregar commits, testes, matriz tarefa-output-evidência, proveniência, relatório de candidata, riscos residuais e estado do gate. Não declarar `ACCEPTED`.

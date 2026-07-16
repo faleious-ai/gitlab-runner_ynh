@@ -1,14 +1,22 @@
 #!/bin/bash
 
-# Keep this path for calling _common.sh inside the execution's context of backup and restore scripts
-source ../settings/scripts/_common.sh
-source /usr/share/yunohost/helpers
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+if [[ -f "$SCRIPT_DIR/../settings/scripts/_common.sh" ]]; then
+    source "$SCRIPT_DIR/../settings/scripts/_common.sh"
+else
+    source "$SCRIPT_DIR/_common.sh"
+fi
+YH_HELPERS="${YH_HELPERS:-/usr/share/yunohost/helpers}"
+source "$YH_HELPERS"
+app="${app:-gitlab-runner}"
 
 #=================================================
 # STANDARD BACKUP STEPS
 #=================================================
 
-# NOTHING TO DO
+# The Runner config contains config.toml and the generated identity. The
+# YunoHost helper preserves the path, ownership and mode in the archive.
+ynh_backup --src_path="/etc/$app"
 
 #=================================================
 # END OF SCRIPT

@@ -2,8 +2,9 @@
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/_common.sh"
-source /usr/share/yunohost/helpers
-source "$SCRIPT_DIR/_register.sh"
+YH_HELPERS="${YH_HELPERS:-/usr/share/yunohost/helpers}"
+source "$YH_HELPERS"
+app="${app:-gitlab-runner}"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -16,12 +17,14 @@ ynh_setup_source --dest_dir=$tempdir --source_id="images"
 dpkg -i $tempdir/gitlab-runner-images.deb $tempdir/gitlab-runner.deb
 ynh_safe_rm "$tempdir"
 
+# Restore config.toml and the Runner identity produced during installation.
+# ynh_restore_file also restores the archived ownership and permissions.
+ynh_restore_file --origin_path="/etc/$app"
+
 #=================================================
 # SETUP GITLAB RUNNER
 #=================================================
 ynh_script_progression "Configuring GitLab Runner..."
-
-register_runner_set "$gitlab_url" "$token" "$docker_image" "${app:-gitlab-runner}"
 
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM

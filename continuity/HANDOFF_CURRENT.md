@@ -1,58 +1,42 @@
 # Handoff atual
 
-Estado: `READY_FOR_WP_01B`  
-Round anterior: `RND-20260716-001`  
+Estado: `READY_FOR_CODEX_FULL_ROUND`  
+Charter: `CHR-WP01-001`  
 Branch: `master`
 
-## Retomada mínima
+## Prompt
 
-1. Leia `AGENTS.md`.
-2. Confirme HEAD de `master`.
-3. Leia `continuity/STATUS.md`.
-4. Leia `WP-01B` em `continuity/EXECUTION_PLAN.md`.
-5. Consulte `RUNNER_AUTOUPDATE_SPEC.md` apenas para identificar dados que a auditoria precisa levantar.
+```text
+Leia AGENTS.md e continue.
+```
 
-## Próxima unidade executável
+## Retomada
 
-### WP-01B — Inventário do pacote Runner
+1. Ler `AGENTS.md`.
+2. Confirmar HEAD de `master` neste repositório e no coordenador quando acessível.
+3. Ler `STATUS.md` e `ACTIVE_ROUND.md`.
+4. Confirmar charter `READY`, atribuir `Round-ID` e executar o DAG completo.
 
-Produzir:
+## Trabalho autorizado
 
-- `docs/audit/RUNNER_PACKAGE_BASELINE.md`;
-- `docs/audit/UPSTREAM_DIVERGENCE.md`;
-- `docs/audit/AUTOUPDATE_GAPS.md`;
-- `docs/audit/LIFECYCLE_AND_SECURITY_MAP.md`.
+Auditar manifest/sources/assets, scripts/lifecycle, service/config, tokens/redaction, Docker/executor/helper images, testes/workflows/docs, upstream/divergência, riscos e backlog.
 
-Cobrir:
+Frentes independentes devem ser paralelizadas por subagentes. Subagentes não fazem commit. O Codex integra, valida e persiste.
 
-- manifest e sources;
-- scripts install/upgrade/remove/backup/restore/config/change-url se existentes;
-- service e configuração do Runner;
-- registration/authentication token lifecycle;
-- executor Docker e dependências;
-- runner/helper-images compatibility;
-- architectures;
-- testes e workflows;
-- divergências do upstream YunoHost;
-- dados desconhecidos e riscos.
+## Regra de parada
 
-## Coordenação
-
-Ao concluir, atualizar `faleious-ai/gitlab_ynh` com uma síntese cross-repo usando o mesmo `Round-ID`, se a sessão possuir acesso de escrita aos dois repositórios.
+Não parar para progresso, tarefa longa, pesquisa ou teste falho. Ao bloquear uma frente, continuar todas as independentes. Parar apenas após conclusão integral ou depois de concluir todo trabalho independente e registrar gate humano válido.
 
 ## Fora de escopo
 
-- implementar updater;
-- modificar versão;
-- registrar Runner real em produção;
-- usar token real;
-- criar mirror;
-- alterar ruleset.
+Updater, mudança de versão/hash/URL, token real, registro em produção, mirrors, ruleset ou release.
 
-## Condições de parada
+## Saída esperada
 
-Escalar somente por segredo ausente necessário, operação irreversível, mudança de missão/licença/visibilidade, impacto material de privilégio ou impossibilidade comprovada de acessar uma fonte indispensável.
+- quatro documentos de auditoria definidos no charter;
+- status, handoff, evidence index e round record;
+- commit em `master` e mesmo `Round-ID` cross-repo quando acessível;
+- estado `EXECUTED_AWAITING_REVIEW`;
+- pacote com commits, evidências, gaps, riscos e bloqueios.
 
-## Fechamento
-
-Um único commit em `master` com auditoria, status, handoff, evidence index e round record.
+O ChatGPT revisará e definirá aceite, correção ou gate humano.

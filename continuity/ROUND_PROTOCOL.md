@@ -1,76 +1,141 @@
 # Protocolo de rodada de IA
 
-Identificador: `RND-YYYYMMDD-NNN`.
+Identificadores: `RND-YYYYMMDD-NNN` e `T-<NN>-<slug>`.
 
-A rodada só fica disponível para revisão quando o commit final está publicado e verificável em `origin/master`. Commit apenas local não é persistência MAESTRO.
+A rodada é a unidade de autorização, baseline, escopo e revisão. A tarefa é a unidade de implementação, commit, sincronização e reversão. Estado exclusivamente local não é persistência MAESTRO.
 
 ## ORCHESTRATE
 
-O ChatGPT reconcilia estado/decisões/evidências e HEADs remotos, pergunta ao usuário o que possa alterar consequência prática, decide questões técnicas reversíveis e só marca `ACTIVE_ROUND` como `READY` quando escopo, DAG, critérios, validações, gates e plano de sincronização remota estiverem completos.
+O ChatGPT reconcilia estado, decisões, evidências e HEADs remotos; resolve questões técnicas reversíveis; pergunta ao Maestro Diretor apenas o que altera produto, consequência, custo, privilégio, risco ou irreversibilidade; e só marca o charter `READY` quando tarefas, DAG, seams, critérios, gates e persistência estão definidos.
+
+Cada tarefa deve declarar:
+
+- `Task-ID`, objetivo e dependências;
+- seam público observado;
+- claims/invariantes e interfaces tocadas;
+- paths autorizados e ownership;
+- contrato de verificação com comandos e estados de evidência esperados;
+- estratégia RED→GREEN quando houver mudança comportamental;
+- condição de commit e rollback.
 
 ## START — Codex
 
 1. confirmar repositório e `master`;
 2. executar `git fetch origin`;
-3. registrar `baseline_head = origin/master`;
-4. verificar árvore limpa e HEAD local reconciliado;
-5. ler `AGENTS.md`, `HANDOFF_CURRENT.md`, `STATUS.md` e `ACTIVE_ROUND.md`;
+3. registrar `baseline_head = origin/master` da rodada;
+4. verificar árvore limpa e HEAD reconciliado;
+5. ler `AGENTS.md`, `HANDOFF_CURRENT.md`, `STATUS.md`, `ACTIVE_ROUND.md` e o índice de skills;
 6. confirmar charter `READY`, atribuir `Round-ID` e registrar orientação adicional;
-7. decompor DAG e paralelismo seguro.
+7. decompor DAG, tarefas e paralelismo seguro.
 
-## EXECUTE
+## PRE-BUILD CHALLENGE
 
-- executar todo o charter;
-- usar tentativa-erro-aprendizado e testes;
-- registrar fatos em arquivos/evidências;
-- não usar tokens reais persistidos;
-- tratar Runner/helper images como conjunto;
-- não confundir download com lifecycle validado;
-- não parar para progresso, tarefa longa, pesquisa, teste falho ou primeira estratégia malsucedida.
+Para tarefa de alto impacto, antes do primeiro edit:
 
-## PARALLELIZE
+1. executar revisão adversarial da tarefa contra charter, código, ADRs e fontes externas aplicáveis;
+2. tentar refutar goal, seams, invariantes, lifecycle, segurança e rollback;
+3. corrigir especificação técnica reversível autonomamente;
+4. escalar apenas decisão humana material;
+5. registrar `GO` ou `NO_GO` com evidência.
 
-Delegar frentes independentes com ownership de paths/outputs. Subagentes não fazem commit, push, não alteram documentos canônicos compartilhados sem ownership e retornam fatos, mudanças, validações, riscos e desconhecidos. O Codex integra e valida.
+## EXECUTE — POR TAREFA
 
-## VALIDATE
+1. marcar tarefa `IN_PROGRESS` no registro de trabalho quando necessário;
+2. carregar somente contexto e skills aplicáveis;
+3. para mudança comportamental, executar ciclo `RED → GREEN` no seam público;
+4. implementar somente o mínimo exigido pelos claims;
+5. executar gate cascade proporcional: parse/build → teste focal → integração → lifecycle/smoke → segurança/CI;
+6. em falha inesperada, executar backprop antes de nova tentativa cega;
+7. manter matriz claim → mecanismo → comando → resultado → estado de evidência;
+8. concluir todos os nós independentes quando uma frente bloquear.
 
-Aplicar conforme escopo: schema/lint, integridade/hashes, determinismo, install/service, registration redigido, Docker/helper image, upgrade, backup/restore, remove, falhas negativas, diff e ausência de segredo.
+## BACKPROP
 
-## BLOCKER SWEEP
+Toda falha inesperada é classificada como:
 
-Antes de parar, concluir todos os nós independentes, tentar alternativas técnicas e registrar condição, evidência, tentativas, decisão humana exata e grafo restante. Tarefa longa e teste falho não são bloqueios. Problema de push é sincronização remota, não aceite.
+- `IMPLEMENTATION_BUG`;
+- `MISSING_CRITERION`;
+- `INCOMPLETE_CRITERION`;
+- `WRONG_CRITERION`;
+- `MISSING_REQUIREMENT`;
+- `ENVIRONMENTAL_LIMIT`;
+- `EXTERNAL_DEPENDENCY`.
 
-## PERSIST LOCAL
+Backprop técnico pode atualizar invariante, critério, teste e memória sem gate. Mudança de comportamento externo, produto, custo, acesso, risco ou irreversibilidade exige decisão do Maestro Diretor.
 
-Atualizar no fechamento: código/docs, `STATUS`, `HANDOFF_CURRENT`, `ACTIVE_ROUND`, decisões/ADRs, round record e `EVIDENCE_INDEX`. Executar `git fetch origin`, reconciliar novamente o HEAD, revisar diff/segredos e repetir checks impactados. Criar exatamente um commit local da rodada.
+## INTERNAL REVIEW — ANTES DE CADA COMMIT
 
-Após o commit local, o estado máximo permitido é `LOCAL_COMPLETE_AWAITING_SYNC`.
+Executar duas revisões independentes, preferencialmente em contextos/subagentes separados:
 
-## REMOTE SYNC
+1. **Spec/Charter:** requisitos ausentes/parciais, scope creep, interface drift, claims sem prova.
+2. **Engineering:** bugs, segurança, lifecycle, compatibilidade, falhas negativas, simplicidade e reversibilidade.
 
-Para este repositório e qualquer coordenador afetado:
+P0/P1 bloqueiam o commit. P2/P3 são corrigidos ou recebem rationale explícito. Depois executar `maestro-check` e `maestro-guardrails`.
+
+## TASK COMMIT
+
+Para cada tarefa concluída:
+
+1. executar `git fetch origin`;
+2. confirmar que o remoto é ancestral direto do trabalho local ou reconciliar apenas mudanças ainda não publicadas;
+3. revisar diff, segredos, ruído, paths e claims;
+4. repetir checks impactados;
+5. criar exatamente um commit atômico com mensagem `RND-<id> T-<id>: <resultado>`;
+6. não incluir trabalho de outra tarefa independente;
+7. não criar commits intermediários de teste RED; a evidência RED fica em output/fixture/log versionado ou round record, e o commit final contém teste + fix coerentes;
+8. registrar rollback seletivo pela reversão desse commit.
+
+Após o commit local, o estado da tarefa é `TASK_LOCAL_COMPLETE_AWAITING_SYNC`.
+
+## TASK REMOTE SYNC
 
 1. executar `git fetch origin`;
 2. verificar `git rev-list --left-right --count origin/master...HEAD`;
-3. com resultado `0 1`, executar `git push origin master`;
-4. se o remoto avançou, nunca force: rebasear ou recriar apenas o commit ainda não publicado sobre o novo `origin/master`, resolver conflitos, repetir checks e preservar um único commit final;
-5. se o push falhar por acesso, divergência ou indisponibilidade, registrar `REMOTE_SYNC_BLOCKED` com comando, erro, tentativas e ação necessária;
-6. após push, executar novo fetch e confirmar `git rev-parse HEAD == git rev-parse origin/master`;
-7. confirmar SHA completo recuperável no GitHub e todos os paths de evidência presentes no remoto.
+3. com fast-forward seguro, executar `git push origin master`;
+4. nunca usar force push;
+5. após push, fazer novo fetch e confirmar `HEAD == origin/master`;
+6. confirmar SHA completo recuperável pelo GitHub e outputs remotos presentes;
+7. só então marcar tarefa `TASK_REMOTE_VERIFIED` e iniciar a próxima tarefa que escreva neste repositório.
 
-## ESTADOS DE SAÍDA
+Falha de push produz `TASK_REMOTE_SYNC_BLOCKED`. Não empilhar novos commits neste repositório até resolver; continue apenas trabalho independente sem escrita ou em outro repositório.
 
-- `LOCAL_COMPLETE_AWAITING_SYNC`: execução e commit concluídos apenas localmente.
-- `REMOTE_SYNC_BLOCKED`: resultado local seguro, mas publicação remota não concluída.
-- `BLOCKED_HUMAN`: todo trabalho independente e persistência possível concluídos; resta gate humano real.
-- `EXECUTED_AWAITING_REVIEW`: commits publicados, HEADs coincidentes, árvores limpas, evidências remotas e pacote de revisão completo.
+Trabalho cross-repo usa o mesmo `Round-ID` e `Task-ID`, com um commit atômico em cada repositório afetado e confirmação remota em todos antes de fechar a tarefa.
 
-O Codex não marca `ACCEPTED`.
+## CONVERGENCE
 
-## PACOTE REMOTO DE REVISÃO
+A cada ciclo relevante, registre:
 
-Informar repositórios, SHAs completos, `Round-ID`, `Charter-ID`, matriz tarefa-output-evidência, comandos/resultados, paths/URLs do GitHub, riscos, gates e confirmação de `HEAD == origin/master`. Links locais `C:/...` não contam como evidência do orquestrador.
+- claims/invariantes demonstrados versus totais;
+- gates passando/falhando;
+- findings P0–P3 abertos;
+- tarefas concluídas/bloqueadas;
+- falhas repetidas e categorias de backprop;
+- estabilidade do diff como sinal secundário.
+
+Oscilação, pass rate estacionado, repetição de estratégia ou findings persistentes indicam não convergência. Corrija especificação, validação ou ownership; não apenas aumente iterações.
+
+## ROUND CLOSE
+
+A última tarefa da rodada é de integração/continuidade e atualiza `STATUS`, `HANDOFF_CURRENT`, `ACTIVE_ROUND`, decisões, evidence index e round record.
+
+Estados de saída:
+
+- `TASK_LOCAL_COMPLETE_AWAITING_SYNC`;
+- `TASK_REMOTE_SYNC_BLOCKED`;
+- `BLOCKED_HUMAN`;
+- `EXECUTED_AWAITING_REVIEW`.
+
+`EXECUTED_AWAITING_REVIEW` exige:
+
+- todos os Task-IDs concluídos ou bloqueados validamente;
+- todos os commits de tarefa publicados em ordem em `origin/master`;
+- HEADs coincidentes e árvores limpas;
+- matriz task→commit→claim→evidência remota;
+- pacote sem links locais;
+- CI/lifecycle classificados segundo a prova real.
+
+O Codex nunca marca `ACCEPTED`.
 
 ## REVIEW
 
-O ChatGPT aplica `REVIEW_PROTOCOL.md` apenas sobre material remoto e registra aceite, correção ou gate humano. Após resolução com o usuário, revisa o charter e libera nova rodada.
+O ChatGPT revisa o intervalo `baseline_head...round_head`, cada commit de tarefa e o comportamento integrado. Persiste `ACCEPTED`, `CORRECTION_REQUIRED`, `HUMAN_GATE` ou `REJECTED_UNSAFE` em tarefa/commit próprio de orquestração.

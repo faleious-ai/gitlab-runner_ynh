@@ -6,43 +6,81 @@ O ChatGPT revisa somente charter, commits, diffs, evidências e validações pub
 
 `EXECUTED_AWAITING_REVIEW` exige:
 
-1. SHAs completos publicados em `origin/master` de todos os repositórios afetados;
-2. commits recuperáveis pelo GitHub;
-3. paths citados existentes no remoto;
+1. `baseline_head` e `round_head` completos;
+2. todos os commits de tarefa publicados em `origin/master` e recuperáveis;
+3. sequência ordenada `Task-ID → commit SHA → outputs → claims → evidências`;
 4. continuidade com o mesmo `Round-ID`/`Charter-ID`;
-5. pacote sem links locais `C:/...`.
+5. paths remotos existentes e ausência de links locais;
+6. HEADs local/remoto coincidentes em todos os repositórios afetados.
 
-Sem isso, o estado é `NOT_REVIEWABLE_REMOTE_SYNC_REQUIRED`, derivado de `LOCAL_COMPLETE_AWAITING_SYNC` ou `REMOTE_SYNC_BLOCKED`. Isso não é julgamento da qualidade técnica.
+Sem isso, o estado é `NOT_REVIEWABLE_REMOTE_SYNC_REQUIRED`, derivado de tarefa local ou sincronização bloqueada. Isso não julga a qualidade técnica.
 
-## Revisão
+## Entrada
 
-O ChatGPT:
+O pacote de revisão inclui:
 
-1. reconcilia HEADs remotos;
-2. confirma os SHAs completos e sua posição em `origin/master`;
-3. compara o charter com entregas e evidências remotas;
-4. inspeciona diff, testes, segurança, compatibilidade e continuidade;
-5. verifica integração de subagentes e ausência de outputs órfãos;
-6. distingue lacuna técnica, gate humano e falha de sincronização;
-7. persiste o resultado.
+- charter e baseline remoto;
+- lista ordenada de Task-IDs e SHAs completos;
+- matriz claim → seam → teste/comando → resultado → estado de evidência;
+- evidência RED/GREEN de mudanças comportamentais;
+- findings das duas revisões internas e resolução;
+- classificação de CI, lifecycle e limitações;
+- backprop e riscos residuais.
+
+## Revisão por tarefa
+
+Para cada commit de tarefa, o orquestrador:
+
+1. confirma `Task-ID`, escopo e dependências;
+2. verifica atomicidade e ausência de trabalho não relacionado;
+3. compara o diff com claims, interfaces e invariantes;
+4. exige teste comportamental no seam público quando aplicável;
+5. confirma RED anterior e GREEN posterior, ou justificativa de não aplicabilidade;
+6. verifica segurança, lifecycle, compatibilidade, reversibilidade e ausência de segredo;
+7. confirma que claims não excedem o nível de evidência;
+8. avalia se a reversão isolada do commit preserva estado coerente ou se dependências estão explicitadas.
+
+## Revisão integrada
+
+Após os commits individuais, o orquestrador revisa `baseline_head...round_head` para detectar:
+
+- interação defeituosa entre tarefas;
+- regressão causada por sequência de commits;
+- interfaces divergentes;
+- outputs órfãos de subagentes;
+- inconsistência cross-repo;
+- documentação, status ou evidência que não reflitam o código final;
+- lacunas que testes focais não alcançam.
+
+## Dois eixos obrigatórios
+
+O veredito mantém separados:
+
+1. **Spec/Charter:** requisito ausente, parcial, errado, scope creep, claim sem prova ou interface divergente.
+2. **Engineering:** bug, segurança, lifecycle, compatibilidade, qualidade, simplicidade, operabilidade e reversibilidade.
+
+Uma tarefa pode passar em um eixo e falhar no outro. Um eixo não mascara o outro.
+
+## Estados de evidência
+
+- `STRUCTURALLY_OBSERVED`: presença ou forma inspecionada; não demonstra execução.
+- `LOCAL_VERIFIED`: comando comportamental executado localmente com resultado reproduzível.
+- `REMOTE_CI_VERIFIED`: run remoto associado ao SHA e resultado final confirmado.
+- `LIFECYCLE_VERIFIED`: fluxo install/upgrade/backup/restore/remove ou equivalente executado no ambiente proporcional.
+- `UNVERIFIED`: não demonstrado.
+- `FAILED`: demonstrado que não atende.
+
+Busca textual, ausência de erro observada ou fixture isolada não promovem evidência comportamental.
 
 ## Resultados
 
-- `ACCEPTED`: critérios demonstrados.
-- `CORRECTION_REQUIRED`: lacuna técnica; gerar rodada corretiva completa.
-- `HUMAN_GATE`: decisão, acesso, custo, privilégio ou consequência prática depende do usuário.
-- `REJECTED_UNSAFE`: exigir reversão/compensação segura.
+- `ACCEPTED`: todos os critérios materiais demonstrados; limitações remanescentes estão corretamente classificadas.
+- `CORRECTION_REQUIRED`: lacuna técnica executável; preparar tarefas corretivas rastreáveis.
+- `HUMAN_GATE`: decisão, acesso, custo, privilégio ou consequência prática depende do Maestro Diretor.
+- `REJECTED_UNSAFE`: resultado remoto não pode permanecer; exigir reversão seletiva de um ou mais commits ou compensação segura.
 
-O Codex não aceita o próprio trabalho. Encerra conforme o estado real em `EXECUTED_AWAITING_REVIEW`, `BLOCKED_HUMAN`, `LOCAL_COMPLETE_AWAITING_SYNC` ou `REMOTE_SYNC_BLOCKED`.
-
-## Sincronização pendente
-
-Quando o trabalho estiver apenas local, o Codex deve buscar `origin/master`, reconciliar o commit ainda não publicado sem force push, repetir checks impactados, publicar, confirmar `HEAD == origin/master` e então fornecer os SHAs completos e paths remotos.
-
-## Bloqueio humano
-
-O orquestrador apresenta ao usuário a decisão exata, alternativas, consequências e recomendação. Após resposta, persiste a resolução, revisa o charter e libera nova execução. O Codex continua todo trabalho restante até conclusão ou próximo bloqueio válido.
+O Codex não aceita o próprio trabalho.
 
 ## Persistência
 
-Revisões que mudem estado, decisão ou plano geram round record e commit próprio publicado em `origin/master`. Comentário de issue não substitui memória versionada.
+A revisão é uma rodada de orquestração com tarefas próprias. Cada decisão ou mudança normativa recebe commit de tarefa publicado em `origin/master`; não há squash. Comentários de issue resumem, mas não substituem memória versionada.

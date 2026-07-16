@@ -2,12 +2,12 @@
 
 Atualizado em: 2026-07-16  
 Branch autorizada: `master`  
-Última rodada executada pelo Codex: `RND-20260716-007`  
+Última rodada executada pelo Codex: `RND-20260716-010`
 Última rodada do orquestrador: `RND-20260716-009`
 
 ## Fase
 
-`WP02_CHR003_READY_WITH_MAESTRO_CAVEKIT_TASK_PROTOCOL`
+`WP02_CHR003_IN_PROGRESS`
 
 A revisão de `CHR-WP02-002` permanece `CORRECTION_REQUIRED`. O charter corretivo `CHR-WP02-003` continua funcionalmente igual, mas foi decomposto em oito tarefas com seams, RED→GREEN, revisão adversarial, commits remotos por tarefa e rollback seletivo.
 
@@ -36,6 +36,8 @@ Tarefas:
 6. `T-WP02D-06-evidence-portability`;
 7. `T-WP02D-07-remote-ci`;
 8. `T-WP02D-08-integration-continuity`.
+
+Tarefa em execução: `T-WP02D-01-config-controller` — RED observado e GREEN local verificado; sincronização remota pendente.
 
 ## Componentes preservados
 

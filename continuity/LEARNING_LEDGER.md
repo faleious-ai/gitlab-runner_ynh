@@ -20,7 +20,37 @@ Append-only registry for failures, dead ends and process lessons that must survi
 
 ## Entries
 
-No backprop entries recorded under the new protocol yet.
+### BP-20260716-001
+
+| Field | Value |
+|---|---|
+| Backprop-ID | `BP-20260716-001` |
+| Round/Task | `RND-20260716-010` / `T-WP02D-01-config-controller` |
+| classification | `PROCESS_GAP` |
+| pattern | task-start review ordering |
+| symptom | O teste RED do seam de configuração foi criado antes do registro formal do pre-build challenge. |
+| root cause | A retomada priorizou criar o oracle público para medir o baseline antes de persistir a revisão adversarial; a ordem documental da skill não foi aplicada explicitamente. |
+| contract change | Antes do primeiro edit de cada tarefa de alto impacto, registrar GO/NO_GO, seam, invariantes, gates e rollback no round record ou saída versionada; só então criar o oracle RED. |
+| RED | `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_config_controller -v` — falhou por inputs ausentes e por `unknown GitLab Runner config action`. |
+| GREEN | O mesmo comando após a implementação — 2 testes passaram. |
+| commit | pendente até a publicação de T01 |
+| systemic action | nenhuma; aplicar a ordem em T02–T08 |
+
+### BP-20260716-002
+
+| Field | Value |
+|---|---|
+| Backprop-ID | `BP-20260716-002` |
+| Round/Task | `RND-20260716-010` / `T-WP02D-01-config-controller` |
+| classification | `INCOMPLETE_CRITERION` |
+| pattern | stale public seam in regression harness |
+| symptom | A suíte existente falhou com `FileNotFoundError` porque invocava `scripts/config` sem dispatch e esperava logs do fake Runner. |
+| root cause | O oracle herdado exercitava a interface CLI legada, enquanto o contrato ativo exige o controlador `run__register()` do ConfigPanel. |
+| contract change | Testes de registro devem invocar o seam público vigente; a remoção de interfaces legadas fica explicitamente em `T-WP02D-02`. |
+| RED | `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v` — 15 passaram e `test_registration_redaction_never_returns_token` falhou antes de criar `argv.log`. |
+| GREEN | O mesmo comando após migrar o harness — suíte completa passa. |
+| commit | pendente até a publicação de T01 |
+| systemic action | nenhuma; auditar seams herdados nas tarefas seguintes |
 
 ## Rules
 

@@ -284,7 +284,8 @@ class AutoupdateTests(unittest.TestCase):
             result = subprocess.run(
                 [
                     BASH,
-                    str(ROOT / "scripts" / "config"),
+                    "-c",
+                    "source scripts/config; run__register",
                     "register",
                 ],
                 cwd=ROOT,

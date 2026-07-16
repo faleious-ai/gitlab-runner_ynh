@@ -8,10 +8,31 @@ name.fr = "GitLab Runner"
     name.en = "Registration"
     name.fr = "Enregistrement"
 
+        [main.registration.gitlab_url]
+        ask.en = "GitLab coordinator URL"
+        ask.fr = "URL du coordinateur GitLab"
+        type = "url"
+        bind = "null"
+        example = "https://gitlab.com/"
+
+        [main.registration.token]
+        ask.en = "Ephemeral Runner authentication token"
+        ask.fr = "Jeton d'authentification Runner éphémère"
+        type = "password"
+        bind = "null"
+        example = "glrt-..."
+
+        [main.registration.docker_image]
+        ask.en = "Docker image"
+        ask.fr = "Image Docker"
+        type = "string"
+        bind = "null"
+        default = "alpine:latest"
+
         [main.registration.register]
         ask.en = "Register configured runners"
         ask.fr = "Enregistrer les runners configurés"
         type = "button"
         style = "success"
-        help.en = "Registers the configured GitLab URLs with the stored runner settings."
-        help.fr = "Enregistre les URLs GitLab configurées avec les paramètres du runner stockés."
+        help.en = "Registers the GitLab URL entered for this action; the authentication token is not stored."
+        help.fr = "Enregistre l'URL GitLab saisie pour cette action ; le jeton d'authentification n'est pas stocké."

@@ -5,12 +5,14 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=_register.sh
 source "$SCRIPT_DIR/_register.sh"
 
-case "${1:-}" in
-    register)
-        register_runner_set "${gitlab_url:-}" "${token:-}" "${docker_image:-}" "${RUNNER_BIN:-gitlab-runner}"
-        ;;
-    *)
-        printf 'unknown GitLab Runner config action\n' >&2
-        exit 2
-        ;;
-esac
+run__register() {
+    register_runner_set "${gitlab_url:-}" "${token:-}" "${docker_image:-}" "${RUNNER_BIN:-gitlab-runner}"
+}
+
+# YunoHost's config-panel helper dispatches run__<id> functions. Keep the
+# sourceable definition separate so the seam can be exercised without a host
+# YunoHost installation.
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    source /usr/share/yunohost/helpers
+    ynh_app_config_run "${1:-}"
+fi

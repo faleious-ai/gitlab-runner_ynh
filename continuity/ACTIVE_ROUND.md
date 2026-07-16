@@ -1,7 +1,8 @@
 # Rodada ativa
 
 Charter-ID: `CHR-WP02-003`  
-Estado: `READY`  
+Estado: `IN_PROGRESS`
+Round-ID: `RND-20260716-010`
 Preparado em: 2026-07-16  
 Orquestrador: ChatGPT com o Maestro Diretor  
 Executor principal: Codex  

@@ -3,32 +3,39 @@
 Atualizado em: 2026-07-16  
 Branch autorizada: `master`  
 Última rodada executada pelo Codex: `RND-20260716-007`  
-Última rodada do orquestrador: `RND-20260716-008`
+Última rodada do orquestrador: `RND-20260716-009`
 
 ## Fase
 
-`WP02_CORRECTION_REQUIRED_CHR003_READY`
+`WP02_CHR003_READY_WITH_MAESTRO_CAVEKIT_TASK_PROTOCOL`
 
-A revisão independente de `CHR-WP02-002` resultou em `CORRECTION_REQUIRED`. A base de descoberta/checksums/manifest candidato é preservada, mas action, lifecycle, trust criptográfico, evidência canônica e CI remoto ainda não atendem ao contrato.
+A revisão de `CHR-WP02-002` permanece `CORRECTION_REQUIRED`. O charter corretivo `CHR-WP02-003` continua funcionalmente igual, mas foi decomposto em oito tarefas com seams, RED→GREEN, revisão adversarial, commits remotos por tarefa e rollback seletivo.
 
-Registro: `continuity/reviews/REV-RND-20260716-007.md`.
+## Processo incorporado
+
+- ADR-0006 substituiu um commit por rodada por um commit por tarefa;
+- 12 skills MAESTRO adaptadas do Cavekit foram publicadas em `.agents/skills/`;
+- TDD é obrigatório para toda mudança comportamental;
+- backprop técnico é autônomo e registrado em `continuity/LEARNING_LEDGER.md`;
+- revisão interna usa os eixos Spec/Charter e Engineering/Security/Lifecycle;
+- convergência usa claims, gates, findings e bloqueios;
+- compressão Caveman é limitada a matrizes/ledgers.
 
 ## Charter ativo
 
-`CHR-WP02-003 — Action, trust fail-closed e lifecycle seguro`.
-
+`CHR-WP02-003 — Action, trust fail-closed e lifecycle seguro`  
 Estado: `READY`.
 
-## Correções obrigatórias
+Tarefas:
 
-- implementar controlador YunoHost `run__register()` com entradas efêmeras;
-- remover a interface legada que aceita credencial por argumentos;
-- preservar configuração/identidade em backup/restore sem re-registro;
-- falhar fechado em assinatura ou chave inválida/expirada/revogada;
-- validar self-link/origem/redirects;
-- restaurar `evidence/EVIDENCE_INDEX.md` como único índice canônico;
-- remover paths locais dos relatórios;
-- obter CI remoto verificável ou registrar bloqueio objetivo.
+1. `T-WP02D-01-config-controller`;
+2. `T-WP02D-02-remove-legacy-register`;
+3. `T-WP02D-03-lifecycle-identity`;
+4. `T-WP02D-04-signature-fail-closed`;
+5. `T-WP02D-05-source-self-link-redirects`;
+6. `T-WP02D-06-evidence-portability`;
+7. `T-WP02D-07-remote-ci`;
+8. `T-WP02D-08-integration-continuity`.
 
 ## Componentes preservados
 
@@ -42,3 +49,7 @@ Estado: `READY`.
 ## Gate humano
 
 `HG-RUN-SEC-01` permanece `UNRESOLVED_NO_AUTHORITY`. Não bloqueia `CHR-WP02-003`.
+
+## Próxima ação
+
+Codex deve ler `AGENTS.md`, `.agents/skills/README.md` e executar integralmente `CHR-WP02-003` sob o novo protocolo. Nenhuma nova decisão humana está pendente.

@@ -1,72 +1,69 @@
 # Plano de execução local
 
+A sequência de longo prazo está aqui; a autorização concreta pertence a `continuity/ACTIVE_ROUND.md`.
+
 ## Política
 
-- branch única `master`;
-- um commit por rodada;
-- mesmo `Round-ID` para trabalho cross-repo;
-- maior unidade coerente possível até bloqueio real;
-- implementação somente após baseline persistido.
+- ChatGPT prepara/revisa rodadas completas após perguntas humanas necessárias.
+- Codex executa todo charter `READY` e não para enquanto houver trabalho não bloqueado.
+- Usar DAG e subagentes em frentes independentes; Codex integra.
+- `master` exclusiva, sem branches/PRs/worktrees.
+- Um commit normativo por rodada futura; mesmo `Round-ID` cross-repo.
+- Implementação somente após baseline aceito pelo orquestrador.
 
 ## WP-00 — Bootstrap MAESTRO
 
 Status: `DONE`.
 
+## WP-00B — Contrato orquestrador-executor
+
+Status: `DONE`.
+
 ## WP-01B — Auditoria baseline Runner
 
-Status: `NEXT`.
+Status: `ACTIVE_CHARTER_READY`.
+
+Charter: `CHR-WP01-001`.
 
 Saídas:
 
-1. inventário estrutural e de lifecycle;
+1. inventário estrutural/lifecycle;
 2. matriz versão × arquitetura × assets;
-3. mapeamento Runner/helper images;
-4. fluxo de tokens e redaction;
-5. integração Docker/executor;
-6. testes e workflows;
-7. divergência upstream;
-8. lacunas e backlog derivado.
+3. Runner/helper images;
+4. tokens/redaction;
+5. Docker/executor;
+6. testes/workflows;
+7. upstream/divergência;
+8. lacunas e backlog.
 
-Critério de saída: fatos por path/commit, desconhecidos explícitos e nenhuma implementação misturada.
+Critério de saída: fatos por path/commit, desconhecidos explícitos, nenhuma implementação misturada, commits/evidências persistidos e revisão do orquestrador.
 
 ## WP-02A — Fonte de verdade de release
 
-Status: `PLANNED`.
-
-Definir fonte oficial, regra de stable release, asset matching, autenticidade e falhas.
+Status: `PLANNED`; depende de WP-01B `ACCEPTED`.
 
 ## WP-02B — Resolver atômico Runner/helper images
 
 Status: `PLANNED`.
 
-Resolver todos os assets da mesma versão e rejeitar conjunto incompleto ou incompatível.
-
 ## WP-02C — Gerador determinístico
 
 Status: `PLANNED`.
-
-Atualizar manifest/fixtures em ordem estável, com URLs e SHA256, sem escrita parcial.
 
 ## WP-02D — Testes unitários e negativos
 
 Status: `PLANNED`.
 
-Cobrir release inválida, asset ausente, hash divergente, arquitetura incompleta, mismatch de versão, rede, idempotência e determinismo.
-
 ## WP-02E — Lifecycle
 
 Status: `PLANNED`.
-
-Validar install, service, registration, executor/helper image, upgrade, backup/restore e remove em ambiente controlado.
 
 ## WP-02F — Automação recorrente
 
 Status: `PLANNED`.
 
-Criar rotina que detecta versão elegível, gera mudança e produz evidência, sem publicar automaticamente release de produção.
-
 ## WP-09 — Manutenção contínua
 
 Status: `PLANNED`.
 
-Monitorar drift, compatibilidade com GitLab, YunoHost/Debian, deprecações de token/executor e releases.
+Monitorar drift, compatibilidade, YunoHost/Debian, tokens/executor e releases.

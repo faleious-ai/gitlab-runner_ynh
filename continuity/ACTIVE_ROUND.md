@@ -1,7 +1,8 @@
 # Rodada ativa
 
 Charter-ID: `CHR-WP01-001`  
-Estado: `READY`  
+Estado: `EXECUTED_AWAITING_REVIEW`
+Round-ID: `RND-20260716-003`
 Orquestrador: ChatGPT com o Maestro Diretor  
 Executor: Codex  
 Unidade local: `WP-01B — Auditoria baseline Runner`
@@ -72,3 +73,25 @@ Todos os itens possuem path/fonte e estado de verificação; matrizes não omite
 ## Bloqueio
 
 Somente segredo indispensável, operação irreversível, mudança de missão/licença/visibilidade, consequência material de privilégio ou fonte indispensável inacessível após tentativas. Antes de parar, concluir todas as frentes independentes.
+
+## Fechamento da execução
+
+As frentes de inventário, lifecycle, tokens/redaction, Docker/helper images,
+testes/workflows/docs e upstream foram concluídas. Foram produzidos:
+
+- docs/audit/RUNNER_PACKAGE_BASELINE.md
+- docs/audit/UPSTREAM_DIVERGENCE.md
+- docs/audit/AUTOUPDATE_GAPS.md
+- docs/audit/LIFECYCLE_AND_SECURITY_MAP.md
+
+O pacote funcional não foi alterado. Versão, URLs, hashes, scripts,
+actions.json, Docker e fixtures permaneceram iguais ao HEAD de entrada.
+Validações estáticas passaram; package_linter e lifecycle real permanecem
+UNVERIFIED por limitações ambientais.
+
+Foi registrado um achado P0 em tests.toml:21: literal com aparência de token.
+O valor não foi usado ou reproduzido. A ação register também tem falha
+estrutural porque o target declarado não existe.
+
+Não há bloqueio humano ativo. Estado de saída:
+EXECUTED_AWAITING_REVIEW.

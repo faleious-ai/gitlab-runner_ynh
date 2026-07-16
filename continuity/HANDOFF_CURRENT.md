@@ -1,34 +1,48 @@
 # Handoff atual
 
-Estado: `EXECUTED_AWAITING_REVIEW`
-Charter: `CHR-WP02-001`
-Round-ID: `RND-20260716-005`
+Estado: `READY_FOR_CODEX_CORRECTION_ROUND`  
+Charter ativo: `CHR-WP02-002`  
+Revisão anterior: `REV-RND-20260716-005 — CORRECTION_REQUIRED`  
 Branch: `master`
 
-## Resultado
+## Prompt
 
-O Codex executou as frentes S1, S2, U1, U2, U3 e A1. O pacote de revisão está
-em `continuity/rounds/RND-20260716-005.md`, com evidências indexadas em
-`evidence/EVIDENCE_INDEX.md`.
+```text
+Leia AGENTS.md e continue.
+```
 
-O manifest continua em `18.6.2~ynh1`. `v19.0.1` é somente candidata observada
-em fixture offline e relatório dry-run; não houve promoção.
+## Retomada mínima
 
-## Próxima ação do orquestrador
+1. Ler `AGENTS.md`.
+2. Confirmar `master`, árvore limpa e `HEAD == origin/master` nos dois repositórios.
+3. Ler `continuity/STATUS.md`, `continuity/ACTIVE_ROUND.md` e `continuity/reviews/REV-RND-20260716-005.md`.
+4. Confirmar `CHR-WP02-002` em estado `READY`.
+5. Atribuir novo `Round-ID` e executar integralmente o DAG corretivo.
 
-Reconciliar os dois commits da rodada, revisar diff, evidências, testes,
-segurança e limites do charter. Registrar `ACCEPTED`, `CORRECTION_REQUIRED`,
-`HUMAN_GATE` ou `REJECTED_UNSAFE` conforme o protocolo de revisão.
+## Trabalho autorizado
 
-## Gate humano
+Completar descoberta oficial/freshness, cadeia de checksums, allowlists de origem, cópia candidata do manifest com diff guard, credencial fora de argv, contrato atual da action YunoHost, testes e CI remoto verificável.
 
-`HG-RUN-SEC-01` permanece aberto e fora da autoridade do Codex. Não usar o
-valor histórico nem tentar autenticação; a decisão requerida é confirmação
-externa de revogação, rotação ou expiração pelo administrador do projeto
-GitLab usado pelo package_check.
+Preservar o que já foi demonstrado na rodada anterior. Não reiniciar a arquitetura nem reduzir requisitos para encaixar a implementação existente.
 
-## Restrições para retomada
+## Regra de esforço
 
-Não iniciar nova implementação sob este handoff sem charter/revisão que a
-autorize. Não criar branch/PR/worktree, não promover versão e não executar
-registro ou remoção de Runner real.
+Não parar para progresso, pesquisa, teste falho ou primeira abordagem malsucedida. Ao bloquear uma frente, continuar todas as demais independentes. O gate histórico externo não justifica `BLOCKED_HUMAN`.
+
+## Paralelismo
+
+Use as cinco frentes da Onda 1 do charter. Subagentes não fazem commit nem editam arquivos canônicos compartilhados sem ownership. O executor principal integra, revisa segredo/diff, executa a suíte completa e publica.
+
+## Fora de escopo
+
+Sem promoção de versão, registro real, ação destrutiva, uso da credencial histórica, branch, PR, worktree, release, force push, reescrita de histórico ou alteração de ruleset.
+
+## Fechamento remoto
+
+A rodada só termina depois de:
+
+- um commit publicado em `origin/master` por repositório afetado, mesmo `Round-ID`;
+- `HEAD == origin/master` e árvores limpas;
+- todos os arquivos/evidências recuperáveis pelo GitHub;
+- pacote remoto de revisão com SHAs completos e URLs remotas;
+- estado `EXECUTED_AWAITING_REVIEW`.

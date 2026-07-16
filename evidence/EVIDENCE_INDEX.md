@@ -2,47 +2,47 @@
 
 ## Estados
 
-- `OBSERVED`: inspecionado, sem teste completo.
+- `OBSERVED`: fato inspecionado, sem demonstração completa.
 - `VERIFIED`: demonstrado de forma reproduzível.
-- `FAILED`: check falhou.
+- `FAILED`: critério executado/revisado e não atendido.
 - `UNVERIFIED`: não demonstrado.
 - `SUPERSEDED`: substituído.
 
-## Entradas
+## Evidências históricas
 
 | ID | Estado | Round | Assunto | Localização | Resultado |
 |---|---|---|---|---|---|
 | EVD-20260716-001-RUNNER | VERIFIED | RND-20260716-001 | bootstrap MAESTRO | `AGENTS.md`, `CONTEXT.md`, `continuity/`, `docs/`, `evidence/` | estrutura criada sem mudança funcional |
-| EVD-20260716-002-RUNNER | VERIFIED | RND-20260716-002 | contrato orquestrador/Codex | `AGENTS.md`, `ACTIVE_ROUND.md`, protocolos, ADR-0005 e especificações | rodada completa, revisão e paralelismo persistidos; sem mudança funcional |
-| EVD-RUNNER-BASELINE-001 | OBSERVED | pre-bootstrap | versão/sources | `manifest.toml` | `18.6.2~ynh1` |
-| EVD-RUNNER-BASELINE-002 | OBSERVED | pre-bootstrap | autoupdate | `manifest.toml` | bloco comentado/helper sem estratégia observada |
+| EVD-20260716-002-RUNNER | VERIFIED | RND-20260716-002 | contrato orquestrador/Codex | protocolos, ADR-0005 e especificações | rodada completa, revisão, sincronização e paralelismo persistidos |
 | EVD-WP01B-INVENTORY | VERIFIED | RND-20260716-003 | inventário Runner | `docs/audit/RUNNER_PACKAGE_BASELINE.md` | manifest, assets, scripts, action, Docker e lifecycle documentados |
-| EVD-WP01B-TOKEN-SECURITY | VERIFIED | RND-20260716-003 | tokens e redaction | `docs/audit/LIFECYCLE_AND_SECURITY_MAP.md` | credential-like literal localizado sem reproduzir o valor; fluxo e riscos documentados |
-| EVD-WP01B-UPSTREAM-DIVERGENCE | VERIFIED | RND-20260716-003 | comparação upstream | `docs/audit/UPSTREAM_DIVERGENCE.md` | fork funcionalmente igual ao snapshot YunoHost-Apps |
-| EVD-WP01B-ASSURANCE-GAPS | VERIFIED | RND-20260716-003 | autoupdate, Docker e lifecycle | `docs/audit/AUTOUPDATE_GAPS.md`, `docs/audit/LIFECYCLE_AND_SECURITY_MAP.md` | gaps e critérios de aceite derivados |
-| EVD-WP01B-ORCHESTRATOR-REVIEW | VERIFIED | RND-20260716-004 | revisão independente WP-01B | `continuity/reviews/REV-RND-20260716-003.md` | outputs e commit conferidos; achados críticos reproduzidos; verdict `ACCEPTED` |
+| EVD-WP01B-TOKEN-SECURITY | VERIFIED | RND-20260716-003 | risco credential-like | `docs/audit/LIFECYCLE_AND_SECURITY_MAP.md` | risco localizado sem uso/reprodução do valor |
+| EVD-WP01B-UPSTREAM-DIVERGENCE | VERIFIED | RND-20260716-003 | comparação upstream | `docs/audit/UPSTREAM_DIVERGENCE.md` | fork funcionalmente igual ao snapshot auditado |
+| EVD-WP01B-ORCHESTRATOR-REVIEW | VERIFIED | RND-20260716-004 | revisão WP-01B | `continuity/reviews/REV-RND-20260716-003.md` | verdict `ACCEPTED` |
 
-## Evidências requeridas para CHR-WP02-001
+## Revisão de RND-20260716-005
 
-- `EVD-WP02-SECRET-REMEDIATION`;
-- `EVD-WP02-REGISTER-ACTION`;
-- `EVD-WP02-RELEASE-PROVENANCE`;
-- `EVD-WP02-ATOMIC-RESOLVER`;
-- `EVD-WP02-GENERATOR-TESTS`;
-- `EVD-WP02-CI-AND-REDACTION`;
-- `EVD-WP02-ORCHESTRATOR-REVIEW`.
+| ID | Estado | Assunto | Resultado da revisão |
+|---|---|---|---|
+| EVD-WP02-SECRET-REMEDIATION | VERIFIED | fixture, scanner e redaction | literal removido; scanner e redaction presentes/testados |
+| EVD-WP02-REGISTER-ACTION | OBSERVED | action e registro compartilhado | target/helper/cardinalidade confirmados; contrato YunoHost e token fora de argv não demonstrados |
+| EVD-WP02-RELEASE-PROVENANCE | FAILED | fonte/checksum/freshness | fixture confia em hashes fornecidos; checksum oficial e descoberta corrente não integrados |
+| EVD-WP02-ATOMIC-RESOLVER | OBSERVED | matriz Runner/helper | matriz e falhas estruturais confirmadas, mas sem hash com cadeia de confiança |
+| EVD-WP02-GENERATOR-TESTS | FAILED | generator/diff | produz TOML auxiliar, não cópia/diff do manifest real |
+| EVD-WP02-CI-AND-REDACTION | UNVERIFIED | CI remoto | testes locais declarados; nenhum check/status remoto recuperado; actions por tags mutáveis |
+| EVD-WP02-ORCHESTRATOR-REVIEW | VERIFIED | revisão independente | `continuity/reviews/REV-RND-20260716-005.md`; verdict `CORRECTION_REQUIRED` |
 
-## Evidências produzidas por RND-20260716-005
+## Evidências requeridas para CHR-WP02-002
 
-| ID | Estado | Round | Assunto | Localização | Resultado |
-|---|---|---|---|---|---|
-| EVD-WP02-SECRET-REMEDIATION | VERIFIED | RND-20260716-005 | fixture, secret scan e redaction | `tests.toml`, `scripts/secret_scan.py`, `scripts/_register.sh`, `tests/test_autoupdate.py` | literal removido; scan e redaction testados sem token real |
-| EVD-WP02-REGISTER-ACTION | VERIFIED | RND-20260716-005 | action e registro compartilhado | `actions.json`, `scripts/actions/register`, `scripts/_register.sh`, `scripts/install`, `scripts/restore` | target existente; cardinalidade fail-closed e fluxo compartilhado testados |
-| EVD-WP02-RELEASE-PROVENANCE | VERIFIED | RND-20260716-005 | fonte e fixture offline | `docs/decisions/ADR-0006-runner-release-provenance.md`, `scripts/autoupdate/fixtures/release-v19.0.1.json` | API/S3 oficiais, stable-only e conjunto versionado documentados |
-| EVD-WP02-ATOMIC-RESOLVER | VERIFIED | RND-20260716-005 | Runner/helper resolver | `scripts/autoupdate.py`, `tests/test_autoupdate.py` | amd64/arm64/armhf + helper same-version; falhas fechadas cobertas |
-| EVD-WP02-GENERATOR-TESTS | VERIFIED | RND-20260716-005 | dry-run, determinismo e atomicidade | `scripts/autoupdate.py`, `evidence/wp02-candidate-report.json` | candidata `v19.0.1` observada sem promoção; escrita explícita e idempotente |
-| EVD-WP02-CI-AND-REDACTION | VERIFIED | RND-20260716-005 | CI read-only e assurance | `.github/workflows/validation.yml`, `tests/test_autoupdate.py` | suíte local passou; CI não cria branch/PR/commit |
+- `EVD-WP02C-LIVE-DISCOVERY`;
+- `EVD-WP02C-CHECKSUM-TRUST`;
+- `EVD-WP02C-SOURCE-BOUNDARY`;
+- `EVD-WP02C-MANIFEST-CANDIDATE`;
+- `EVD-WP02C-TOKEN-NOT-IN-ARGV`;
+- `EVD-WP02C-YUNOHOST-ACTION-CONTRACT`;
+- `EVD-WP02C-TESTS-AND-REMOTE-CI`;
+- `EVD-WP02C-CROSS-REPO-SYNTHESIS`;
+- `EVD-WP02C-ORCHESTRATOR-REVIEW`.
 
 ## Regras
 
-Registrar método/comando, ambiente, commit, resultado, limitações e risco residual. Redigir segredos e nunca reproduzir o valor histórico. O trabalho do Codex só recebe aceite após revisão independente.
+Claims devem apontar para método, entrada/commit, resultado e limitação. Fixture não é autoridade de checksum ou freshness por si só. Nunca reproduzir a credencial histórica. Aceite permanece exclusivo do orquestrador.

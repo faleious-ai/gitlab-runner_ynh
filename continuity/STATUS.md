@@ -1,59 +1,52 @@
 # Status atual
 
-Atualizado em: 2026-07-16
-Branch autorizada: `master`
-Última rodada executada pelo Codex: `RND-20260716-005`
-Última rodada do orquestrador: `RND-20260716-004`
+Atualizado em: 2026-07-16  
+Branch autorizada: `master`  
+Última rodada executada pelo Codex: `RND-20260716-005`  
+Última rodada do orquestrador: `RND-20260716-006`
 
-## Fase do programa
+## Fase
 
-`WP02_EXECUTED_AWAITING_REVIEW`
+`WP02_CORRECTION_READY`
 
-O charter `CHR-WP02-001` foi executado até o limite técnico autorizado. O
-resultado aguarda revisão independente do orquestrador; não foi marcado como
-`ACCEPTED`.
+O charter `CHR-WP02-001` foi revisado remotamente e recebeu `CORRECTION_REQUIRED`. A revisão está em `continuity/reviews/REV-RND-20260716-005.md`. O charter corretivo `CHR-WP02-002` está `READY`.
 
-## Entregas da rodada
+## Partes preservadas
 
-- S1: fixture histórica removida, placeholder não funcional, secret scan e
-  redaction testados.
-- S2: `actions/register` implementada; install, restore e action reutilizam
-  `scripts/_register.sh`; cardinalidade é validada antes do primeiro registro.
-- U1/U2: ADR-0006 e fixture oficial offline com release stable, Runner
-  `amd64`/`arm64`/`armhf`, helper package da mesma tag, tamanhos e SHA256.
-- U3: `scripts/autoupdate.py` produz relatório dry-run e candidata determinística;
-  escrita é explícita, staged e atômica; `manifest.toml` não foi promovido.
-- A1: testes positivos/negativos, workflow CI read-only e check estrutural de
-  target da action.
+- literal credential-like removido da árvore atual;
+- scanner e redaction implementados;
+- target da action criado e helper de registro compartilhado;
+- validação prévia de cardinalidade/URL/imagem;
+- matriz Runner/helper e falhas estruturais básicas;
+- escrita auxiliar atômica/idempotente;
+- 14 testes locais declarados;
+- manifest não promovido e versão ainda `18.6.2~ynh1`;
+- um commit remoto por repositório com o mesmo `Round-ID`.
 
-## Evidências e validação
+## Lacunas que impedem aceite
 
-Índice: `evidence/EVIDENCE_INDEX.md`. Relatório de candidata:
-`evidence/wp02-candidate-report.json`.
+- `CR-01 P0`: hashes da fixture não são confrontados com o checksum oficial;
+- `CR-02 P1`: CLI não integra descoberta atual pela Releases API;
+- `CR-03 P1`: origem oficial é validada de forma ampla demais;
+- `CR-04 P1`: generator produz TOML auxiliar, não cópia/diff do manifest real;
+- `CR-05 P1`: credencial de registro continua no argv apesar de alternativa suportada;
+- `CR-06 P1`: suporte atual de `actions.json` no YunoHost declarado não foi demonstrado;
+- `CR-07 P2`: CI remoto e pin imutável das actions não foram demonstrados.
 
-Checks executados:
+## Unidade ativa
 
-- `python -m unittest discover -s tests -v` — 14 testes, PASS;
-- `python scripts/secret_scan.py .` — clean;
-- `bash -n scripts/_register.sh scripts/actions/register scripts/install scripts/restore` pelo Git Bash — PASS;
-- `python -m py_compile scripts/autoupdate.py scripts/secret_scan.py tests/test_autoupdate.py` — PASS;
-- dry-run da fixture — baseline `18.6.2`, candidata `19.0.1`, `promoted: false`.
+`CHR-WP02-002 — cadeia de confiança, manifest candidato e registro seguro`.
 
-Limitações explicitamente mantidas: package_linter YunoHost, lifecycle real,
-job Docker e autenticação GitLab não foram executados; os assets não foram
-baixados no CI; a disponibilidade HTTP observada não substitui validação de
-conteúdo em ambiente de instalação.
+Estado: `READY`.
 
-## Gate humano aberto
+## Gate humano
 
-`HG-RUN-SEC-01` continua `UNRESOLVED_NO_AUTHORITY`: somente o administrador
-do projeto externo usado pelo package_check pode confirmar revogação, rotação
-ou expiração do valor histórico. O valor não foi usado, validado ou
-reproduzido. O gate é risco residual e não bloqueou as frentes técnicas.
+`HG-RUN-SEC-01` permanece `UNRESOLVED_NO_AUTHORITY`. É risco histórico externo e não bloqueia a rodada corretiva.
 
 ## Integridade
 
-- versão declarada permaneceu `18.6.2~ynh1`;
-- nenhum Runner real foi registrado e nenhuma ação destrutiva foi executada;
-- nenhuma branch, PR, worktree, force push ou release foi criada;
-- o fechamento desta rodada usa um commit atômico em `master`.
+- commits revisados: Runner `0e6acbd3fddc6bf79e7b235cb43a25405dcd2e25`; coordenador `46e2fb46d8addaeee321d449ffa7a5f81ccc196f`;
+- revisão baseada apenas em material remoto;
+- nenhuma versão promovida pelo orquestrador;
+- nenhuma branch, PR, force push ou operação real criada;
+- evidência da revisão: `EVD-WP02-ORCHESTRATOR-REVIEW`.

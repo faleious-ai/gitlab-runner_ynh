@@ -223,10 +223,16 @@ class AutoupdateTests(unittest.TestCase):
 
     @unittest.skipUnless(BASH, "bash is required for shell action tests")
     def test_registration_rejects_mismatched_cardinality_before_execution(self) -> None:
-        action = ROOT / "scripts" / "actions" / "register"
         result = subprocess.run(
-            [BASH, str(action), "--gitlab_url", "https://gitlab.example", "--token", "TEST_ONLY_TOKEN_PLACEHOLDER,SECOND", "--docker_image", "alpine:3.20"],
+            [BASH, "-c", "source scripts/config; run__register"],
             cwd=ROOT,
+            env={
+                **dict(os.environ),
+                "RUNNER_BIN": "true",
+                "gitlab_url": "https://gitlab.example",
+                "token": "TEST_ONLY_TOKEN_PLACEHOLDER,SECOND",
+                "docker_image": "alpine:3.20",
+            },
             text=True,
             capture_output=True,
             check=False,
@@ -237,11 +243,16 @@ class AutoupdateTests(unittest.TestCase):
 
     @unittest.skipUnless(BASH, "bash is required for shell action tests")
     def test_registration_validates_all_urls_before_first_execution(self) -> None:
-        action = ROOT / "scripts" / "actions" / "register"
         result = subprocess.run(
-            [BASH, str(action), "--gitlab_url", "https://gitlab.example,not-a-url", "--token", "TEST_ONLY_TOKEN_PLACEHOLDER,SECOND", "--docker_image", "alpine:3.20,alpine:3.20"],
+            [BASH, "-c", "source scripts/config; run__register"],
             cwd=ROOT,
-            env={**dict(os.environ), "RUNNER_BIN": "true"},
+            env={
+                **dict(os.environ),
+                "RUNNER_BIN": "true",
+                "gitlab_url": "https://gitlab.example,not-a-url",
+                "token": "TEST_ONLY_TOKEN_PLACEHOLDER,SECOND",
+                "docker_image": "alpine:3.20,alpine:3.20",
+            },
             text=True,
             capture_output=True,
             check=False,

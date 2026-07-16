@@ -30,7 +30,7 @@ jobs:
         run: >-
           python -c "import json, pathlib, tomllib; [json.loads(p.read_text()) for p in pathlib.Path('.').rglob('*.json') if '.git' not in p.parts]; [tomllib.loads(p.read_text()) for p in pathlib.Path('.').rglob('*.toml') if '.git' not in p.parts]"
       - name: Validate Bash scripts
-        run: bash -n scripts/_register.sh scripts/actions/register scripts/config scripts/install scripts/restore
+        run: bash -n scripts/_register.sh scripts/config scripts/install scripts/restore
       - name: Validate release fixture without network
         run: >-
           python scripts/autoupdate.py check

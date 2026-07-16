@@ -1,0 +1,85 @@
+{
+  "baseline_manifest_version": "18.6.2",
+  "candidate_is_newer": true,
+  "candidate_upstream_version": "19.2.0",
+  "discovery": {
+    "api": "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-runner/releases",
+    "pagination": "GitLab X-Next-Page with per_page=100",
+    "selected_tag": "v19.2.0",
+    "signature": {
+      "method": "official checksum document over pinned HTTPS; exact required asset records parsed and confronted; GPG verification requires the documented GitLab Runner signing key; trusted fingerprint matched",
+      "status": "verified",
+      "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/release.sha256.asc"
+    }
+  },
+  "mode": "dry-run",
+  "observed_at": "2026-07-16T19:50:58.171091Z",
+  "promoted": false,
+  "release": {
+    "checksum_trust": {
+      "assets": {
+        "gitlab-runner-helper-images.deb": "794be4f327cbf773cddb26feb6f362061d5ef71b466975c0778f49922e90eed6",
+        "gitlab-runner_amd64.deb": "f810e79679f3e7ffea112e27c21dfe1d77c5b8f3878de3185d72e58de2aee565",
+        "gitlab-runner_arm64.deb": "7e8f8b9bf67c2ffb17fea836637a7f84aa77ec6138c2e7fb37a5321f76c8c93b",
+        "gitlab-runner_armhf.deb": "e5e914ef5054af62dd206f52019eff1c69859d9cc1f53ee89ad4616e52a1fe82"
+      },
+      "document_sha256": "fa973abe3dedf3dd8a2670e497d99b2e58c79fb76678a0fd6bba6d0c3849a32b",
+      "signature": {
+        "method": "official checksum document over pinned HTTPS; exact required asset records parsed and confronted; GPG verification requires the documented GitLab Runner signing key; trusted fingerprint matched",
+        "status": "verified",
+        "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/release.sha256.asc"
+      },
+      "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/release.sha256"
+    },
+    "checksum_url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/release.sha256",
+    "helper_images": {
+      "architectures": [
+        "amd64",
+        "arm64",
+        "armhf"
+      ],
+      "filename": "gitlab-runner-helper-images.deb",
+      "sha256": "794be4f327cbf773cddb26feb6f362061d5ef71b466975c0778f49922e90eed6",
+      "size": 537469982,
+      "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/deb/gitlab-runner-helper-images.deb",
+      "version": "v19.2.0"
+    },
+    "release_tag": "v19.2.0",
+    "release_url": "https://gitlab.com/gitlab-org/gitlab-runner/-/releases/v19.2.0",
+    "released_at": "2026-07-16T05:57:21.276Z",
+    "runner": [
+      {
+        "architecture": "amd64",
+        "filename": "gitlab-runner_amd64.deb",
+        "sha256": "f810e79679f3e7ffea112e27c21dfe1d77c5b8f3878de3185d72e58de2aee565",
+        "size": 30652922,
+        "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/deb/gitlab-runner_amd64.deb"
+      },
+      {
+        "architecture": "arm64",
+        "filename": "gitlab-runner_arm64.deb",
+        "sha256": "7e8f8b9bf67c2ffb17fea836637a7f84aa77ec6138c2e7fb37a5321f76c8c93b",
+        "size": 27362256,
+        "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/deb/gitlab-runner_arm64.deb"
+      },
+      {
+        "architecture": "armhf",
+        "filename": "gitlab-runner_armhf.deb",
+        "sha256": "e5e914ef5054af62dd206f52019eff1c69859d9cc1f53ee89ad4616e52a1fe82",
+        "size": 28792338,
+        "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/deb/gitlab-runner_armhf.deb"
+      }
+    ],
+    "source": {
+      "api": "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-runner/releases",
+      "download_base": "https://gitlab-runner-downloads.s3.amazonaws.com",
+      "kind": "current-online",
+      "observed_at": "2026-07-16T19:50:58.171091Z",
+      "pagination": "GitLab X-Next-Page with per_page=100",
+      "project": "gitlab-org/gitlab-runner"
+    },
+    "version": "19.2.0"
+  },
+  "schema_version": 2,
+  "source_kind": "current-online"
+}

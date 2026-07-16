@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=_register.sh
+source "$SCRIPT_DIR/_register.sh"
+
+case "${1:-}" in
+    register)
+        register_runner_set "${gitlab_url:-}" "${token:-}" "${docker_image:-}" "${RUNNER_BIN:-gitlab-runner}"
+        ;;
+    *)
+        printf 'unknown GitLab Runner config action\n' >&2
+        exit 2
+        ;;
+esac

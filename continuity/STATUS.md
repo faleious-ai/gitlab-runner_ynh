@@ -2,51 +2,33 @@
 
 Atualizado em: 2026-07-16  
 Branch autorizada: `master`  
-Última rodada executada pelo Codex: `RND-20260716-005`  
+Última rodada executada pelo Codex: `RND-20260716-007`
 Última rodada do orquestrador: `RND-20260716-006`
 
 ## Fase
 
-`WP02_CORRECTION_READY`
+`WP02_EXECUTED_AWAITING_REVIEW`
 
-O charter `CHR-WP02-001` foi revisado remotamente e recebeu `CORRECTION_REQUIRED`. A revisão está em `continuity/reviews/REV-RND-20260716-005.md`. O charter corretivo `CHR-WP02-002` está `READY`.
+`CHR-WP02-002` foi executado no repositório funcional primário. O resultado permanece aguardando revisão independente; não é `ACCEPTED`.
 
-## Partes preservadas
+## Entregas
 
-- literal credential-like removido da árvore atual;
-- scanner e redaction implementados;
-- target da action criado e helper de registro compartilhado;
-- validação prévia de cardinalidade/URL/imagem;
-- matriz Runner/helper e falhas estruturais básicas;
-- escrita auxiliar atômica/idempotente;
-- 14 testes locais declarados;
-- manifest não promovido e versão ainda `18.6.2~ynh1`;
-- um commit remoto por repositório com o mesmo `Round-ID`.
+- descoberta online paginada pela Releases API oficial, com allowlist de projeto, release page, downloads e redirects;
+- seleção corrente `v19.2.0`, com observação UTC, tamanhos e origem registrados;
+- fixture `v19.0.1` identificada como snapshot offline, com quatro hashes confrontados ao documento oficial;
+- assinatura `release.sha256.asc` verificada com a chave oficial e fingerprint registrado;
+- gerador de cópia completa do manifest com diff determinístico e allowlist de nove campos;
+- `manifest.toml` preservado em `18.6.2~ynh1`;
+- token fora de `argv`, stdout e stderr no fake, através de `CI_SERVER_URL`, `CI_SERVER_TOKEN` e `REGISTER_NON_INTERACTIVE`;
+- action atual YunoHost em `config_panel.toml`/`scripts/config`, mantendo `_register.sh` compartilhado;
+- workflow com `workflow_dispatch`, permissões read-only, actions por SHA completo e guardas de diff.
 
-## Lacunas que impedem aceite
+## Validações locais
 
-- `CR-01 P0`: hashes da fixture não são confrontados com o checksum oficial;
-- `CR-02 P1`: CLI não integra descoberta atual pela Releases API;
-- `CR-03 P1`: origem oficial é validada de forma ampla demais;
-- `CR-04 P1`: generator produz TOML auxiliar, não cópia/diff do manifest real;
-- `CR-05 P1`: credencial de registro continua no argv apesar de alternativa suportada;
-- `CR-06 P1`: suporte atual de `actions.json` no YunoHost declarado não foi demonstrado;
-- `CR-07 P2`: CI remoto e pin imutável das actions não foram demonstrados.
+`14/14` testes: PASS; secret scan: clean; Bash: PASS; JSON/TOML: PASS; dry-run e diff guard: PASS; manifest: `18.6.2~ynh1`; assinatura online: VERIFIED.
 
-## Unidade ativa
-
-`CHR-WP02-002 — cadeia de confiança, manifest candidato e registro seguro`.
-
-Estado: `READY`.
+O workflow remoto foi preparado para execução após publicação; qualquer estado remoto será reportado sem ser inferido do CI local.
 
 ## Gate humano
 
-`HG-RUN-SEC-01` permanece `UNRESOLVED_NO_AUTHORITY`. É risco histórico externo e não bloqueia a rodada corretiva.
-
-## Integridade
-
-- commits revisados: Runner `0e6acbd3fddc6bf79e7b235cb43a25405dcd2e25`; coordenador `46e2fb46d8addaeee321d449ffa7a5f81ccc196f`;
-- revisão baseada apenas em material remoto;
-- nenhuma versão promovida pelo orquestrador;
-- nenhuma branch, PR, force push ou operação real criada;
-- evidência da revisão: `EVD-WP02-ORCHESTRATOR-REVIEW`.
+`HG-RUN-SEC-01` permanece `UNRESOLVED_NO_AUTHORITY` e não foi exercitado.

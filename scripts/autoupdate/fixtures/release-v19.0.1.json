@@ -3,7 +3,9 @@
     "api": "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-runner/releases",
     "project": "gitlab-org/gitlab-runner",
     "download_base": "https://gitlab-runner-downloads.s3.amazonaws.com",
-    "fixture_kind": "offline-release-snapshot"
+    "kind": "offline-release-snapshot",
+    "observed_at": "2026-07-16T00:00:00Z",
+    "snapshot_tag": "v19.0.1"
   },
   "releases": [
     {
@@ -42,6 +44,22 @@
         "sha256": "9ae51f380ddec00f97f8f3abba91ebb71098020dd500cb87d3038dedab0612dc",
         "size": 539508632,
         "architectures": ["amd64", "arm64", "armhf"]
+      },
+      "official_checksums": {
+        "tag_name": "v19.0.1",
+        "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/release.sha256",
+        "document_sha256": "25d364afef5c62656f0976b5c99b672b77aa29473dc12e66bc3b3125c29e384a",
+        "assets": {
+          "gitlab-runner-helper-images.deb": "9ae51f380ddec00f97f8f3abba91ebb71098020dd500cb87d3038dedab0612dc",
+          "gitlab-runner_amd64.deb": "862abf6022dc02ad2b16ed3dfc026fe0ed88c9962f90c6a32988ec0515f70548",
+          "gitlab-runner_arm64.deb": "eb69b652890c57bfc13264a5808e88c30a14397287cff3ae12698167e475ef16",
+          "gitlab-runner_armhf.deb": "693ecf7db27be0162b32d7ec1e6aba73e4b7d252d24a5057bb70d66ddea0d6c0"
+        },
+        "signature": {
+          "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/release.sha256.asc",
+          "status": "equivalent-recomputation",
+          "method": "official checksum document digest recorded; required catalog records parsed and confronted; GPG key verification is an explicit online-environment step"
+        }
       }
     },
     {

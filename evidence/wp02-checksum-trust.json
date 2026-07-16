@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "round_id": "RND-20260716-007",
+  "source_kind": "current-online",
+  "observed_at": "2026-07-16T19:50:58.171091Z",
+  "release_tag": "v19.2.0",
+  "checksum_url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/release.sha256",
+  "checksum_document_sha256": "fa973abe3dedf3dd8a2670e497d99b2e58c79fb76678a0fd6bba6d0c3849a32b",
+  "required_assets": {
+    "gitlab-runner-helper-images.deb": "794be4f327cbf773cddb26feb6f362061d5ef71b466975c0778f49922e90eed6",
+    "gitlab-runner_amd64.deb": "f810e79679f3e7ffea112e27c21dfe1d77c5b8f3878de3185d72e58de2aee565",
+    "gitlab-runner_arm64.deb": "7e8f8b9bf67c2ffb17fea836637a7f84aa77ec6138c2e7fb37a5321f76c8c93b",
+    "gitlab-runner_armhf.deb": "e5e914ef5054af62dd206f52019eff1c69859d9cc1f53ee89ad4616e52a1fe82"
+  },
+  "catalog_confrontation": "PASS",
+  "signature": {
+    "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/release.sha256.asc",
+    "status": "verified",
+    "key_fingerprint": "931DA69CFA3AFEBBC97DAA8C6C57C29C6BA75A4E",
+    "method": "GPGV with the official GitLab Runner public key"
+  }
+}

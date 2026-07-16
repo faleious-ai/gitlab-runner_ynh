@@ -82,15 +82,19 @@ register_runner_set() {
         token=${tokens[$index]}
         image=${images[$index]}
 
-        # The current gitlab-runner CLI accepts the token only as the --token
-        # value. Keep tracing disabled, capture output, and redact before any
-        # diagnostic is emitted. No token is written by this helper.
-        if output=$("$runner_bin" register \
-            --non-interactive \
-            --url "$url" \
-            --token "$token" \
+        # GitLab Runner documents CI_SERVER_URL, CI_SERVER_TOKEN and
+        # REGISTER_NON_INTERACTIVE as the supported non-interactive
+        # environment mechanism. Keep the credential and coordinator URL out
+        # of argv, disable tracing by policy, capture output, and redact before
+        # any diagnostic is emitted. No token is written by this helper.
+        if output=$(
+            CI_SERVER_URL="$url" \
+            CI_SERVER_TOKEN="$token" \
+            REGISTER_NON_INTERACTIVE=true \
+            "$runner_bin" register \
             --executor docker \
-            --docker-image "$image" 2>&1); then
+            --docker-image "$image" 2>&1
+        ); then
             printf 'runner registration succeeded for %s\n' "$url"
         else
             printf 'runner registration failed for %s: %s\n' "$url" "$(_register_redact "$output" "$token")" >&2

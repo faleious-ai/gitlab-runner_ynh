@@ -85,6 +85,21 @@ class AutoupdateTests(unittest.TestCase):
         with self.assertRaisesRegex(autoupdate.ResolutionError, "version-pinned"):
             autoupdate.resolve_release(payload)
 
+        payload = copy.deepcopy(self.payload)
+        payload["releases"][0]["official_checksums"]["assets"]["gitlab-runner_amd64.deb"] = "0" * 64
+        with self.assertRaisesRegex(autoupdate.ResolutionError, "does not match official"):
+            autoupdate.resolve_release(payload)
+
+        payload = copy.deepcopy(self.payload)
+        payload["source"]["project"] = "attacker/project"
+        with self.assertRaisesRegex(autoupdate.ResolutionError, "official GitLab Runner project"):
+            autoupdate.resolve_release(payload)
+
+        payload = copy.deepcopy(self.payload)
+        payload["releases"][0]["official_checksums"]["signature"]["status"] = "bad"
+        with self.assertRaisesRegex(autoupdate.ResolutionError, "signature trust status"):
+            autoupdate.resolve_release(payload)
+
     def test_local_checksum_is_verified(self) -> None:
         resolved = autoupdate.resolve_release(self.payload)
         with tempfile.TemporaryDirectory() as directory:
@@ -123,6 +138,46 @@ class AutoupdateTests(unittest.TestCase):
         self.assertEqual(autoupdate.fetch_json("https://example.invalid", timeout=0.25, retries=2, opener=flaky_opener), {"ok": True})
         self.assertEqual(calls["count"], 3)
 
+        class PageResponse(Response):
+            def __init__(self, body, next_page=None, final_url=autoupdate.OFFICIAL_API):
+                self.body = body
+                self.headers = {"X-Next-Page": next_page} if next_page else {}
+                self.final_url = final_url
+
+            def read(self, _limit):
+                return self.body
+
+            def geturl(self):
+                return self.final_url
+
+        pages = [
+            PageResponse(json.dumps([{"tag_name": "v19.2.0"}]).encode(), "2"),
+            PageResponse(json.dumps([{"tag_name": "v19.1.1"}]).encode()),
+        ]
+
+        def page_opener(_url, timeout):
+            self.assertEqual(timeout, 0.25)
+            return pages.pop(0)
+
+        discovered_pages = autoupdate.fetch_json_pages(autoupdate.OFFICIAL_API, timeout=0.25, retries=0, opener=page_opener)
+        self.assertEqual([item["tag_name"] for item in discovered_pages], ["v19.2.0", "v19.1.1"])
+
+        with self.assertRaisesRegex(autoupdate.ResolutionError, "unexpected redirect origin"):
+            autoupdate._official_fetch(
+                autoupdate.OFFICIAL_API,
+                "api",
+                timeout=0.25,
+                retries=0,
+                opener=lambda _url, timeout: PageResponse(b"[]", final_url="https://evil.example/releases"),
+            )
+
+        with self.assertRaisesRegex(autoupdate.ResolutionError, "missing"):
+            autoupdate.parse_checksum_document("0" * 64 + "  deb/gitlab-runner_amd64.deb\n")
+
+        duplicate = "\n".join(["0" * 64 + "  deb/gitlab-runner_amd64.deb"] * 2)
+        with self.assertRaisesRegex(autoupdate.ResolutionError, "duplicate"):
+            autoupdate.parse_checksum_document(duplicate)
+
     def test_candidate_is_deterministic_and_atomic(self) -> None:
         resolved = autoupdate.resolve_release(self.payload)
         rendered_a = autoupdate.render_candidate(resolved)
@@ -141,10 +196,24 @@ class AutoupdateTests(unittest.TestCase):
                 autoupdate.resolve_release(invalid)
             self.assertEqual(output.read_text(encoding="utf-8"), original)
 
+        candidate, fields, diff = autoupdate.render_manifest_candidate(ROOT / "manifest.toml", resolved)
+        self.assertEqual(fields, sorted(autoupdate.MANIFEST_FIELDS))
+        self.assertIn('version = "19.0.1~ynh1"', candidate)
+        self.assertTrue(any("amd64.sha256" in line for line in diff))
+        self.assertIn('version = "18.6.2~ynh1"', (ROOT / "manifest.toml").read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaisesRegex(autoupdate.ResolutionError, "must not overwrite"):
+                autoupdate._assert_candidate_destination(ROOT / "manifest.toml", ROOT / "manifest.toml")
+            output = Path(directory) / "candidate.toml"
+            autoupdate._assert_candidate_destination(output, ROOT / "manifest.toml")
+
     def test_action_target_and_manifest_baseline(self) -> None:
-        actions = json.loads((ROOT / "actions.json").read_text(encoding="utf-8"))
-        self.assertTrue((ROOT / "scripts" / "actions" / "register").is_file())
-        self.assertEqual(actions[0]["command"], "/bin/bash scripts/actions/register")
+        config_panel = (ROOT / "config_panel.toml").read_text(encoding="utf-8")
+        self.assertIn("type = \"button\"", config_panel)
+        self.assertIn("[main.registration.register]", config_panel)
+        self.assertTrue((ROOT / "scripts" / "config").is_file())
+        config_script = (ROOT / "scripts" / "config").read_text(encoding="utf-8")
+        self.assertIn('register_runner_set "${gitlab_url:-}" "${token:-}" "${docker_image:-}"', config_script)
         report = autoupdate.build_report(autoupdate.resolve_release(self.payload), ROOT / "manifest.toml")
         self.assertEqual(report["baseline_manifest_version"], "18.6.2")
         self.assertFalse(report["promoted"])
@@ -194,6 +263,42 @@ class AutoupdateTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertNotIn(token, result.stdout + result.stderr)
         self.assertIn("[REDACTED]", result.stdout)
+
+        fake = ROOT / "tests" / "fixtures" / "fake_runner.sh"
+        try:
+            os.chmod(fake, 0o755)
+        except OSError:
+            self.skipTest("cannot make fake runner executable")
+        with tempfile.TemporaryDirectory() as directory:
+            argv_log = Path(directory) / "argv.log"
+            env_log = Path(directory) / "env.log"
+            env = {
+                **dict(os.environ),
+                "RUNNER_BIN": "tests/fixtures/fake_runner.sh",
+                "ARGV_LOG": str(argv_log),
+                "ENV_LOG": str(env_log),
+                "gitlab_url": "https://gitlab.example",
+                "token": token,
+                "docker_image": "alpine:3.20",
+            }
+            result = subprocess.run(
+                [
+                    BASH,
+                    str(ROOT / "scripts" / "config"),
+                    "register",
+                ],
+                cwd=ROOT,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertNotIn(token, result.stdout + result.stderr)
+            self.assertNotIn(token, argv_log.read_text(encoding="utf-8"))
+            self.assertNotIn("https://gitlab.example", argv_log.read_text(encoding="utf-8"))
+            self.assertIn(f"CI_SERVER_TOKEN={token}", env_log.read_text(encoding="utf-8"))
+            self.assertIn("REGISTER_NON_INTERACTIVE=true", env_log.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

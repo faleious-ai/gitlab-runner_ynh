@@ -1,0 +1,17 @@
+version = "1.0"
+
+[main]
+name.en = "GitLab Runner"
+name.fr = "GitLab Runner"
+
+    [main.registration]
+    name.en = "Registration"
+    name.fr = "Enregistrement"
+
+        [main.registration.register]
+        ask.en = "Register configured runners"
+        ask.fr = "Enregistrer les runners configurés"
+        type = "button"
+        style = "success"
+        help.en = "Registers the configured GitLab URLs with the stored runner settings."
+        help.fr = "Enregistre les URLs GitLab configurées avec les paramètres du runner stockés."

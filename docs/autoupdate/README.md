@@ -1,8 +1,18 @@
 # Atualizador determinístico do GitLab Runner
 
-O updater é offline-first. A fixture em `scripts/autoupdate/fixtures/` representa uma release oficial e é usada por testes e CI; nenhum script de install/upgrade consulta `latest`.
+O updater separa snapshot offline, descoberta corrente, confiança dos checksums e cópia candidata do manifest. Nenhum caminho usa `latest` e nenhum comando promove o manifest rastreado.
 
-## Verificar uma candidata
+## Descoberta corrente
+
+```bash
+python3 scripts/autoupdate.py discover \
+  --manifest manifest.toml \
+  --report evidence/wp02-online-discovery.json
+```
+
+O comando pagina a Releases API oficial, escolhe a release estável mais recente, valida origem/redirects, baixa apenas os metadados `release.sha256`/`.asc`, consulta tamanhos por `HEAD` e registra a observação. A release corrente observada nesta rodada é `v19.2.0`; isso não altera `manifest.toml`.
+
+## Verificar a fixture offline
 
 ```bash
 python3 scripts/autoupdate.py check \
@@ -11,26 +21,28 @@ python3 scripts/autoupdate.py check \
   --report evidence/wp02-candidate-report.json
 ```
 
-O comando é dry-run, valida Runner e helper images como uma unidade, e informa a candidata sem modificar `manifest.toml`.
+A fixture é um `offline-release-snapshot` versionado. O updater confronta os quatro hashes do catálogo com a tabela registrada do `release.sha256`; `--verify-files` também verifica arquivos locais opcionais por tamanho e SHA256.
 
-## Gerar saída de candidata
+## Gerar a cópia candidata completa
 
 ```bash
 python3 scripts/autoupdate.py generate \
   --fixture scripts/autoupdate/fixtures/release-v19.0.1.json \
-  --output /tmp/gitlab-runner-candidate.toml \
+  --manifest manifest.toml \
+  --output /tmp/gitlab-runner-manifest.candidate.toml \
+  --report evidence/wp02-manifest-diff.json \
   --write
 ```
 
-`--write` é obrigatório. A saída é um artefato de revisão, não uma promoção automática. A promoção para o manifest requer uma rodada autorizada separada.
+O destino é explícito, fora do manifest e de arquivos rastreados. O diff machine-readable só permite `version`, URLs e hashes dos sources Runner/helper. Sem `--write`, o comando é dry-run e imprime a candidata sem criar arquivo.
 
 ## Registro administrativo
 
-`actions.json` chama `scripts/actions/register`. O script e install/restore reutilizam `scripts/_register.sh`, que:
+YunoHost >= 12.1.17 usa a action `main.registration.register` de `config_panel.toml`, implementada em `scripts/config`. Install, restore e action chamam `scripts/_register.sh`, que:
 
-- valida cardinalidade de URL, token e imagem antes do primeiro registro;
-- usa o token somente no comando suportado pelo CLI do Runner;
-- mantém tracing desligado, captura a saída e redige token em diagnósticos;
+- valida cardinalidade e todos os valores antes do primeiro subprocesso;
+- passa URL/token por `CI_SERVER_URL`, `CI_SERVER_TOKEN` e `REGISTER_NON_INTERACTIVE`;
+- mantém URL/token fora de `argv` e redige token em diagnósticos;
 - nunca grava o token em arquivo ou saída de teste.
 
-O placeholder em `tests.toml` é deliberadamente não funcional. O gate `HG-RUN-SEC-01` permanece aberto para que o administrador confirme revogação, rotação ou expiração do valor histórico removido.
+O placeholder em `tests.toml` é deliberadamente não funcional. O gate `HG-RUN-SEC-01` permanece aberto para confirmação externa sobre o valor histórico removido.

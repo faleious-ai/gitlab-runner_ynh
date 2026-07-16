@@ -1,40 +1,33 @@
 # ADR-0006 — Proveniência e resolução do release Runner/helper
 
-Status: `ACCEPTED`
+Status: `ACCEPTED_WITH_CORRECTION_ROUND`
 Data: 2026-07-16
-Round-ID: `RND-20260716-005`
+Round-ID: `RND-20260716-007`
 
 ## Decisão
 
-O updater usa como fonte oficial o endpoint de releases do projeto `gitlab-org/gitlab-runner` e os assets versionados publicados no bucket oficial de downloads:
+O updater usa exatamente o projeto `gitlab-org/gitlab-runner`, a Releases API oficial e os downloads versionados:
 
-- API de releases: <https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-runner/releases>;
-- release page: <https://gitlab.com/gitlab-org/gitlab-runner/-/releases>;
+- API: <https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-runner/releases>;
+- página: `https://gitlab.com/gitlab-org/gitlab-runner/-/releases/{tag}`;
 - downloads/checksums: `https://gitlab-runner-downloads.s3.amazonaws.com/{tag}/`.
 
-O snapshot offline em `scripts/autoupdate/fixtures/` é uma cópia versionada de metadados oficiais, adequada para CI sem rede. Ele não é autoridade para alterar o manifest sozinho.
+`discover` pagina a API, seleciona semanticamente a release estável mais recente, exige a página e os links de assets oficiais e registra `observed_at`. Redirecionamentos cujo destino não pertence à origem esperada abortam.
 
-## Critérios de elegibilidade
+## Checksums e assinatura
 
-1. somente releases estáveis; pre-releases são ignoradas;
-2. exatamente um DEB Runner para `amd64`, `arm64` e `armhf`;
-3. exatamente um `gitlab-runner-helper-images.deb` com a mesma tag do Runner;
-4. URL HTTPS em host oficial, sem `latest`, com tag no caminho;
-5. SHA256 de 64 caracteres e tamanho positivo em todas as células;
-6. ausência, duplicidade, arquitetura inesperada, mismatch ou metadado inválido aborta antes de qualquer escrita.
+Para a mesma tag, o updater busca `release.sha256`, interpreta os registros e exige exatamente estes quatro nomes: `gitlab-runner_amd64.deb`, `gitlab-runner_arm64.deb`, `gitlab-runner_armhf.deb` e `gitlab-runner-helper-images.deb`. O catálogo só é aceito quando seus hashes coincidem com essa fonte; ausência, duplicidade, divergência, tag ou filename inesperado aborta antes da escrita.
 
-## Operação e limites
+O documento `.asc` é buscado junto. Quando o ambiente possui GPG e a chave oficial documentada, a assinatura é verificada pelo fingerprint `931D A69C FA3A FEBB C97D AA8C 6C57 C29C 6BA7 5A4E`; quando o ambiente não possui a ferramenta/keyring operacional, o relatório registra `unverified-environment` e a limitação. A estratégia equivalente registrada é HTTPS de origem fixada, digest do documento, parsing completo dos registros necessários e confronto integral catálogo/documento. A chave e o procedimento são os publicados na documentação oficial do GitLab Runner.
 
-- metadados de rede usam timeout de 10 segundos e duas tentativas após a primeira, com limite de 1 MiB;
-- arquivos locais de fixture podem ser verificados por tamanho e SHA256; downloads de assets não são feitos pelo CI;
-- `check` é dry-run e produz relatório JSON; `generate` só escreve com `--write` explícito;
-- a escrita usa staging no mesmo diretório e `os.replace` após validação completa;
-- o generator cria uma candidata separada e não modifica `manifest.toml` nesta rodada.
+## Fixture, candidata e não promoção
 
-## Candidata observada
+A fixture `scripts/autoupdate/fixtures/release-v19.0.1.json` é explicitamente `offline-release-snapshot`; contém o digest do documento oficial e seus quatro registros confrontados. Ela não é confundida com a descoberta corrente, que em 2026-07-16 observou `v19.2.0`.
 
-`v19.0.1` foi registrada em `evidence/wp02-candidate-report.json` com os hashes e tamanhos observados no release oficial. É evidência de resolução, não promoção de versão.
+`check` é dry-run. `generate` lê e valida o `manifest.toml` real, cria uma cópia candidata completa em destino explícito fora dos arquivos rastreados e produz diff determinístico limitado a `version`, URLs e hashes autorizados. `--write` é obrigatório para materializar a cópia; o `manifest.toml` rastreado permanece em `18.6.2~ynh1`.
 
-## Rationale
+## Registro e action YunoHost
 
-A documentação oficial do GitLab Runner exige instalar `gitlab-runner-helper-images` na mesma versão do pacote Runner para instalações versionadas. Tratar os dois como conjunto evita um estado parcialmente compatível.
+O GitLab Runner recebe `CI_SERVER_URL`, `CI_SERVER_TOKEN` e `REGISTER_NON_INTERACTIVE` no ambiente, sem URL/token em `argv`. Install, restore e a action compartilham `scripts/_register.sh`.
+
+YunoHost atual executa `app_action_run` através de `ConfigPanel.run_action`; por isso a action foi migrada para `config_panel.toml` e `scripts/config`, com o identificador `main.registration.register`. `actions.json` não é mais a fonte de contrato.

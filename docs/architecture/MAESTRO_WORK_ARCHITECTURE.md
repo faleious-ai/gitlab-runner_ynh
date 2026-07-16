@@ -2,63 +2,97 @@
 
 ## Finalidade
 
-Tornar o repositório uma superfície de trabalho continuável para humanos e agentes, na qual uma mudança no pacote Runner atravessa intenção, especificação, contexto, contratos, execução, validação, governança e memória.
+Tornar o repositório uma superfície de trabalho continuável para humanos e agentes, na qual cada mudança atravessa intenção, contrato, execução, validação, revisão, persistência e aprendizagem sem depender do contexto do chat.
 
 ## Princípio
 
-O agente pode executar tecnicamente com ampla autonomia, mas não pode transformar plausibilidade em prova nem atravessar gates de risco, segredo ou irreversibilidade.
+O modelo descreve e executa; contratos, testes, gates e revisor decidem o que pode ser promovido. Plausibilidade nunca substitui prova. A autonomia técnica é ampla dentro do mandato e limitada por consequência humana, privilégio, risco e irreversibilidade.
 
 ## Camadas
 
-1. **Intenção** — issue, usuário ou incidente define o resultado desejado.
-2. **Especificação** — `RUNNER_AUTOUPDATE_SPEC.md` e work package definem escopo e aceite.
-3. **Contexto** — `AGENTS.md` roteia leitura mínima e arquivos sob demanda.
-4. **Contratos** — manifest, scripts, testes, versão Runner/helper images e lifecycle.
-5. **Execução** — unidade delimitada diretamente em `master`.
-6. **Validação** — checks proporcionais, inclusive executor/helper image quando aplicável.
-7. **Governança** — ADRs e gates humanos.
-8. **Memória** — status, handoff, rounds, evidence index e Git.
+1. **Intenção** — usuário, issue ou incidente define resultado e consequência.
+2. **Especificação** — documentos em `docs/specifications/` definem o comportamento durável.
+3. **Contexto** — `AGENTS.md` e índices roteiam progressive disclosure.
+4. **Tarefa** — `ACTIVE_ROUND` define Task-ID, seam, claims, ownership, gates e rollback.
+5. **Execução** — TDD, implementação mínima, subagentes com ownership e backprop.
+6. **Validação** — gate cascade proporcional e estados explícitos de evidência.
+7. **Revisão** — challenge pré-build, dois eixos pré-commit e revisor externo remoto.
+8. **Persistência** — um commit remoto por tarefa, sem squash ou reescrita publicada.
+9. **Governança** — ADRs e gates humanos proporcionais.
+10. **Memória** — status, handoff, rounds, evidence index, learning ledger e Git.
 
 ## Máquina de estados
 
 ```text
-READY -> SCOPED -> EXECUTING -> VALIDATING -> PERSISTING -> COMMITTED -> READY
-                         \-> BLOCKED
-                         \-> REVERTING -> PERSISTING
+ROUND_READY
+  → TASK_SCOPED
+  → PRE_BUILD_REVIEW?
+  → RED
+  → GREEN
+  → VALIDATING
+  → INTERNAL_REVIEW
+  → TASK_COMMITTED_LOCAL
+  → TASK_REMOTE_VERIFIED
+  → next TASK | ROUND_INTEGRATION
+  → EXECUTED_AWAITING_REVIEW
+  → ACCEPTED | CORRECTION_REQUIRED | HUMAN_GATE | REJECTED_UNSAFE
 ```
 
-Nenhum estado é promovido por declaração. `COMMITTED` exige commit real em `master`.
+Desvios:
+
+```text
+failure → BACKPROP → contract/test amendment → RED
+sync failure → TASK_REMOTE_SYNC_BLOCKED
+material decision → BLOCKED_HUMAN
+unsafe remote state → selective revert/compensation
+```
+
+Nenhum estado é promovido por declaração. A tarefa só fica persistida quando o SHA está em `origin/master`. A rodada só fica revisável quando todos os commits e evidências estão remotos.
 
 ## Memória em camadas
 
 | Camada | Autoridade |
 |---|---|
 | orientação | `AGENTS.md` |
+| skills | `.agents/skills/README.md` e `SKILL.md` aplicáveis |
 | propósito | `CONTEXT.md` |
-| contrato | `docs/specifications/` |
-| rationale | `docs/decisions/` |
+| contrato durável | `docs/specifications/` |
+| rationale | `docs/decisions/` e `continuity/DECISIONS.md` |
+| autorização/tarefas | `continuity/ACTIVE_ROUND.md` |
 | estado | `continuity/STATUS.md` |
 | retomada | `continuity/HANDOFF_CURRENT.md` |
-| ordem | `continuity/EXECUTION_PLAN.md` |
+| aprendizagem | `continuity/LEARNING_LEDGER.md` |
 | prova | `evidence/EVIDENCE_INDEX.md` |
-| histórico | `continuity/rounds/` e Git |
+| histórico | `continuity/rounds/` e commits Git |
 
-## Papéis
+Arquivos de estado não duplicam especificações; apontam para a autoridade.
 
-- **Maestro humano:** missão, risco, segredo, produção e irreversibilidade.
-- **Agente executor:** análise, decisão técnica, implementação, testes e persistência.
-- **Verificador:** testes, revisão separada, pipeline ou agente em fase de crítica.
-- **Repositório:** memória e contratos executáveis.
+## Unidade de rastreabilidade
 
-## Evidência proporcional
+A rodada possui `Round-ID` e baseline. Cada tarefa possui `Task-ID` e exatamente um commit por repositório afetado. O commit liga:
 
-- mudança documental: coerência e rastreabilidade;
-- manifest/source: schema, URLs, hashes e matriz;
-- updater: determinismo, idempotência e falhas negativas;
-- Runner: service, registration e executor;
-- segurança: redaction e ausência de segredo;
-- produção: gate humano e rollback.
+`Task-ID → claims/invariantes → seam → RED/GREEN → gates → evidência → rollback`.
+
+Subagentes produzem outputs; somente o executor integra, valida, commita e publica.
+
+## Evidência
+
+- `STRUCTURALLY_OBSERVED`: forma/presença;
+- `LOCAL_VERIFIED`: comportamento executado localmente;
+- `REMOTE_CI_VERIFIED`: run remoto associado ao SHA;
+- `LIFECYCLE_VERIFIED`: install/upgrade/service/backup/restore/remove proporcional;
+- `UNVERIFIED` e `FAILED`.
+
+Um nível não implica o seguinte. Busca textual nunca prova runtime.
+
+## Aprendizagem
+
+Falha inesperada é classificada e retropropagada para o menor contrato que a teria prevenido. O ledger preserva causa, RED, GREEN e padrão. Recorrência transforma caso local em tarefa sistêmica; não em expansão silenciosa do fix atual.
+
+## Reversibilidade
+
+O commit por tarefa é a unidade preferencial de reversão. Dependências entre commits são explícitas. Commits publicados não são squashados, reordenados ou reescritos. Operação irreversível continua atrás de gate humano.
 
 ## Fechamento
 
-Cada rodada deve deixar o repositório mais fácil de entender e continuar. Se um agente novo ainda precisar reconstruir a intenção pelo chat, a rodada não fechou corretamente.
+Cada tarefa deixa código e prova coerentes. Cada rodada deixa o programa mais fácil de continuar. Se um agente novo precisar reconstruir intenção, falhas ou prova pelo chat, a rodada não fechou corretamente.

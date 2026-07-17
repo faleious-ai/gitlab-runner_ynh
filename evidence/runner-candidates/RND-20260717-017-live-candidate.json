@@ -1,0 +1,36 @@
+{
+  "artifact_id": "EVD-RND-20260717-017-RUNNER-LIVE-CANDIDATE",
+  "artifact_kind": "runner-live-candidate",
+  "schema_version": 1,
+  "round_id": "RND-20260717-017",
+  "charter_id": "CHR-PROGRAM-V2-CONTINUE-001",
+  "task_id": "T-RUN-UPDATER-LIVE-CANDIDATE-001",
+  "repository": "runner",
+  "observed_at": "2026-07-17T19:47:00Z",
+  "source": {
+    "project": "gitlab-org/gitlab-runner",
+    "api": "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-runner/releases",
+    "release_url": "https://gitlab.com/gitlab-org/gitlab-runner/-/releases/v19.0.1",
+    "api_probe": "TIMEOUT_EXTERNAL_NETWORK",
+    "fallback": "checked-in official release snapshot v19.0.1; no payload downloaded"
+  },
+  "release_tag": "v19.0.1",
+  "runner_assets": ["amd64", "arm64", "armhf"],
+  "helper_images": ["amd64", "arm64", "armhf"],
+  "signature_status": "equivalent-recomputation",
+  "candidate": {
+    "manifest": "evidence/runner-candidates/RND-20260717-017-v19.0.1.candidate.toml",
+    "report": "evidence/runner-candidates/RND-20260717-017-v19.0.1.report.json",
+    "manifest_sha256": "cfc0188e1374056c5c323ccad699c10a31fbb364ee3fc2927f2f2db409d5dd4c",
+    "report_sha256": "ec88e9554f8009d629663755a38cc8b9986b1036f5b19915c31dbef2624941ca",
+    "promoted": false,
+    "tracked_manifest_unchanged": true,
+    "changed_fields": ["version", "amd64.url", "amd64.sha256", "arm64.url", "arm64.sha256", "armhf.url", "armhf.sha256", "url", "sha256"]
+  },
+  "limitations": [
+    "The live Releases API probe timed out in this sandbox; the fallback is the official fixed release snapshot already protected by the updater fixture.",
+    "The checksum signature was not GPG-verified in this environment and remains unverified for promotion purposes.",
+    "No manifest promotion, release, deployment or payload download occurred."
+  ]
+}
+

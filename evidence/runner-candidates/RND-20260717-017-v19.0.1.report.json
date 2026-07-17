@@ -1,0 +1,135 @@
+{
+  "baseline_manifest_version": "18.6.2",
+  "candidate_is_newer": true,
+  "candidate_upstream_version": "19.0.1",
+  "changed": true,
+  "changed_fields": [
+    "amd64.sha256",
+    "amd64.url",
+    "arm64.sha256",
+    "arm64.url",
+    "armhf.sha256",
+    "armhf.url",
+    "sha256",
+    "url",
+    "version"
+  ],
+  "diff": [
+    "--- manifest.toml",
+    "+++ manifest.toml.candidate",
+    "@@ -7,7 +7,7 @@",
+    " description.en = \"Continuous integration tool to use with a GitLab instance (YNH or not)\"",
+    " description.fr = \"Outil d'intégration continue à utiliser avec une instance GitLab (YNH ou non)\"",
+    " ",
+    "-version = \"18.6.2~ynh1\"",
+    "+version = \"19.0.1~ynh1\"",
+    " ",
+    " maintainers = [\"kay0u\"]",
+    " ",
+    "@@ -57,12 +57,12 @@",
+    " [resources]",
+    "     [resources.sources.main]",
+    "     rename = \"gitlab-runner.deb\"",
+    "-    amd64.url = \"https://gitlab-runner-downloads.s3.amazonaws.com/v18.6.2/deb/gitlab-runner_amd64.deb\"",
+    "-    amd64.sha256 = \"a8667f6ec5430c800973d8611ca3ba88351a2901ffbd9755980a7927464351f5\"",
+    "-    arm64.url = \"https://gitlab-runner-downloads.s3.amazonaws.com/v18.6.2/deb/gitlab-runner_arm64.deb\"",
+    "-    arm64.sha256 = \"ef9e1af7fe6c4f484c4e43578cffb2aaaa3897ea284961c45500d535af2e1fd6\"",
+    "-    armhf.url = \"https://gitlab-runner-downloads.s3.amazonaws.com/v18.6.2/deb/gitlab-runner_armhf.deb\"",
+    "-    armhf.sha256 = \"4f73835da80b31921bca8a5999f5bf4708035863d4685b0035e46240dd203dec\"",
+    "+    amd64.url = \"https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/deb/gitlab-runner_amd64.deb\"",
+    "+    amd64.sha256 = \"862abf6022dc02ad2b16ed3dfc026fe0ed88c9962f90c6a32988ec0515f70548\"",
+    "+    arm64.url = \"https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/deb/gitlab-runner_arm64.deb\"",
+    "+    arm64.sha256 = \"eb69b652890c57bfc13264a5808e88c30a14397287cff3ae12698167e475ef16\"",
+    "+    armhf.url = \"https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/deb/gitlab-runner_armhf.deb\"",
+    "+    armhf.sha256 = \"693ecf7db27be0162b32d7ec1e6aba73e4b7d252d24a5057bb70d66ddea0d6c0\"",
+    " ",
+    "     # autoupdate.upstream = \"https://gitlab.com/gitlab-org/gitlab-runner\"",
+    "     # autoupdate.strategy = \"latest_gitlab_release\"",
+    "@@ -73,9 +73,9 @@",
+    "     # update when the above updates",
+    "     [resources.sources.images]",
+    "     rename = \"gitlab-runner-images.deb\"",
+    "-    url = \"https://s3.amazonaws.com/gitlab-runner-downloads/v18.6.2/deb/gitlab-runner-helper-images.deb\"",
+    "+    url = \"https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/deb/gitlab-runner-helper-images.deb\"",
+    "     # IDK how to autoupdate this",
+    "-    sha256 = \"3de4a5a2e6b3066929d3534ec14282b803bab9ea6dbf0bf11ef46ceba7ccbc83\"",
+    "+    sha256 = \"9ae51f380ddec00f97f8f3abba91ebb71098020dd500cb87d3038dedab0612dc\"",
+    "     format = \"whatever\"",
+    "     extract = false",
+    " "
+  ],
+  "diff_guard": "allowlist-only",
+  "manifest_candidate": "evidence/runner-candidates/RND-20260717-017-v19.0.1.candidate.toml",
+  "mode": "write",
+  "observed_at": "2026-07-16T00:00:00Z",
+  "promoted": false,
+  "release": {
+    "checksum_trust": {
+      "assets": {
+        "gitlab-runner-helper-images.deb": "9ae51f380ddec00f97f8f3abba91ebb71098020dd500cb87d3038dedab0612dc",
+        "gitlab-runner_amd64.deb": "862abf6022dc02ad2b16ed3dfc026fe0ed88c9962f90c6a32988ec0515f70548",
+        "gitlab-runner_arm64.deb": "eb69b652890c57bfc13264a5808e88c30a14397287cff3ae12698167e475ef16",
+        "gitlab-runner_armhf.deb": "693ecf7db27be0162b32d7ec1e6aba73e4b7d252d24a5057bb70d66ddea0d6c0"
+      },
+      "document_sha256": "25d364afef5c62656f0976b5c99b672b77aa29473dc12e66bc3b3125c29e384a",
+      "signature": {
+        "key_validity": "not-observed",
+        "method": "official checksum document digest recorded; required catalog records parsed and confronted; GPG key verification is an explicit online-environment step",
+        "status": "equivalent-recomputation",
+        "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/release.sha256.asc"
+      },
+      "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/release.sha256"
+    },
+    "checksum_url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/release.sha256",
+    "helper_images": {
+      "architectures": [
+        "amd64",
+        "arm64",
+        "armhf"
+      ],
+      "filename": "gitlab-runner-helper-images.deb",
+      "sha256": "9ae51f380ddec00f97f8f3abba91ebb71098020dd500cb87d3038dedab0612dc",
+      "size": 539508632,
+      "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/deb/gitlab-runner-helper-images.deb",
+      "version": "v19.0.1"
+    },
+    "release_tag": "v19.0.1",
+    "release_url": "https://gitlab.com/gitlab-org/gitlab-runner/-/releases/v19.0.1",
+    "released_at": "2026-06-01T02:18:27.725Z",
+    "runner": [
+      {
+        "architecture": "amd64",
+        "filename": "gitlab-runner_amd64.deb",
+        "sha256": "862abf6022dc02ad2b16ed3dfc026fe0ed88c9962f90c6a32988ec0515f70548",
+        "size": 30140968,
+        "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/deb/gitlab-runner_amd64.deb"
+      },
+      {
+        "architecture": "arm64",
+        "filename": "gitlab-runner_arm64.deb",
+        "sha256": "eb69b652890c57bfc13264a5808e88c30a14397287cff3ae12698167e475ef16",
+        "size": 26939556,
+        "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/deb/gitlab-runner_arm64.deb"
+      },
+      {
+        "architecture": "armhf",
+        "filename": "gitlab-runner_armhf.deb",
+        "sha256": "693ecf7db27be0162b32d7ec1e6aba73e4b7d252d24a5057bb70d66ddea0d6c0",
+        "size": 28310422,
+        "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/deb/gitlab-runner_armhf.deb"
+      }
+    ],
+    "source": {
+      "api": "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-runner/releases",
+      "download_base": "https://gitlab-runner-downloads.s3.amazonaws.com",
+      "kind": "offline-release-snapshot",
+      "observed_at": "2026-07-16T00:00:00Z",
+      "project": "gitlab-org/gitlab-runner",
+      "snapshot_tag": "v19.0.1"
+    },
+    "version": "19.0.1"
+  },
+  "schema_version": 2,
+  "source_kind": "offline-release-snapshot"
+}
+

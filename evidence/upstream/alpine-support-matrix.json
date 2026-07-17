@@ -1,0 +1,46 @@
+{
+  "artifact_kind": "upstream-support-matrix",
+  "schema_version": 1,
+  "observed_at": "2026-07-17",
+  "distribution": "alpine",
+  "release_source": "https://www.alpinelinux.org/releases/",
+  "registry_source": "https://hub.docker.com/_/alpine/tags/",
+  "branches": {
+    "3.20": {
+      "end_of_support": "2026-04-01",
+      "support_level": "on-request"
+    },
+    "3.21": {
+      "end_of_support": "2026-11-01",
+      "support_level": "main"
+    },
+    "3.22": {
+      "end_of_support": "2027-05-01",
+      "support_level": "main"
+    },
+    "3.23": {
+      "end_of_support": "2027-11-01",
+      "support_level": "main"
+    },
+    "3.24": {
+      "end_of_support": "2028-06-01",
+      "support_level": "main-and-community"
+    }
+  },
+  "registry_observation": {
+    "observed_at": "2026-07-17",
+    "repository": "library/alpine",
+    "tags": [
+      "3.20.10",
+      "3.21.7",
+      "3.22.5",
+      "3.23.5",
+      "3.24.0",
+      "3.24.1"
+    ]
+  },
+  "limitations": [
+    "This matrix is a dated observation and must be refreshed by a new artifact, never edited retrospectively to claim a later state.",
+    "Registry tag presence does not replace image-content or digest verification when a stronger supply-chain claim is required."
+  ]
+}

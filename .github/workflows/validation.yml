@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Compile Python sources
-        run: python -m py_compile scripts/autoupdate.py scripts/secret_scan.py tests/test_autoupdate.py
+        run: python -m py_compile scripts/autoupdate.py scripts/secret_scan.py scripts/program_consumer.py tests/test_autoupdate.py
       - name: Run unit and negative tests
         run: python -m unittest discover -s tests -v
       - name: Scan current tree for credential-like values
@@ -30,7 +30,7 @@ jobs:
         run: >-
           python -c "import json, pathlib, tomllib; [json.loads(p.read_text()) for p in pathlib.Path('.').rglob('*.json') if '.git' not in p.parts]; [tomllib.loads(p.read_text()) for p in pathlib.Path('.').rglob('*.toml') if '.git' not in p.parts]"
       - name: Validate Bash scripts
-        run: bash -n scripts/_register.sh scripts/config scripts/install scripts/restore
+        run: bash -n scripts/_common.sh scripts/_register.sh scripts/config scripts/backup scripts/restore scripts/install scripts/upgrade scripts/remove
       - name: Validate release fixture without network
         run: >-
           python scripts/autoupdate.py check

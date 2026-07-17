@@ -71,7 +71,8 @@
 | EVD-WP02E-KEY-TRANSPORT | LOCAL_VERIFIED | cadeia capturada aceita somente o par CloudFront host/path observado; adversários continuam fail-closed | T01 `6fb500ec3474c07137fcb8962512ed0adc59a9bb`; sem claim live | `T-WP02E-01` |
 | EVD-WP02E-LIVE-TRUST | UNVERIFIED | nova execução live falhou no fetch de `release.sha256` antes da chave/GPG | `evidence/wp02e-live-trust-observation.json`; sem promoção de confiança | `T-WP02E-02` |
 | EVD-WP02E-HISTORICAL-PROVENANCE | LOCAL_VERIFIED | payloads históricos restaurados byte a byte ao estado pré-T06; observação antiga marcada `SUPERSEDED`; T02 é a única fonte live atual | SHA-256 fixado no teste de provenance; `evidence/wp02e-live-trust-observation.json`; este task commit | `T-WP02E-03` |
-| EVD-WP02E-DOCKER-DEFAULT | FAILED | panel `alpine:latest` diverge do install `alpine:3.20` sem rationale | config/manifest | `T-WP02E-04` |
+| EVD-WP02E-DOCKER-DEFAULT | LOCAL_VERIFIED | panel e install agora compartilham o default versionado `alpine:3.20` | `config_panel.toml`, `manifest.toml`, teste focal | `T-WP02E-04`; suíte local GREEN |
+| EVD-WP02E-REMOTE-CI | UNVERIFIED | T-WP02E-05 / RND-20260717-012 | workflow read-only no commit T04; runs/statuses vazios e `gh` indisponível | `evidence/wp02e-remote-ci-observation.json`; gates locais não promovem CI remoto |
 | EVD-WP02E-FINAL-CONTINUITY | FAILED | future/pending e pre-T08 heads no estado final | handoff/index RND-20260716-010 | `T-WP02E-07` |
 | EVD-WP02E-PROCESS-BACKPROP | LOCAL_VERIFIED | imutabilidade de evidência e transport seam incorporados | `.agents/skills/`, `REVIEW_PROTOCOL`, `LEARNING_LEDGER` | commit `4cefe926732c95344c3d7d129aa9dbe110dcae72` |
 

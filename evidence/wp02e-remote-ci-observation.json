@@ -1,0 +1,50 @@
+{
+  "artifact_id": "EVD-WP02E-REMOTE-CI",
+  "artifact_kind": "remote-ci-observation",
+  "charter_id": "CHR-WP02-004",
+  "round_id": "RND-20260717-012",
+  "task_id": "T-WP02E-05-remote-ci-observation",
+  "producer_commit": "2563fc31e1b71db89315fd8c707235ed98659962",
+  "observed_at": "2026-07-17",
+  "repository": "faleious-ai/gitlab-runner_ynh",
+  "target_commit": "2563fc31e1b71db89315fd8c707235ed98659962",
+  "workflow": {
+    "path": ".github/workflows/validation.yml",
+    "push_master_configured": true,
+    "actions_pinned": true
+  },
+  "observations": [
+    {
+      "mechanism": "github_fetch_commit_workflow_runs",
+      "result": "workflow_runs=[]",
+      "limitation": "connector wrapper filters to pull-request-triggered runs"
+    },
+    {
+      "mechanism": "github_get_commit_combined_status",
+      "result": "statuses=[]",
+      "limitation": "no status entries returned for the target commit"
+    },
+    {
+      "mechanism": "gh",
+      "result": "unavailable",
+      "limitation": "command not found in the executor environment"
+    }
+  ],
+  "result": "unverified",
+  "evidence_state": "UNVERIFIED",
+  "local_equivalent_gates": {
+    "result": "passed",
+    "not_remote_ci_evidence": true,
+    "commands": [
+      "PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile scripts/autoupdate.py tests/test_config_controller.py",
+      "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_*.py'",
+      "PYTHONDONTWRITEBYTECODE=1 python3 scripts/secret_scan.py .",
+      "git diff --check"
+    ]
+  },
+  "limitations": [
+    "No run associated with the target push commit was recoverable through the available read-only connector calls.",
+    "The local equivalent gates do not promote the evidence state to REMOTE_CI_VERIFIED.",
+    "No workflow, job, artifact, release, credential, registration, or manifest promotion was performed."
+  ]
+}

@@ -139,6 +139,83 @@ class AutoupdateTests(unittest.TestCase):
             with self.assertRaisesRegex(autoupdate.ResolutionError, "unexpected redirect origin"):
                 denied.redirect_request(request, None, 302, "Found", {}, "https://evil.example/hop")
 
+    def test_official_key_transport_accepts_captured_cloudfront_origin(self) -> None:
+        captured_final = (
+            "https://d20rj4el6vkp4c.cloudfront.net/8/56/gpg/"
+            "runner-gitlab-runner-49F16C5CC3A0F81F.pub.gpg?temporary=fixture-only"
+        )
+        self.assertTrue(autoupdate._official_endpoint(autoupdate.OFFICIAL_KEY_URL, "key"))
+        self.assertTrue(autoupdate._official_endpoint(captured_final, "key"))
+        handler = autoupdate._BoundedRedirectHandler(lambda url: autoupdate._official_endpoint(url, "key"))
+        request = urllib.request.Request(autoupdate.OFFICIAL_KEY_URL)
+        with mock.patch.object(urllib.request.HTTPRedirectHandler, "redirect_request", return_value=request):
+            self.assertIs(
+                request,
+                handler.redirect_request(request, None, 302, "Found", {}, captured_final),
+            )
+
+        class Response:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self, _limit):
+                return b"captured-key-bytes"
+
+            def geturl(self):
+                return captured_final
+
+        def opener(url, timeout):
+            self.assertEqual(url, autoupdate.OFFICIAL_KEY_URL)
+            self.assertEqual(timeout, 0.25)
+            return Response()
+
+        body, _ = autoupdate._official_fetch(
+            autoupdate.OFFICIAL_KEY_URL,
+            "key",
+            timeout=0.25,
+            retries=0,
+            opener=opener,
+        )
+        self.assertEqual(body, b"captured-key-bytes")
+
+    def test_official_key_transport_rejects_unallowlisted_final_origins(self) -> None:
+        captured_path = "/8/56/gpg/runner-gitlab-runner-49F16C5CC3A0F81F.pub.gpg"
+        rejected = [
+            f"https://d20rj4el6vkp4c.cloudfront.net{captured_path.replace('.pub.gpg', '-other.pub.gpg')}?temporary=x",
+            f"https://203.0.113.10{captured_path}?temporary=x",
+            f"http://d20rj4el6vkp4c.cloudfront.net{captured_path}?temporary=x",
+            f"https://evil.example{captured_path}?temporary=x",
+        ]
+        for final_url in rejected:
+            with self.subTest(final_url=final_url):
+                self.assertFalse(autoupdate._official_endpoint(final_url, "key"))
+
+                class Response:
+                    def __enter__(self):
+                        return self
+
+                    def __exit__(self, *_args):
+                        return False
+
+                    def read(self, _limit):
+                        return b"captured-key-bytes"
+
+                    def geturl(self):
+                        return final_url
+
+                with self.assertRaisesRegex(autoupdate.ResolutionError, "unexpected redirect origin") as raised:
+                    autoupdate._official_fetch(
+                        autoupdate.OFFICIAL_KEY_URL,
+                        "key",
+                        timeout=0.25,
+                        retries=0,
+                        opener=lambda _url, timeout: Response(),
+                    )
+                self.assertNotIn("temporary", str(raised.exception))
+
     def test_missing_architecture_fails_closed(self) -> None:
         payload = copy.deepcopy(self.payload)
         payload["releases"][0]["runner_assets"] = payload["releases"][0]["runner_assets"][:-1]

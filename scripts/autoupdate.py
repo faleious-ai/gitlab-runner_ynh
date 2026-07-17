@@ -41,6 +41,12 @@ OFFICIAL_DOWNLOAD_HOSTS = {
 }
 OFFICIAL_KEY_URL = "https://packages.gitlab.com/runner/gitlab-runner/gpgkey/runner-gitlab-runner-49F16C5CC3A0F81F.pub.gpg"
 OFFICIAL_KEY_FINGERPRINT = "931DA69CFA3AFEBBC97DAA8C6C57C29C6BA75A4E"
+OFFICIAL_KEY_REDIRECT_TARGETS = {
+    (
+        "d20rj4el6vkp4c.cloudfront.net",
+        "/8/56/gpg/runner-gitlab-runner-49F16C5CC3A0F81F.pub.gpg",
+    ),
+}
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 FINGERPRINT_RE = re.compile(r"^[0-9A-F]{40}$")
 SEMVER_RE = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$")
@@ -468,12 +474,14 @@ def fetch_json(
 def _official_endpoint(url: str, kind: str) -> bool:
     parsed = urllib.parse.urlparse(url)
     path = urllib.parse.unquote(parsed.path)
-    if parsed.scheme != "https" or parsed.query and kind != "api" or parsed.fragment:
+    if parsed.scheme != "https" or parsed.fragment:
+        return False
+    if parsed.query and kind not in {"api", "key"}:
         return False
     if kind == "api":
         return parsed.hostname == "gitlab.com" and path == "/api/v4/projects/gitlab-org/gitlab-runner/releases"
     if kind == "key":
-        return url == OFFICIAL_KEY_URL
+        return url == OFFICIAL_KEY_URL or (parsed.hostname, path) in OFFICIAL_KEY_REDIRECT_TARGETS
     if kind == "release":
         return parsed.hostname == "gitlab.com" and bool(re.fullmatch(r"/gitlab-org/gitlab-runner/-/releases/v\d+\.\d+\.\d+(?:[-+][^/]*)?", path))
     if kind == "download":

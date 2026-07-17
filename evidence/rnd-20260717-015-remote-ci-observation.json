@@ -1,0 +1,66 @@
+{
+  "artifact_id": "EVD-RND-20260717-015-REMOTE-CI",
+  "artifact_kind": "remote-ci-observation",
+  "schema_version": 1,
+  "round_id": "RND-20260717-015",
+  "charter_id": "CHR-GOV-AUTONOMY-001",
+  "task_id": "T-RUN-02-observability",
+  "producer_commit": "40e3a0854da387ed51320afa15416abb1747009f",
+  "observed_at": "2026-07-17T12:51:46Z",
+  "repository": "faleious-ai/gitlab-runner_ynh",
+  "target_commit": "40e3a0854da387ed51320afa15416abb1747009f",
+  "mechanisms": [
+    {
+      "endpoint": "https://api.github.com/repos/faleious-ai/gitlab-runner_ynh/commits/40e3a0854da387ed51320afa15416abb1747009f/status",
+      "http": 200,
+      "state": "pending",
+      "total_count": 0
+    },
+    {
+      "endpoint": "https://api.github.com/repos/faleious-ai/gitlab-runner_ynh/actions/runs?head_sha=40e3a0854da387ed51320afa15416abb1747009f",
+      "http": 200,
+      "workflow_run": {
+        "id": 29581786119,
+        "name": "Validation",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "40e3a0854da387ed51320afa15416abb1747009f",
+        "created_at": "2026-07-17T12:51:38Z",
+        "updated_at": "2026-07-17T12:51:46Z"
+      },
+      "job": {
+        "id": 87888980227,
+        "name": "validation",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_step": "Run unit and negative tests",
+        "started_at": "2026-07-17T12:51:40Z",
+        "completed_at": "2026-07-17T12:51:45Z"
+      }
+    },
+    {
+      "endpoint": "https://api.github.com/repos/faleious-ai/gitlab-runner_ynh/actions/jobs/87888980227/logs",
+      "http": 403,
+      "result": "detailed_logs_unavailable_without_authorization"
+    }
+  ],
+  "result": "failed",
+  "evidence_state": "FAILED",
+  "success_claim": "UNVERIFIED",
+  "local_diagnosis": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v",
+    "result": "4 failures and 1 error on Windows",
+    "relevant_failures": [
+      "test_panel_declares_ephemeral_inputs_and_register_button still expects alpine:3.20",
+      "test_canonical_state_uses_published_task_shas_and_final_status still expects the pre-round EXECUTED_AWAITING_REVIEW state",
+      "config controller and lifecycle harness returned nonzero under the Windows shell environment",
+      "missing-gpg test reached the official key route and timed out during the Windows TLS handshake"
+    ]
+  },
+  "limitations": [
+    "Remote logs were not recoverable through the unauthenticated public endpoint; no log content was inferred.",
+    "No workflow rerun, credential use, release, registration or environment mutation was performed.",
+    "A passing remote CI result remains unverified until a later published SHA completes successfully."
+  ]
+}

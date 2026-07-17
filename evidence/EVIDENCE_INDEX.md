@@ -69,7 +69,7 @@
 | ID | Estado | Task/round | Resultado e localização |
 |---|---|---|---|
 | EVD-WP02E-KEY-TRANSPORT | LOCAL_VERIFIED | T-WP02E-01 / RND-20260717-012 | cadeia capturada aceita somente o par CloudFront host/path observado; adversários fail-closed; `6fb500ec3474c07137fcb8962512ed0adc59a9bb` |
-| EVD-WP02E-LIVE-TRUST | UNVERIFIED | T-WP02E-02 / RND-20260717-012 | `evidence/wp02e-live-trust-observation.json`; checksum fetch falhou antes de chave/GPG; trust não observado |
+| EVD-WP02E-LIVE-TRUST | SUPERSEDED | T-WP02E-02 / RND-20260717-012 | `evidence/wp02e-live-trust-observation.json`; substituído por nova observação versionada em RND-20260717-015 |
 | EVD-WP02E-HISTORICAL-PROVENANCE | LOCAL_VERIFIED | T-WP02E-03 / RND-20260717-012 | payloads pré-T06 restaurados por SHA-256 e observação antiga `SUPERSEDED`; `ea9774001fbf181b5fc210a17fad6a1208a83d4c` |
 | EVD-WP02E-DOCKER-DEFAULT | LOCAL_VERIFIED | T-WP02E-04 / RND-20260717-012 | panel/install usam `alpine:3.20`; `2563fc31e1b71db89315fd8c707235ed98659962` |
 | EVD-WP02E-REMOTE-CI | UNVERIFIED | T-WP02E-05 / RND-20260717-012 | `evidence/wp02e-remote-ci-observation.json`; `workflow_runs=[]`, `statuses=[]`, `gh` ausente |
@@ -87,6 +87,13 @@
 - `EVD-WP02E-INTEGRATION`;
 - `EVD-WP02E-FINAL-CONTINUITY`;
 - `EVD-WP02E-ORCHESTRATOR-REVIEW`.
+
+## Evidências de RND-20260717-015
+
+| ID | Estado | Task/round | Resultado e limitação |
+|---|---|---|---|
+| EVD-RND-20260717-015-LIVE-TRUST | LOCAL_VERIFIED | T-RUN-02 / RND-20260717-015 | `evidence/rnd-20260717-015-live-trust-observation.json`; release v19.2.0, checksum/signature HTTP 200, GPG fingerprint observado como válido; sem download/promoção/lifecycle |
+| EVD-RND-20260717-015-REMOTE-CI | FAILED | T-RUN-02 / RND-20260717-015 | `evidence/rnd-20260717-015-remote-ci-observation.json`; run público associado ao SHA terminou failure no passo unitário; logs detalhados 403; CI-success permanece `UNVERIFIED` |
 
 ## Regras
 

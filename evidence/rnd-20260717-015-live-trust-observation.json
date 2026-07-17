@@ -1,0 +1,79 @@
+{
+  "artifact_id": "EVD-RND-20260717-015-LIVE-TRUST",
+  "artifact_kind": "live-observation",
+  "schema_version": 2,
+  "round_id": "RND-20260717-015",
+  "charter_id": "CHR-GOV-AUTONOMY-001",
+  "task_id": "T-RUN-02-observability",
+  "producer_commit": "40e3a0854da387ed51320afa15416abb1747009f",
+  "observed_at": "2026-07-17T12:56:33.017139Z",
+  "command": "PYTHONDONTWRITEBYTECODE=1 python scripts/autoupdate.py discover --manifest manifest.toml --report <temporary-report> --timeout 5 --retries 0",
+  "source": {
+    "kind": "current-online",
+    "project": "gitlab-org/gitlab-runner",
+    "api": "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-runner/releases",
+    "download_base": "https://gitlab-runner-downloads.s3.amazonaws.com",
+    "selected_tag": "v19.2.0",
+    "checksum_url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/release.sha256",
+    "signature_url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/release.sha256.asc",
+    "checksum_http": 200,
+    "signature_http": 200,
+    "checksum_document_sha256": "fa973abe3dedf3dd8a2670e497d99b2e58c79fb76678a0fd6bba6d0c3849a32b"
+  },
+  "result": "verified",
+  "mode": "dry-run",
+  "promoted": false,
+  "trust": {
+    "status": "verified",
+    "key_validity": "valid",
+    "key_fingerprint": "931DA69CFA3AFEBBC97DAA8C6C57C29C6BA75A4E",
+    "signature_method": "official checksum document over pinned HTTPS; exact required asset records parsed and confronted; GPG verification requires the documented GitLab Runner signing key; trusted fingerprint matched"
+  },
+  "release": {
+    "version": "19.2.0",
+    "release_tag": "v19.2.0",
+    "release_url": "https://gitlab.com/gitlab-org/gitlab-runner/-/releases/v19.2.0",
+    "released_at": "2026-07-16T05:57:21.276Z",
+    "runner": [
+      {
+        "architecture": "amd64",
+        "filename": "gitlab-runner_amd64.deb",
+        "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/deb/gitlab-runner_amd64.deb",
+        "sha256": "f810e79679f3e7ffea112e27c21dfe1d77c5b8f3878de3185d72e58de2aee565",
+        "size": 30652922
+      },
+      {
+        "architecture": "arm64",
+        "filename": "gitlab-runner_arm64.deb",
+        "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/deb/gitlab-runner_arm64.deb",
+        "sha256": "7e8f8b9bf67c2ffb17fea836637a7f84aa77ec6138c2e7fb37a5321f76c8c93b",
+        "size": 27362256
+      },
+      {
+        "architecture": "armhf",
+        "filename": "gitlab-runner_armhf.deb",
+        "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/deb/gitlab-runner_armhf.deb",
+        "sha256": "e5e914ef5054af62dd206f52019eff1c69859d9cc1f53ee89ad4616e52a1fe82",
+        "size": 28792338
+      }
+    ],
+    "helper_images": {
+      "version": "v19.2.0",
+      "filename": "gitlab-runner-helper-images.deb",
+      "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/deb/gitlab-runner-helper-images.deb",
+      "sha256": "794be4f327cbf773cddb26feb6f362061d5ef71b466975c0778f49922e90eed6",
+      "size": 537469982,
+      "architectures": ["amd64", "arm64", "armhf"]
+    }
+  },
+  "manifest": {
+    "path": "manifest.toml",
+    "version": "18.6.2~ynh1",
+    "promoted": false
+  },
+  "limitations": [
+    "The observation proves the published updater can reach, parse and verify the current official release metadata in this environment.",
+    "No package was downloaded, installed or promoted; no Runner registration or real environment mutation was performed.",
+    "This artifact does not prove lifecycle or remote CI success."
+  ]
+}

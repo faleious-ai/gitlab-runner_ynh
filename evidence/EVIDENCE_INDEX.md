@@ -1,109 +1,20 @@
-# Índice de evidências
+# Runner evidence index
 
-## Estados
+Evidence states: `STRUCTURALLY_OBSERVED`, `LOCAL_VERIFIED`, `REMOTE_CI_VERIFIED`, `LIFECYCLE_VERIFIED`, `FAILED`, `UNVERIFIED`, `SUPERSEDED`.
 
-- `STRUCTURALLY_OBSERVED`: forma/presença inspecionada, sem execução comportamental.
-- `LOCAL_VERIFIED`: demonstrado localmente em seam adequado.
-- `REMOTE_CI_VERIFIED`: run remoto associado ao SHA confirmado.
-- `LIFECYCLE_VERIFIED`: lifecycle proporcional executado.
-- `FAILED`: critério executado/revisado e não atendido.
-- `UNVERIFIED`: não demonstrado.
-- `SUPERSEDED`: substituído.
+## Current architecture
 
-## Evidências históricas
-
-| ID | Estado | Round | Assunto | Localização | Resultado |
-|---|---|---|---|---|---|
-| EVD-20260716-001-RUNNER | LOCAL_VERIFIED | RND-20260716-001 | bootstrap MAESTRO | `AGENTS.md`, `CONTEXT.md`, `continuity/`, `docs/`, `evidence/` | estrutura criada sem mudança funcional |
-| EVD-20260716-002-RUNNER | LOCAL_VERIFIED | RND-20260716-002 | contrato orquestrador/Codex | protocolos, ADR-0005 e especificações | rodada, revisão e sincronização persistidas |
-| EVD-WP01B-INVENTORY | LOCAL_VERIFIED | RND-20260716-003 | inventário Runner | `docs/audit/RUNNER_PACKAGE_BASELINE.md` | manifest, assets, scripts, action, Docker e lifecycle documentados |
-| EVD-WP01B-TOKEN-SECURITY | LOCAL_VERIFIED | RND-20260716-003 | risco credential-like | `docs/audit/LIFECYCLE_AND_SECURITY_MAP.md` | risco localizado sem uso/reprodução do valor |
-| EVD-WP01B-UPSTREAM-DIVERGENCE | LOCAL_VERIFIED | RND-20260716-003 | comparação upstream | `docs/audit/UPSTREAM_DIVERGENCE.md` | fork igual ao snapshot auditado |
-| EVD-WP01B-ORCHESTRATOR-REVIEW | LOCAL_VERIFIED | RND-20260716-004 | revisão WP-01B | `continuity/reviews/REV-RND-20260716-003.md` | verdict `ACCEPTED` |
-| EVD-WP02-ORCHESTRATOR-REVIEW-005 | LOCAL_VERIFIED | RND-20260716-006 | revisão fundação WP-02 | `continuity/reviews/REV-RND-20260716-005.md` | verdict `CORRECTION_REQUIRED` |
-
-## Revisão de RND-20260716-007
-
-| ID | Estado | Assunto | Resultado da revisão |
+| ID | State | Round / task | Evidence |
 |---|---|---|---|
-| EVD-WP02C-LIVE-DISCOVERY | STRUCTURALLY_OBSERVED | descoberta online | API paginada, stable-only e origem implementados; self-link/page incompletos |
-| EVD-WP02C-CHECKSUM-TRUST | FAILED | checksum e assinatura | hashes confrontados, porém falha criptográfica pode ser classificada como indisponibilidade |
-| EVD-WP02C-SOURCE-BOUNDARY | STRUCTURALLY_OBSERVED | origem e redirects | allowlists presentes; self-link e limite efetivo não demonstrados |
-| EVD-WP02C-MANIFEST-CANDIDATE | LOCAL_VERIFIED | manifest candidato | cópia completa, nove campos allowlisted, diff determinístico e sem promoção |
-| EVD-WP02C-TOKEN-NOT-IN-ARGV | STRUCTURALLY_OBSERVED | transporte de registro | subprocesso principal usa ambiente, mas interface legada permanece |
-| EVD-WP02C-YUNOHOST-ACTION-CONTRACT | FAILED | config panel | botão sem controlador real/inputs efêmeros |
-| EVD-WP02C-LIFECYCLE-IDENTITY | FAILED | backup/restore | identidade não preservada; restore depende de senha não persistida |
-| EVD-WP02C-TESTS-AND-REMOTE-CI | UNVERIFIED | testes e CI | testes locais declarados; nenhum run/status remoto recuperado |
-| EVD-WP02C-CROSS-REPO-SYNTHESIS | LOCAL_VERIFIED | síntese | commits e estado reconciliados |
-| EVD-WP02C-ORCHESTRATOR-REVIEW | LOCAL_VERIFIED | revisão independente | `continuity/reviews/REV-RND-20260716-007.md`; `CORRECTION_REQUIRED` |
+| EVD-ARCH-V2-RUNNER | LOCAL_VERIFIED | RND-20260717-016 / T-RUN-ARCHITECTURE-V2 | Runner consumer and contracts at `7dc24ccb8b539c052966eee4d22820e51e418433` |
+| EVD-ARCH-V2-HARDEN-RUNNER | LOCAL_VERIFIED | RND-20260717-016 / T-GOV-ARCHITECTURE-V2-HARDEN | dynamic correction tasks, unknown-task rejection, v2 skills and receipt at `dafcac9a26e56d8c3731fae66e9e4cc5f5a0d015` |
+| EVD-RUNNER-DOCKER-DEFAULT | LOCAL_VERIFIED | RND-20260717-015 | `alpine:3.24.1` in manifest and config panel at `40e3a0854da387ed51320afa15416abb1747009f` |
+| EVD-RUNNER-LIVE-TRUST | LOCAL_VERIFIED | RND-20260717-015 | versioned trust observation; no promotion or lifecycle claim |
+| EVD-RUNNER-REMOTE-CI | FAILED | RND-20260717-015 | public run failed; success remains `UNVERIFIED` |
+| EVD-RUNNER-FULL-SUITE-LINUX | LOCAL_VERIFIED | RND-20260717-016 | architecture activation record reports 39/39 in the Linux sandbox |
 
-## Evidências de RND-20260716-009 — processo
+## Historical evidence
 
-| ID | Estado | Task | Assunto | Resultado |
-|---|---|---|---|---|
-| EVD-PROC-ADR006 | LOCAL_VERIFIED | T-01 | política de commits por tarefa e decisões D1–D5 | ADR, AGENTS e protocolos publicados nos dois repositórios |
-| EVD-PROC-CAVEKIT-RESEARCH | LOCAL_VERIFIED | T-02 | leitura/adaptação Cavekit | relatório no coordenador; índice e licença no Runner |
-| EVD-PROC-SKILL-SUITE | STRUCTURALLY_OBSERVED | T-03..T-14 | 12 skills MAESTRO | arquivos publicados individualmente; eficácia testada em RND-20260716-010 e retropropagada em RND-20260717-011 |
-| EVD-PROC-LEARNING-LEDGER | LOCAL_VERIFIED | T-15 | memória de backprop/dead ends | schema append-only publicado |
-| EVD-PROC-ARCHITECTURE | LOCAL_VERIFIED | T-16 | máquina de estados e papéis | tarefa/commit/TDD/review/backprop integrados à arquitetura |
-| EVD-PROC-CHR003-MIGRATION | LOCAL_VERIFIED | T-17 | charter executável | oito Task-IDs com seams, RED/GREEN, gates e dependências |
+Detailed evidence before architecture v2 remains in `continuity/rounds/`, `continuity/reviews/`, `docs/audit/`, versioned JSON artifacts and Git history. Superseded observations remain immutable and are not upgraded by editing this index.
 
-## Evidências de CHR-WP02-003 — RND-20260716-010
-
-| ID | Estado | Task/round | Seam e localização | Commit remoto ou limitação |
-|---|---|---|---|---|
-| EVD-WP02D-YUNOHOST-RUN-CONTROLLER | LOCAL_VERIFIED | T-WP02D-01 / RND-20260716-010 | `config_panel.toml`, `scripts/config`, `tests/test_config_controller.py`; RED/GREEN no round record | `ada6b78ca4db00c1dcacda4eb01736f123f6040b`; sem host YunoHost real |
-| EVD-WP02D-EPHEMERAL-REGISTRATION-INPUTS | LOCAL_VERIFIED | T-WP02D-01 / RND-20260716-010 | inputs `password`/`url` com `bind = "null"`; harness sem segredo persistido | `ada6b78ca4db00c1dcacda4eb01736f123f6040b`; token real não usado |
-| EVD-WP02D-NO-LEGACY-ARGV | LOCAL_VERIFIED | T-WP02D-02 / RND-20260716-010 | `tests/test_legacy_register_removed.py`, controlador seguro e suíte | `79fb763c6c2d20f9bb1b76e42a266da1b41e8ad9`; referências históricas permanecem documentais |
-| EVD-WP02D-LIFECYCLE-IDENTITY | LOCAL_VERIFIED | T-WP02D-03 / RND-20260716-010 | harness temporário backup→restore | `2f0185cbf8b630f94d9618c9d7afe56cabc434b3`; sem host YunoHost/Docker |
-| EVD-WP02D-SIGNATURE-FAIL-CLOSED | LOCAL_VERIFIED | T-WP02D-04 / RND-20260716-010 | adaptador GPG/GPGV falso; refresh bloqueado sem confiança | `35e8e44dd9fb39b47ad71e6dfb06e854c0029618`; lógica local preservada, transport live falha na revisão integrada |
-| EVD-WP02D-SELF-LINK-REDIRECTS | LOCAL_VERIFIED | T-WP02D-05 / RND-20260716-010 | API/HTTP falsos; self-link e paths de release/download | `51dbb98a7e6de477c4f3234b1c7d40b4ac1a54ac`; redirect da chave oficial não coberto |
-| EVD-WP02D-CANONICAL-EVIDENCE | FAILED | T-WP02D-06 / RND-20260716-010 | scanner de portabilidade e artefatos JSON | `2acc1a3ec1a6c42a81eacea02f7ae093131070de`; campo factual live foi acrescentado sem nova observação |
-| EVD-WP02D-LOCAL-TESTS | LOCAL_VERIFIED | T-WP02D-01..07 / RND-20260716-010 | 32 testes, scanner, parsers, Bash e dry-run | nível local somente |
-| EVD-WP02D-REMOTE-CI | UNVERIFIED | T-WP02D-07 / RND-20260716-010 | workflow read-only e actions fixadas | nenhum run/status remoto recuperado; não promover |
-| EVD-WP02D-CROSS-REPO-SYNTHESIS | FAILED | T-WP02D-08 / RND-20260716-010 | continuidade cross-repo | commits existem, porém handoff/index mantiveram referências pré-T08 |
-| EVD-WP02D-ORCHESTRATOR-REVIEW | LOCAL_VERIFIED | RND-20260717-011 | `continuity/reviews/REV-RND-20260716-010.md` | verdict `CORRECTION_REQUIRED`; Runner review commit `dd24f407e8bfcfe84b8b8ed95cfcabc7004a4463` |
-
-## Evidências finais de RND-20260717-012
-
-| ID | Estado | Task/round | Resultado e localização |
-|---|---|---|---|
-| EVD-WP02E-KEY-TRANSPORT | LOCAL_VERIFIED | T-WP02E-01 / RND-20260717-012 | cadeia capturada aceita somente o par CloudFront host/path observado; adversários fail-closed; `6fb500ec3474c07137fcb8962512ed0adc59a9bb` |
-| EVD-WP02E-LIVE-TRUST | SUPERSEDED | T-WP02E-02 / RND-20260717-012 | `evidence/wp02e-live-trust-observation.json`; substituído por nova observação versionada em RND-20260717-015 |
-| EVD-WP02E-HISTORICAL-PROVENANCE | LOCAL_VERIFIED | T-WP02E-03 / RND-20260717-012 | payloads pré-T06 restaurados por SHA-256 e observação antiga `SUPERSEDED`; `ea9774001fbf181b5fc210a17fad6a1208a83d4c` |
-| EVD-WP02E-DOCKER-DEFAULT | LOCAL_VERIFIED | T-WP02E-04 / RND-20260717-012 | panel/install usam `alpine:3.20`; `2563fc31e1b71db89315fd8c707235ed98659962` |
-| EVD-WP02E-REMOTE-CI | UNVERIFIED | T-WP02E-05 / RND-20260717-012 | `evidence/wp02e-remote-ci-observation.json`; `workflow_runs=[]`, `statuses=[]`, `gh` ausente |
-| EVD-WP02E-INTEGRATION | LOCAL_VERIFIED | T-WP02E-06 / RND-20260717-012 | `evidence/wp02e-integration-gates.json`; 37 testes, lifecycle local e manifest inalterado; `08563cbd2c957e6cca16ae6535a56ef9b2d52b9e` |
-| EVD-WP02E-FINAL-CONTINUITY | LOCAL_VERIFIED | T-WP02E-07 / RND-20260717-012 | `ACTIVE_ROUND.md`, `HANDOFF_CURRENT.md`, `STATUS.md`, este índice e round record reconciliados; `this task commit` |
-| EVD-WP02E-PROCESS-BACKPROP | LOCAL_VERIFIED | RND-20260717-011 | imutabilidade de evidência e transport seam incorporados; `4cefe926732c95344c3d7d129aa9dbe110dcae72` |
-
-## Evidências requeridas para CHR-WP02-004
-
-- `EVD-WP02E-KEY-TRANSPORT`;
-- `EVD-WP02E-LIVE-TRUST`;
-- `EVD-WP02E-HISTORICAL-PROVENANCE`;
-- `EVD-WP02E-DOCKER-DEFAULT`;
-- `EVD-WP02E-REMOTE-CI`;
-- `EVD-WP02E-INTEGRATION`;
-- `EVD-WP02E-FINAL-CONTINUITY`;
-- `EVD-WP02E-ORCHESTRATOR-REVIEW`.
-
-## Evidências de RND-20260717-015
-
-| ID | Estado | Task/round | Resultado e limitação |
-|---|---|---|---|
-| EVD-RND-20260717-015-LIVE-TRUST | LOCAL_VERIFIED | T-RUN-02 / RND-20260717-015 | `evidence/rnd-20260717-015-live-trust-observation.json`; release v19.2.0, checksum/signature HTTP 200, GPG fingerprint observado como válido; sem download/promoção/lifecycle |
-| EVD-RND-20260717-015-REMOTE-CI | FAILED | T-RUN-02 / RND-20260717-015 | `evidence/rnd-20260717-015-remote-ci-observation.json`; run público associado ao SHA terminou failure no passo unitário; logs detalhados 403; CI-success permanece `UNVERIFIED` |
-
-## Evidências de RND-20260717-015 — fechamento Runner
-
-| ID | Estado | Task/round | Resultado e localização |
-|---|---|---|---|
-| EVD-RND-20260717-015-DOCKER-DEFAULT | LOCAL_VERIFIED | T-RUN-01 / RND-20260717-015 | `manifest.toml` e `config_panel.toml` usam `alpine:3.24.1`; `40e3a0854da387ed51320afa15416abb1747009f` |
-| EVD-RND-20260717-015-PROCESS-ADOPTION | LOCAL_VERIFIED | T-RUN-03 / RND-20260717-015 | consumidor da fila publicado em `8a40e1d1bbaab33fb44a7779160855cdc1d374e9` |
-| EVD-RND-20260717-015-CI-ALPINE-ORACLE | LOCAL_VERIFIED | T-RUN-04 / RND-20260717-015 | oracle stale corrigido em `b3f752f4c5b8ace5a224263454eb9fc6220b71a1`; CI remoto posterior continua `FAILED`/`UNVERIFIED` |
-| EVD-RND-20260717-015-RUNNER-FINAL-CONTINUITY | LOCAL_VERIFIED | T-GOV-03 / RND-20260717-015 | status, handoff, active round e índice reconciliados; SHA final consta no pacote remoto |
-
-## Regras
-
-Claims apontam para Task-ID, seam, método, comando, resultado, SHA e limitação. Fixture não é autoridade de freshness ou checksum por si só. Busca textual é somente estrutural. Artefato observado é semanticamente imutável; nova factualidade exige nova observação e novo artefato. O índice funcional canônico é este arquivo. Nunca reproduzir a credencial histórica. Aceite permanece exclusivo do orquestrador.
+Claims require a task, public seam, method, command, result, commit and limitation. Fixture data does not establish freshness. Acceptance remains owned by the Orchestrator.

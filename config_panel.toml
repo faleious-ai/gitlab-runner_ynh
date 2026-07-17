@@ -27,7 +27,7 @@ name.fr = "GitLab Runner"
         ask.fr = "Image Docker"
         type = "string"
         bind = "null"
-        default = "alpine:3.20"
+        default = "alpine:3.24.1"
 
         [main.registration.register]
         ask.en = "Register configured runners"

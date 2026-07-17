@@ -42,12 +42,27 @@ OFFICIAL_DOWNLOAD_HOSTS = {
 OFFICIAL_KEY_URL = "https://packages.gitlab.com/runner/gitlab-runner/gpgkey/runner-gitlab-runner-49F16C5CC3A0F81F.pub.gpg"
 OFFICIAL_KEY_FINGERPRINT = "931DA69CFA3AFEBBC97DAA8C6C57C29C6BA75A4E"
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+FINGERPRINT_RE = re.compile(r"^[0-9A-F]{40}$")
 SEMVER_RE = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$")
 MANIFEST_VERSION_RE = re.compile(r'^version\s*=\s*"([^"]+)"', re.MULTILINE)
 # The Releases API page includes the complete asset-link matrix for up to 100
 # releases. Keep a bounded cap while allowing that official response shape.
 MAX_METADATA_BYTES = 8 * 1024 * 1024
 MAX_REDIRECTS = 3
+GPG_FAILURE_CODES = {
+    "BADSIG",
+    "ERRSIG",
+    "EXPSIG",
+    "EXPKEYSIG",
+    "KEYEXPIRED",
+    "REVKEYSIG",
+    "KEYREVOKED",
+    "SIGEXPIRED",
+    "NO_PUBKEY",
+    "NODATA",
+    "BADARMOR",
+    "FAILURE",
+}
 REQUIRED_FILENAMES = tuple(
     [f"gitlab-runner_{arch}.deb" for arch in REQUIRED_ARCHITECTURES]
     + ["gitlab-runner-helper-images.deb"]
@@ -67,6 +82,13 @@ MANIFEST_FIELDS = {
 
 class ResolutionError(ValueError):
     """Raised when a release cannot be used as an atomic candidate."""
+
+
+def _normalize_fingerprint(value: Any, field: str) -> str:
+    fingerprint = _require_string(value, field).replace(" ", "").upper()
+    if not FINGERPRINT_RE.fullmatch(fingerprint):
+        raise ResolutionError(f"{field} must be an exact 40-character fingerprint")
+    return fingerprint
 
 
 def _version_key(version: str) -> tuple[int, int, int]:
@@ -252,18 +274,36 @@ def _validate_official_checksums(
     if not isinstance(signature, dict):
         raise ResolutionError("official checksum signature provenance is required")
     _validate_signature_url(signature.get("url"), tag)
-    if signature.get("status") not in {"verified", "equivalent-recomputation", "unverified-environment"}:
+    status = signature.get("status")
+    if status not in {"verified", "equivalent-recomputation", "unverified-environment"}:
         raise ResolutionError("official checksum signature trust status is invalid")
     _require_string(signature.get("method"), "official checksum signature method")
+    key_fingerprint = signature.get("key_fingerprint")
+    if key_fingerprint is not None:
+        key_fingerprint = _normalize_fingerprint(key_fingerprint, "official checksum key fingerprint")
+        if key_fingerprint != OFFICIAL_KEY_FINGERPRINT:
+            raise ResolutionError("official checksum key fingerprint does not match the pinned key")
+    key_validity = signature.get("key_validity", "not-observed")
+    if key_validity not in {"valid", "unavailable", "not-observed"}:
+        raise ResolutionError("official checksum key validity is invalid")
+    if status == "verified":
+        if key_fingerprint != OFFICIAL_KEY_FINGERPRINT:
+            raise ResolutionError("verified checksum key fingerprint is required")
+        if key_validity != "valid":
+            raise ResolutionError("verified checksum key validity must be valid")
+    normalized_signature = {
+        "url": signature["url"],
+        "status": status,
+        "method": signature["method"],
+        "key_validity": key_validity,
+    }
+    if key_fingerprint is not None:
+        normalized_signature["key_fingerprint"] = key_fingerprint
     return {
         "url": checksum_url,
         "document_sha256": official["document_sha256"],
         "assets": dict(sorted(assets.items())),
-        "signature": {
-            "url": signature["url"],
-            "status": signature["status"],
-            "method": signature["method"],
-        },
+        "signature": normalized_signature,
     }
 
 
@@ -484,8 +524,22 @@ def parse_checksum_document(document: bytes | str, required: Iterable[str] = REQ
     return dict(sorted(result.items()))
 
 
-def _signature_status(checksum: bytes, signature: bytes, timeout: float, retries: int, opener: Callable[..., Any] | None) -> dict[str, str]:
-    """Verify the release signature when a trusted GPG tool/key is available."""
+def _signature_status(
+    checksum: bytes,
+    signature: bytes,
+    timeout: float,
+    retries: int,
+    opener: Callable[..., Any] | None,
+) -> dict[str, Any]:
+    """Verify the release signature and fail closed once GPG is available."""
+
+    method = (
+        "official checksum document over pinned HTTPS; exact required asset records parsed and confronted; "
+        "GPG verification requires the documented GitLab Runner signing key"
+    )
+
+    def failure(reason: str) -> ResolutionError:
+        return ResolutionError(f"checksum signature verification failed: {reason}")
 
     gpg = shutil.which("gpg") or shutil.which("gpg.exe")
     if not gpg and os.name == "nt":
@@ -493,12 +547,13 @@ def _signature_status(checksum: bytes, signature: bytes, timeout: float, retries
             if candidate.is_file():
                 gpg = str(candidate)
                 break
-    method = (
-        "official checksum document over pinned HTTPS; exact required asset records parsed and confronted; "
-        "GPG verification requires the documented GitLab Runner signing key"
-    )
     if not gpg:
-        return {"status": "unverified-environment", "method": method + "; gpg unavailable"}
+        return {
+            "status": "unverified-environment",
+            "method": method + "; gpg unavailable",
+            "key_validity": "unavailable",
+        }
+
     try:
         key, _ = _official_fetch(OFFICIAL_KEY_URL, "key", timeout, retries, opener)
         with tempfile.TemporaryDirectory(prefix="runner-gpg-") as directory:
@@ -512,36 +567,71 @@ def _signature_status(checksum: bytes, signature: bytes, timeout: float, retries
             signature_path.write_bytes(signature)
             env = {**os.environ, "GNUPGHOME": str(home)}
             gpg_path = lambda path: path.as_posix() if os.name == "nt" else str(path)
-            dearmored = subprocess.run(
-                [gpg, "--batch", "--yes", "--no-autostart", "--dearmor", "--output", gpg_path(keyring_path), gpg_path(key_path)],
-                env=env,
-                capture_output=True,
-                text=True,
-                check=False,
-            )
+            try:
+                dearmored = subprocess.run(
+                    [gpg, "--batch", "--yes", "--no-autostart", "--dearmor", "--output", gpg_path(keyring_path), gpg_path(key_path)],
+                    env=env,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+            except OSError as error:
+                raise failure("GPG key conversion could not be executed") from error
+            if dearmored.returncode != 0:
+                raise failure("GPG key conversion returned nonzero")
+
             gpgv = shutil.which("gpgv") or shutil.which("gpgv.exe")
             if not gpgv and os.name == "nt":
                 sibling = Path(gpg).with_name("gpgv.exe")
                 if sibling.is_file():
                     gpgv = str(sibling)
-            if dearmored.returncode != 0 or not gpgv:
-                return {"status": "unverified-environment", "method": method + "; trusted key conversion unavailable"}
-            verified = subprocess.run(
-                [gpgv, "--status-fd", "1", "--keyring", gpg_path(keyring_path), gpg_path(signature_path), gpg_path(checksum_path)],
-                env=env,
-                capture_output=True,
-                text=True,
-                check=False,
-            )
-            valid = any(
-                line.startswith("[GNUPG:] VALIDSIG ") and OFFICIAL_KEY_FINGERPRINT in line.replace(" ", "")
-                for line in verified.stdout.splitlines()
-            )
-            if verified.returncode == 0 and valid:
-                return {"status": "verified", "method": method + "; trusted fingerprint matched"}
-            return {"status": "unverified-environment", "method": method + "; signature did not verify with trusted key"}
-    except (OSError, ResolutionError):
-        return {"status": "unverified-environment", "method": method + "; verification environment unavailable"}
+            if not gpgv:
+                raise failure("gpgv unavailable")
+            try:
+                verified = subprocess.run(
+                    [gpgv, "--status-fd", "1", "--keyring", gpg_path(keyring_path), gpg_path(signature_path), gpg_path(checksum_path)],
+                    env=env,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+            except OSError as error:
+                raise failure("gpgv could not be executed") from error
+
+            status_lines = (verified.stdout or "").splitlines()
+            status_codes = [parts[1] for parts in (line.split() for line in status_lines) if len(parts) > 1 and parts[0] == "[GNUPG:]"]
+            for code in status_codes:
+                if code in {"EXPSIG", "EXPKEYSIG", "KEYEXPIRED", "SIGEXPIRED"}:
+                    raise failure("signature or key is expired")
+                if code in {"REVKEYSIG", "KEYREVOKED"}:
+                    raise failure("signature or key is revoked")
+                if code in GPG_FAILURE_CODES:
+                    raise failure(f"verifier status {code}")
+            if verified.returncode != 0:
+                raise failure("verifier returned nonzero")
+
+            validsig_records = [
+                parts for parts in (line.split() for line in status_lines) if len(parts) > 1 and parts[0] == "[GNUPG:]" and parts[1] == "VALIDSIG"
+            ]
+            if len(validsig_records) != 1 or len(validsig_records[0]) < 6:
+                raise failure("verifier output did not contain exactly one complete VALIDSIG record")
+            try:
+                fingerprint = _normalize_fingerprint(validsig_records[0][2], "verifier fingerprint")
+            except ResolutionError as error:
+                raise failure("verifier fingerprint is invalid") from error
+            if fingerprint != OFFICIAL_KEY_FINGERPRINT:
+                raise failure("verifier fingerprint does not match the pinned key")
+            expiration = validsig_records[0][5]
+            if expiration.isdigit() and expiration != "0" and int(expiration) <= int(datetime.now(timezone.utc).timestamp()):
+                raise failure("signature or key is expired")
+            return {
+                "status": "verified",
+                "method": method + "; trusted fingerprint matched",
+                "key_fingerprint": fingerprint,
+                "key_validity": "valid",
+            }
+    except OSError as error:
+        raise failure("verification environment could not be prepared") from error
 
 
 def _probe_size(url: str, timeout: float, retries: int, opener: Callable[..., Any] | None) -> int:
@@ -898,6 +988,9 @@ def main(argv: list[str] | None = None) -> int:
 
         if args.refresh:
             resolved = discover_current()["resolved"]
+            signature = resolved["checksum_trust"]["signature"]
+            if signature.get("status") != "verified" or signature.get("key_validity") != "valid":
+                raise ResolutionError("generate --refresh requires verified checksum signature")
         else:
             payload = _load_fixture(args.fixture)
             resolved = resolve_release(payload)

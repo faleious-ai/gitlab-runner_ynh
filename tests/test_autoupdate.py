@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import io
 import json
 import os
 import shutil
@@ -11,6 +12,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from urllib.error import URLError
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -99,6 +101,99 @@ class AutoupdateTests(unittest.TestCase):
         payload["releases"][0]["official_checksums"]["signature"]["status"] = "bad"
         with self.assertRaisesRegex(autoupdate.ResolutionError, "signature trust status"):
             autoupdate.resolve_release(payload)
+
+    def _signature_with_fake_verifier(
+        self,
+        status_output: str,
+        *,
+        verifier_returncode: int = 0,
+        dearmor_returncode: int = 0,
+    ) -> dict[str, str]:
+        def fake_which(name: str) -> str | None:
+            return {"gpg": "/fake/gpg", "gpgv": "/fake/gpgv"}.get(name)
+
+        def fake_run(command: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+            if "--dearmor" in command:
+                return subprocess.CompletedProcess(command, dearmor_returncode, stdout="", stderr="")
+            return subprocess.CompletedProcess(command, verifier_returncode, stdout=status_output, stderr="")
+
+        with (
+            mock.patch.object(autoupdate.shutil, "which", side_effect=fake_which),
+            mock.patch.object(autoupdate, "_official_fetch", return_value=(b"public key", None)),
+            mock.patch.object(autoupdate.subprocess, "run", side_effect=fake_run),
+        ):
+            return autoupdate._signature_status(b"checksum", b"signature", 0.25, 0, None)
+
+    def test_missing_gpg_is_unverified_environment_never_verified(self) -> None:
+        with mock.patch.object(autoupdate.shutil, "which", return_value=None):
+            result = autoupdate._signature_status(b"checksum", b"signature", 0.25, 0, None)
+        self.assertEqual(result["status"], "unverified-environment")
+        self.assertEqual(result["key_validity"], "unavailable")
+        self.assertNotEqual(result["status"], "verified")
+
+    def test_gpg_failures_and_invalid_key_states_fail_closed(self) -> None:
+        valid = f"[GNUPG:] VALIDSIG {autoupdate.OFFICIAL_KEY_FINGERPRINT} 20260716 1721088000 0 1 10 1 10 00 {autoupdate.OFFICIAL_KEY_FINGERPRINT}\n"
+        cases = [
+            ("nonzero verifier", "[GNUPG:] BADSIG 1234\n", 1, 0, "signature verification failed"),
+            ("missing VALIDSIG", "[GNUPG:] GOODSIG 1234\n", 0, 0, "VALIDSIG"),
+            (
+                "fingerprint suffix is not an exact match",
+                valid.replace(autoupdate.OFFICIAL_KEY_FINGERPRINT, autoupdate.OFFICIAL_KEY_FINGERPRINT + "A"),
+                0,
+                0,
+                "fingerprint",
+            ),
+            ("expired key", valid + "[GNUPG:] EXPKEYSIG 1234\n", 0, 0, "expired"),
+            ("revoked key", valid + "[GNUPG:] REVKEYSIG 1234\n", 0, 0, "revoked"),
+            ("key conversion failure", "", 0, 1, "key conversion"),
+        ]
+        for name, output, verifier_returncode, dearmor_returncode, message in cases:
+            with self.subTest(name=name), self.assertRaisesRegex(autoupdate.ResolutionError, message):
+                self._signature_with_fake_verifier(
+                    output,
+                    verifier_returncode=verifier_returncode,
+                    dearmor_returncode=dearmor_returncode,
+                )
+
+    def test_verified_signature_records_exact_fingerprint_and_key_validity(self) -> None:
+        output = f"[GNUPG:] VALIDSIG {autoupdate.OFFICIAL_KEY_FINGERPRINT} 20260716 1721088000 0 1 10 1 10 00 {autoupdate.OFFICIAL_KEY_FINGERPRINT}\n"
+        result = self._signature_with_fake_verifier(output)
+        self.assertEqual(result["status"], "verified")
+        self.assertEqual(result["key_fingerprint"], autoupdate.OFFICIAL_KEY_FINGERPRINT)
+        self.assertEqual(result["key_validity"], "valid")
+
+    def test_verified_fixture_requires_observed_key_fields(self) -> None:
+        payload = copy.deepcopy(self.payload)
+        signature = payload["releases"][0]["official_checksums"]["signature"]
+        signature["status"] = "verified"
+        with self.assertRaisesRegex(autoupdate.ResolutionError, "key fingerprint"):
+            autoupdate.resolve_release(payload)
+        signature["key_fingerprint"] = autoupdate.OFFICIAL_KEY_FINGERPRINT
+        with self.assertRaisesRegex(autoupdate.ResolutionError, "key validity"):
+            autoupdate.resolve_release(payload)
+
+    def test_generate_refresh_requires_verified_signature(self) -> None:
+        resolved = autoupdate.resolve_release(self.payload)
+        resolved["checksum_trust"]["signature"]["status"] = "unverified-environment"
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "candidate.toml"
+            with (
+                mock.patch.object(autoupdate, "discover_current", return_value={"resolved": resolved}),
+                mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
+            ):
+                result = autoupdate.main(
+                    [
+                        "generate",
+                        "--refresh",
+                        "--manifest",
+                        str(ROOT / "manifest.toml"),
+                        "--output",
+                        str(output),
+                    ]
+                )
+            self.assertEqual(result, 2)
+            self.assertIn("requires verified checksum signature", stderr.getvalue())
+            self.assertFalse(output.exists())
 
     def test_local_checksum_is_verified(self) -> None:
         resolved = autoupdate.resolve_release(self.payload)

@@ -73,6 +73,7 @@
 | EVD-WP02E-HISTORICAL-PROVENANCE | LOCAL_VERIFIED | payloads históricos restaurados byte a byte ao estado pré-T06; observação antiga marcada `SUPERSEDED`; T02 é a única fonte live atual | SHA-256 fixado no teste de provenance; `evidence/wp02e-live-trust-observation.json`; este task commit | `T-WP02E-03` |
 | EVD-WP02E-DOCKER-DEFAULT | LOCAL_VERIFIED | panel e install agora compartilham o default versionado `alpine:3.20` | `config_panel.toml`, `manifest.toml`, teste focal | `T-WP02E-04`; suíte local GREEN |
 | EVD-WP02E-REMOTE-CI | UNVERIFIED | T-WP02E-05 / RND-20260717-012 | workflow read-only no commit T04; runs/statuses vazios e `gh` indisponível | `evidence/wp02e-remote-ci-observation.json`; gates locais não promovem CI remoto |
+| EVD-WP02E-INTEGRATION | LOCAL_VERIFIED | T-WP02E-06 / RND-20260717-012 | gates integrados, manifest inalterado e matriz T01–T05 | `evidence/wp02e-integration-gates.json`; lifecycle local, CI remoto e host real continuam limitados | `T-WP02E-06` |
 | EVD-WP02E-FINAL-CONTINUITY | FAILED | future/pending e pre-T08 heads no estado final | handoff/index RND-20260716-010 | `T-WP02E-07` |
 | EVD-WP02E-PROCESS-BACKPROP | LOCAL_VERIFIED | imutabilidade de evidência e transport seam incorporados | `.agents/skills/`, `REVIEW_PROTOCOL`, `LEARNING_LEDGER` | commit `4cefe926732c95344c3d7d129aa9dbe110dcae72` |
 

@@ -1,0 +1,149 @@
+{
+  "artifact_id": "EVD-WP02E-INTEGRATION",
+  "artifact_kind": "integration-gates",
+  "charter_id": "CHR-WP02-004",
+  "round_id": "RND-20260717-012",
+  "task_id": "T-WP02E-06-integration-gates",
+  "producer_commit": "978ec18218e38920a169aa15490ec0cab4399133",
+  "observed_at": "2026-07-17",
+  "repository": "faleious-ai/gitlab-runner_ynh",
+  "evidence_state": "LOCAL_VERIFIED",
+  "result": "passed",
+  "manifest": {
+    "version": "18.6.2~ynh1",
+    "unchanged": true,
+    "sha256": "e2f3eb9bbfd36eeb04e09435f23b9fbdd685aa584bbc222a06deed7e716bdeb4"
+  },
+  "task_commits": [
+    {
+      "task_id": "T-WP02E-01-official-key-transport",
+      "sha": "6fb500ec3474c07137fcb8962512ed0adc59a9bb"
+    },
+    {
+      "task_id": "T-WP02E-02-live-trust-observation",
+      "sha": "8c0c52592d2ccd3f9ebd706d56e63f9b12410f69"
+    },
+    {
+      "task_id": "T-WP02E-03-historical-evidence-repair",
+      "sha": "ea9774001fbf181b5fc210a17fad6a1208a83d4c"
+    },
+    {
+      "task_id": "T-WP02E-04-docker-default-consistency",
+      "sha": "2563fc31e1b71db89315fd8c707235ed98659962"
+    },
+    {
+      "task_id": "T-WP02E-05-remote-ci-observation",
+      "sha": "978ec18218e38920a169aa15490ec0cab4399133"
+    }
+  ],
+  "gates": [
+    {
+      "name": "python_compile",
+      "result": "passed"
+    },
+    {
+      "name": "unit_tests",
+      "result": "passed",
+      "count": 37
+    },
+    {
+      "name": "lifecycle_harness",
+      "result": "passed",
+      "count": 3
+    },
+    {
+      "name": "secret_scan",
+      "result": "passed",
+      "detail": "clean"
+    },
+    {
+      "name": "json_toml_parsers",
+      "result": "passed"
+    },
+    {
+      "name": "bash_syntax",
+      "result": "passed"
+    },
+    {
+      "name": "autoupdate_check",
+      "result": "passed",
+      "mode": "offline",
+      "promoted": false
+    },
+    {
+      "name": "autoupdate_candidate_diff",
+      "result": "passed",
+      "mode": "offline",
+      "promoted": false,
+      "changed_fields": [
+        "amd64.sha256",
+        "amd64.url",
+        "arm64.sha256",
+        "arm64.url",
+        "armhf.sha256",
+        "armhf.url",
+        "sha256",
+        "url",
+        "version"
+      ]
+    },
+    {
+      "name": "manifest_unchanged",
+      "result": "passed"
+    },
+    {
+      "name": "t02_live_result_oracle",
+      "result": "passed",
+      "observed_result": "failed",
+      "trust_status": "not-observed"
+    },
+    {
+      "name": "t05_remote_ci_oracle",
+      "result": "passed",
+      "observed_state": "UNVERIFIED"
+    },
+    {
+      "name": "linear_task_commits",
+      "result": "passed"
+    }
+  ],
+  "finding_resolution": [
+    {
+      "finding": "P1-F01",
+      "status": "traceable",
+      "task_id": "T-WP02E-01-official-key-transport",
+      "sha": "6fb500ec3474c07137fcb8962512ed0adc59a9bb",
+      "limitation": "live T02 failed before key/GPG observation"
+    },
+    {
+      "finding": "P1-F02",
+      "status": "traceable",
+      "task_id": "T-WP02E-03-historical-evidence-repair",
+      "sha": "ea9774001fbf181b5fc210a17fad6a1208a83d4c"
+    },
+    {
+      "finding": "P2-F03",
+      "status": "traceable-to-final-continuity",
+      "task_id": "T-WP02E-07-final-continuity",
+      "limitation": "final canonical SHA reconciliation is the next task"
+    },
+    {
+      "finding": "P2-F04",
+      "status": "traceable",
+      "task_id": "T-WP02E-04-docker-default-consistency",
+      "sha": "2563fc31e1b71db89315fd8c707235ed98659962"
+    }
+  ],
+  "safety": {
+    "credential_used": false,
+    "real_registration": false,
+    "package_download": false,
+    "destructive_operation": false,
+    "manifest_promoted": false
+  },
+  "limitations": [
+    "CI remoto permanece UNVERIFIED conforme ao artefato T05.",
+    "Lifecycle foi exercitado somente pelo harness local; host YunoHost/Docker real não foi usado.",
+    "A reconciliação final de continuidade entre Runner e coordenador permanece no T07."
+  ]
+}

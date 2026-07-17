@@ -1,7 +1,7 @@
 # Rodada ativa
 
 Charter-ID: `CHR-WP02-004`  
-Estado: `READY`  
+Estado: `EXECUTED_AWAITING_REVIEW`
 Preparado em: 2026-07-17  
 Orquestrador: ChatGPT com o Maestro Diretor  
 Executor principal: Codex  
@@ -9,15 +9,15 @@ Unidade: `WP-02E — confiança live, proveniência e fechamento consistente`
 
 ## Autorização
 
-`Leia AGENTS.md e continue` autoriza a execução integral deste charter, tarefa por tarefa, conforme ADR-0006 e as skills locais atualizadas em `RND-20260717-011`.
+`Leia AGENTS.md e continue` autorizou a execução integral deste charter, tarefa por tarefa, conforme ADR-0006 e as skills locais atualizadas em `RND-20260717-011`.
 
-Atribua novo `Round-ID`. Cada tarefa concluída gera um commit atômico publicado em `origin/master` antes da próxima tarefa que escreva neste repositório.
+Round-ID executado: `RND-20260717-012`. Cada tarefa concluída gerou um commit atômico publicado em `origin/master` antes da próxima tarefa que escreveu neste repositório.
 
 Baseline: resolver `origin/master` no START e confirmar que contém:
 
 - revisão `continuity/reviews/REV-RND-20260716-010.md`;
 - process backprop commit `4cefe926732c95344c3d7d129aa9dbe110dcae72`;
-- estado `CHR-WP02-004 READY` nos dois repositórios.
+- estado inicial `CHR-WP02-004` registrado nos dois repositórios.
 
 ## Revisão anterior
 
@@ -152,13 +152,13 @@ Resultado: intervalo funcional corrigido passa os gates integrados sem promoçã
 
 Resultado: estado final usa somente commits já publicados e fica pronto para revisão externa.
 
-- Dependência: T06 remoto.
+- Dependência: T06 publicado em `08563cbd2c957e6cca16ae6535a56ef9b2d52b9e`.
 - Seam: reconciliação GitHub dos dois `master` e memória canônica.
 - Claims:
   - status, handoff, active round, evidence index, learning ledger e round record concordam;
   - matriz Task-ID→SHA→claim→evidência usa SHAs finais T01–T06;
   - nenhuma frase future/pending descreve commit já publicado;
-  - o próprio commit T07 pode ser identificado como `this task commit`; o coordenador, publicado depois do Runner, registra o SHA Runner T07 real;
+  - o próprio commit T07 é identificado como `this task commit`; a síntese correspondente do coordenador registra o SHA Runner T07 real;
   - CI/lifecycle permanecem no nível efetivamente observado;
   - saída é `EXECUTED_AWAITING_REVIEW`, nunca `ACCEPTED`.
 - TDD: contrato documental/parsing e auditoria de contradição.
@@ -171,7 +171,7 @@ Onda 1 paralela: T01 e T04.
 Onda 2: T02 após T01.  
 Onda 3: T03 após T02; T05 após T01–T04.  
 Onda 4 sequencial: T06.  
-Onda 5 sequencial: T07 Runner, depois T07 coordenador.
+Onda 5 executada sequencialmente: T07 Runner, depois T07 coordenador.
 
 Subagentes podem pesquisar/testar frentes independentes, sem commit ou ownership de arquivos canônicos. O Executor integra e publica uma tarefa por vez.
 
@@ -192,7 +192,7 @@ Subagentes podem pesquisar/testar frentes independentes, sem commit ou ownership
 
 ## Definition of Done
 
-- T01–T07 concluídas ou bloqueadas conforme contrato;
+- T01–T07 executadas ou bloqueadas conforme contrato;
 - cadeia oficial da chave coberta por RED/GREEN e resultado live pós-commit;
 - evidência histórica não contém factualidade retrospectiva;
 - default Docker consistente/reproduzível;
@@ -202,4 +202,4 @@ Subagentes podem pesquisar/testar frentes independentes, sem commit ou ownership
 
 ## Pacote de revisão
 
-Entregar baselines, SHAs completos por Task-ID, RED/GREEN, live artifact/provenance, resolução de cada finding, gates integrados, CI/lifecycle, riscos, `HG-RUN-SEC-01`, confirmação dos HEADs e paths remotos. Não declarar `ACCEPTED`.
+Pacote de revisão: baselines, SHAs completos por Task-ID, RED/GREEN, live artifact/provenance, resolução de cada finding, gates integrados, CI/lifecycle, riscos, `HG-RUN-SEC-01`, confirmação dos HEADs e paths remotos. O executor não declara `ACCEPTED`.

@@ -64,18 +64,18 @@
 | EVD-WP02D-CROSS-REPO-SYNTHESIS | FAILED | T-WP02D-08 / RND-20260716-010 | continuidade cross-repo | commits existem, porém handoff/index mantiveram referências pré-T08 |
 | EVD-WP02D-ORCHESTRATOR-REVIEW | LOCAL_VERIFIED | RND-20260717-011 | `continuity/reviews/REV-RND-20260716-010.md` | verdict `CORRECTION_REQUIRED`; Runner review commit `dd24f407e8bfcfe84b8b8ed95cfcabc7004a4463` |
 
-## Findings da revisão RND-20260717-011
+## Evidências finais de RND-20260717-012
 
-| ID | Estado | Finding | Evidência | Próxima tarefa |
-|---|---|---|---|---|
-| EVD-WP02E-KEY-TRANSPORT | LOCAL_VERIFIED | cadeia capturada aceita somente o par CloudFront host/path observado; adversários continuam fail-closed | T01 `6fb500ec3474c07137fcb8962512ed0adc59a9bb`; sem claim live | `T-WP02E-01` |
-| EVD-WP02E-LIVE-TRUST | UNVERIFIED | nova execução live falhou no fetch de `release.sha256` antes da chave/GPG | `evidence/wp02e-live-trust-observation.json`; sem promoção de confiança | `T-WP02E-02` |
-| EVD-WP02E-HISTORICAL-PROVENANCE | LOCAL_VERIFIED | payloads históricos restaurados byte a byte ao estado pré-T06; observação antiga marcada `SUPERSEDED`; T02 é a única fonte live atual | SHA-256 fixado no teste de provenance; `evidence/wp02e-live-trust-observation.json`; este task commit | `T-WP02E-03` |
-| EVD-WP02E-DOCKER-DEFAULT | LOCAL_VERIFIED | panel e install agora compartilham o default versionado `alpine:3.20` | `config_panel.toml`, `manifest.toml`, teste focal | `T-WP02E-04`; suíte local GREEN |
-| EVD-WP02E-REMOTE-CI | UNVERIFIED | T-WP02E-05 / RND-20260717-012 | workflow read-only no commit T04; runs/statuses vazios e `gh` indisponível | `evidence/wp02e-remote-ci-observation.json`; gates locais não promovem CI remoto |
-| EVD-WP02E-INTEGRATION | LOCAL_VERIFIED | T-WP02E-06 / RND-20260717-012 | gates integrados, manifest inalterado e matriz T01–T05 | `evidence/wp02e-integration-gates.json`; lifecycle local, CI remoto e host real continuam limitados | `T-WP02E-06` |
-| EVD-WP02E-FINAL-CONTINUITY | FAILED | future/pending e pre-T08 heads no estado final | handoff/index RND-20260716-010 | `T-WP02E-07` |
-| EVD-WP02E-PROCESS-BACKPROP | LOCAL_VERIFIED | imutabilidade de evidência e transport seam incorporados | `.agents/skills/`, `REVIEW_PROTOCOL`, `LEARNING_LEDGER` | commit `4cefe926732c95344c3d7d129aa9dbe110dcae72` |
+| ID | Estado | Task/round | Resultado e localização |
+|---|---|---|---|
+| EVD-WP02E-KEY-TRANSPORT | LOCAL_VERIFIED | T-WP02E-01 / RND-20260717-012 | cadeia capturada aceita somente o par CloudFront host/path observado; adversários fail-closed; `6fb500ec3474c07137fcb8962512ed0adc59a9bb` |
+| EVD-WP02E-LIVE-TRUST | UNVERIFIED | T-WP02E-02 / RND-20260717-012 | `evidence/wp02e-live-trust-observation.json`; checksum fetch falhou antes de chave/GPG; trust não observado |
+| EVD-WP02E-HISTORICAL-PROVENANCE | LOCAL_VERIFIED | T-WP02E-03 / RND-20260717-012 | payloads pré-T06 restaurados por SHA-256 e observação antiga `SUPERSEDED`; `ea9774001fbf181b5fc210a17fad6a1208a83d4c` |
+| EVD-WP02E-DOCKER-DEFAULT | LOCAL_VERIFIED | T-WP02E-04 / RND-20260717-012 | panel/install usam `alpine:3.20`; `2563fc31e1b71db89315fd8c707235ed98659962` |
+| EVD-WP02E-REMOTE-CI | UNVERIFIED | T-WP02E-05 / RND-20260717-012 | `evidence/wp02e-remote-ci-observation.json`; `workflow_runs=[]`, `statuses=[]`, `gh` ausente |
+| EVD-WP02E-INTEGRATION | LOCAL_VERIFIED | T-WP02E-06 / RND-20260717-012 | `evidence/wp02e-integration-gates.json`; 37 testes, lifecycle local e manifest inalterado; `08563cbd2c957e6cca16ae6535a56ef9b2d52b9e` |
+| EVD-WP02E-FINAL-CONTINUITY | LOCAL_VERIFIED | T-WP02E-07 / RND-20260717-012 | `ACTIVE_ROUND.md`, `HANDOFF_CURRENT.md`, `STATUS.md`, este índice e round record reconciliados; `this task commit` |
+| EVD-WP02E-PROCESS-BACKPROP | LOCAL_VERIFIED | RND-20260717-011 | imutabilidade de evidência e transport seam incorporados; `4cefe926732c95344c3d7d129aa9dbe110dcae72` |
 
 ## Evidências requeridas para CHR-WP02-004
 

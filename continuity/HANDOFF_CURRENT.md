@@ -1,44 +1,31 @@
 # Handoff atual
 
-Estado: `READY_FOR_CODEX_FULL_ROUND`  
-Charter ativo: `CHR-WP02-004`  
-Revisão anterior: `REV-RND-20260716-010 — CORRECTION_REQUIRED`  
-Processo vigente: `ADR-0006` + process backprop `RND-20260717-011`  
+Estado: `EXECUTED_AWAITING_REVIEW`
+Charter ativo: `CHR-WP02-004`
+Round-ID: `RND-20260717-012`
 Branch: `master`
+Runner HEAD: `this task commit` (T-WP02E-07)
 
-## Prompt
+## Resultado
 
-```text
-Leia AGENTS.md e continue.
-```
+| Task-ID | Commit | Resultado/evidência |
+|---|---|---|
+| T-WP02E-01 | `6fb500ec3474c07137fcb8962512ed0adc59a9bb` | redirect oficial capturado aceito por allowlist; adversários fail-closed; `LOCAL_VERIFIED` |
+| T-WP02E-02 | `8c0c52592d2ccd3f9ebd706d56e63f9b12410f69` | fetch live falhou antes da chave/GPG; trust `not-observed`; `UNVERIFIED` |
+| T-WP02E-03 | `ea9774001fbf181b5fc210a17fad6a1208a83d4c` | payloads históricos restaurados e supersedidos sem factualidade retrospectiva; `LOCAL_VERIFIED` |
+| T-WP02E-04 | `2563fc31e1b71db89315fd8c707235ed98659962` | panel/install alinhados em `alpine:3.20`; `LOCAL_VERIFIED` |
+| T-WP02E-05 | `978ec18218e38920a169aa15490ec0cab4399133` | runs/statuses remotos vazios e `gh` indisponível; `UNVERIFIED` |
+| T-WP02E-06 | `08563cbd2c957e6cca16ae6535a56ef9b2d52b9e` | 37 testes, lifecycle harness, gates offline e manifest inalterado; `LOCAL_VERIFIED` |
+| T-WP02E-07 | `this task commit` | continuidade canônica reconciliada; `LOCAL_VERIFIED` |
 
-## Retomada
+## Invariantes confirmados
 
-1. Ler `AGENTS.md`.
-2. Reconciliar `origin/master` deste Runner e do coordenador.
-3. Confirmar `CHR-WP02-004 READY` nos dois repositórios.
-4. Ler `continuity/reviews/REV-RND-20260716-010.md`.
-5. Carregar `maestro-research`, `maestro-tdd`, `maestro-check`, `maestro-review`, `maestro-backprop` e `maestro-guardrails` conforme cada tarefa.
-6. Atribuir novo `Round-ID` e executar T01–T07 integralmente.
+- `manifest.toml` permanece `18.6.2~ynh1`, sem promoção;
+- nenhum registro real, credencial histórica, download de pacote ou operação destrutiva foi usado;
+- CI remoto permanece `UNVERIFIED` e lifecycle em host YunoHost/Docker real permanece não observado;
+- `HG-RUN-SEC-01` permanece `UNRESOLVED_NO_AUTHORITY`, não bloqueante;
+- a síntese cross-repo correspondente registra o SHA real deste commit Runner.
 
-## Findings a resolver
+## Revisão
 
-- P1-F01: o URL oficial da chave redireciona para CloudFront, mas o validator atual rejeita o redirect antes do GPG;
-- P1-F02: evidência histórica recebeu `key_validity=valid` por edição documental, sem nova observação;
-- P2-F03: continuidade T08 contém texto/HEADs pré-publicação;
-- P2-F04: config panel usa `alpine:latest`, divergindo do default versionado do install.
-
-## Invariantes
-
-- preservar correções aceitas de `RND-20260716-010`;
-- nenhum wildcard genérico de origem;
-- GPG/GPGV e fingerprint final são autoridade, não a documentação isolada;
-- novo resultado live gera novo artefato ligado ao commit produtor;
-- não editar semanticamente observação antiga;
-- manifest permanece `18.6.2~ynh1`;
-- não registrar Runner real, usar segredo histórico ou alterar settings do GitHub;
-- um commit remoto por tarefa, sem squash/branch/PR/worktree/force push.
-
-## Gate
-
-`HG-RUN-SEC-01` permanece risco histórico externo e não bloqueia. Nenhuma pergunta humana está pendente.
+O pacote está pronto para revisão independente do orquestrador. O executor não declara `ACCEPTED`.

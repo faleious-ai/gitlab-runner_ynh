@@ -72,6 +72,22 @@ Uma tarefa pode passar em um eixo e falhar no outro. Um eixo não mascara o outr
 
 Busca textual, ausência de erro observada ou fixture isolada não promovem evidência comportamental.
 
+## Proveniência e imutabilidade
+
+Artefatos que registram observações são semanticamente imutáveis. Corrigir formatação, path ou schema não autoriza acrescentar um resultado factual ausente na execução original.
+
+Uma nova observação deve:
+
+1. usar o código já publicado que está sendo avaliado;
+2. gerar novo artefato versionado;
+3. registrar commit produtor, comando, horário, fonte/final URL e limitação;
+4. preservar ou arquivar o artefato anterior;
+5. marcar o anterior como `SUPERSEDED` ou manter seu estado original no índice.
+
+É `OVERCLAIMED` quando `verified`, `valid`, `passed` ou equivalente deriva apenas de edição documental, fixture, presença de campo ou inferência retrospectiva.
+
+Mudanças em transporte externo exigem cobertura do caller real, incluindo redirects e final origin. Mocks podem provar parser e falhas isoladas, mas não compatibilidade com a entrega oficial atual. Um live probe pós-commit é necessário antes de promover o claim live.
+
 ## Resultados
 
 - `ACCEPTED`: todos os critérios materiais demonstrados; limitações remanescentes estão corretamente classificadas.

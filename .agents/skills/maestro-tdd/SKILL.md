@@ -70,19 +70,34 @@ Invoke the public CLI with deterministic fixtures. Assert exact candidate manife
 
 Fixtures test parsing and failure modes. A separate controlled live probe establishes current external behavior; fixture success never proves freshness.
 
+When the production caller follows redirects or delegates transport:
+
+1. capture the current official redirect/final-origin chain or a sanitized fixture derived from it;
+2. make the baseline caller fail against that chain for the intended reason;
+3. keep parser/unit mocks, but do not let them replace the public transport seam;
+4. publish the functional commit;
+5. run the live probe with that published commit;
+6. create a new versioned evidence artifact tied to the commit and command.
+
+Never edit an older observation to add `valid`, `verified`, `passed` or equivalent. Schema completion is not a new experiment.
+
 ## Anti-patterns
 
 - grep or AST presence used as behavior proof;
 - mocks that bypass the real entry point;
+- transport tests that replace the redirect/final-origin layer under review;
 - tautological expected values computed like production code;
 - snapshots without an independent source of truth;
 - test written after the fix and described as RED without observing failure;
 - swallowing expected failure or weakening assertion until green;
-- testing an easy unit seam while the defect requires lifecycle/integration.
+- testing an easy unit seam while the defect requires lifecycle/integration;
+- manually strengthening historical evidence after code changes.
 
 ## Non-code changes
 
 Documentation-only work may mark TDD `NOT_APPLICABLE`, but still needs a verifiable contract such as link/ID/state/contradiction checks. TOML, JSON, workflows and packaging scripts are behavior and normally require parser, contract or harness tests.
+
+A documentation or evidence task may normalize shape, but factual values remain those emitted by the original observation. Changed facts require a new observation and artifact.
 
 ## Completion
 
@@ -91,6 +106,7 @@ A behavioral task is ready for internal review only when:
 - RED evidence matches the intended missing behavior;
 - GREEN proves the same seam;
 - negative and error cases required by the claim pass;
+- external transport changes have a captured-chain test and a post-commit live probe plan;
 - full proportional suite passes;
 - no test or production secret is persisted;
-- evidence level is stated honestly.
+- evidence level and provenance are stated honestly.

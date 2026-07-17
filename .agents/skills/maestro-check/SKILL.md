@@ -70,6 +70,21 @@ Examples:
 
 Do not infer a stronger level.
 
+## Evidence provenance and immutability
+
+An artifact that records an observation is semantically immutable. Formatting or schema migration must not add a factual result that the original command did not emit.
+
+For every observed report:
+
+- preserve the original payload or archive it under a versioned path;
+- create a new artifact for a new observation;
+- record `producer_commit`, exact command, `observed_at`, source/final URL where applicable, result and limitation;
+- mark the prior artifact `SUPERSEDED` in the index instead of completing it retrospectively;
+- treat a field added by hand as metadata only, never as proof of the field's value;
+- reject `verified`, `valid`, `passed` or equivalent when provenance points only to a schema edit, fixture rewrite or documentation task.
+
+For external transports, inspect the real redirect/final-origin chain used by the current official endpoint. A mock that replaces the fetch layer can prove parser behavior but cannot prove transport compatibility.
+
 ## Check canonical memory
 
 - one authoritative state file per concern;
@@ -77,6 +92,7 @@ Do not infer a stronger level.
 - status, handoff and active round agree;
 - paths are remote and portable;
 - claims cite current SHAs/Task-IDs;
+- final continuity uses already-published SHAs, not future tense or pre-task placeholders;
 - historical failures are not silently deleted.
 
 ## Report

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -86,6 +87,62 @@ print(json.dumps(payload))
             )
             self.assertEqual(completed.returncode, 2)
             self.assertIn("COORDINATOR_PROGRAM_NOT_AVAILABLE", completed.stdout)
+
+    def test_consumer_preserves_tracked_queue_and_passes_one_temporary_queue_to_every_command(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            coordinator = root / "coordinator"
+            runner = root / "runner"
+            (coordinator / "scripts").mkdir(parents=True)
+            (coordinator / "continuity").mkdir()
+            runner.mkdir()
+            sentinel = b'{"sentinel":true}\n'
+            tracked_queue = coordinator / "continuity" / "PROGRAM_QUEUE.json"
+            tracked_queue.write_bytes(sentinel)
+            calls = root / "engine-calls.jsonl"
+            engine = coordinator / "scripts" / "maestro_program.py"
+            engine.write_text(
+                """import json, os, sys
+from pathlib import Path
+args = sys.argv[1:]
+queue = Path(args[args.index('--queue') + 1]) if '--queue' in args else None
+with Path(os.environ['PROGRAM_CONSUMER_CALLS']).open('a', encoding='utf-8') as handle:
+    handle.write(json.dumps({'command': args[0], 'args': args}) + '\\n')
+if queue is not None:
+    queue.write_text(json.dumps({'derived': True}), encoding='utf-8')
+if args[0] == 'refresh-queue':
+    payload = {'derived': True}
+elif args[0] == 'doctor':
+    payload = {'valid': True}
+else:
+    payload = {'valid': True, 'eligible_tasks': ['T-RUN'], 'lanes': [], 'stop_allowed': False, 'checkpoint_allowed': False, 'stop_reason': 'ELIGIBLE_WORK_REMAINS', 'parallelism_required': False}
+print(json.dumps(payload))
+""",
+                encoding="utf-8",
+            )
+            (coordinator / "continuity" / "PROGRAM_BACKLOG.json").write_text(
+                json.dumps({"tasks": [{"id": "T-RUN", "repositories": ["runner"]}]}), encoding="utf-8"
+            )
+            (coordinator / "continuity" / "PROGRAM_FINDINGS.json").write_text(json.dumps({"findings": []}), encoding="utf-8")
+            environment = dict(os.environ)
+            environment["PROGRAM_CONSUMER_CALLS"] = str(calls)
+            completed = subprocess.run(
+                [sys.executable, str(CONSUMER), "--coordinator-root", str(coordinator), "--runner-root", str(runner)],
+                text=True,
+                capture_output=True,
+                check=False,
+                env=environment,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr or completed.stdout)
+            self.assertEqual(tracked_queue.read_bytes(), sentinel)
+            observed = [json.loads(line) for line in calls.read_text(encoding="utf-8").splitlines()]
+            self.assertEqual([item["command"] for item in observed], ["refresh-queue", "doctor", "plan"])
+            for item in observed:
+                self.assertIn("--queue", item["args"])
+            queue_paths = [Path(item["args"][item["args"].index("--queue") + 1]) for item in observed]
+            self.assertEqual(len({path.resolve() for path in queue_paths}), 1)
+            self.assertNotEqual(queue_paths[0].resolve(), tracked_queue.resolve())
+            self.assertFalse(str(queue_paths[0].resolve()).startswith(str(coordinator.resolve())))
 
 
 if __name__ == "__main__":

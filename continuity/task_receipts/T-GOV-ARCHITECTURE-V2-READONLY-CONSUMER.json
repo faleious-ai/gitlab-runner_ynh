@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "program_id": "gitlab-ynh-mcp-program",
+  "task_id": "T-GOV-ARCHITECTURE-V2-READONLY-CONSUMER",
+  "repository": "runner",
+  "commit_binding": "SELF",
+  "acceptance": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python -m unittest tests.acceptance.test_program_queue_consumer -v",
+    "result": "pass"
+  },
+  "gates": [
+    {"name": "temporary-planner-queue", "result": "pass"},
+    {"name": "sentinel-read-only-test", "result": "pass"},
+    {"name": "py-compile", "result": "pass"},
+    {"name": "secret-scan", "result": "pass"},
+    {"name": "lane-wave", "result": "pass"},
+    {"name": "spec-review", "result": "pass"},
+    {"name": "engineering-review", "result": "pass"},
+    {"name": "real-diff-authorized-protected-path-review", "result": "pass"}
+  ],
+  "evidence_paths": [
+    "evidence/rnd-20260717-017-consumer-readonly.json",
+    "evidence/rnd-20260717-017-consumer-readonly-spec-review.md",
+    "evidence/rnd-20260717-017-consumer-readonly-engineering-review.md",
+    "continuity/rounds/RND-20260717-017.md"
+  ],
+  "changed_paths": [
+    "scripts/program_consumer.py",
+    "tests/acceptance/test_program_queue_consumer.py",
+    "continuity/HANDOFF_CURRENT.md",
+    "continuity/STATUS.md",
+    "continuity/ACTIVE_ROUND.md",
+    "continuity/rounds/RND-20260717-017.md",
+    "continuity/task_receipts/T-GOV-ARCHITECTURE-V2-READONLY-CONSUMER.json",
+    "evidence/EVIDENCE_INDEX.md",
+    "evidence/rnd-20260717-017-consumer-readonly.json",
+    "evidence/rnd-20260717-017-consumer-readonly-spec-review.md",
+    "evidence/rnd-20260717-017-consumer-readonly-engineering-review.md"
+  ]
+}

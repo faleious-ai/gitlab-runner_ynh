@@ -12,6 +12,7 @@ Evidence states: `STRUCTURALLY_OBSERVED`, `LOCAL_VERIFIED`, `REMOTE_CI_VERIFIED`
 | EVD-RUNNER-LIVE-TRUST | LOCAL_VERIFIED | RND-20260717-015 | versioned trust observation; no promotion or lifecycle claim |
 | EVD-RUNNER-REMOTE-CI | FAILED | RND-20260717-015 | public run failed; success remains `UNVERIFIED` |
 | EVD-RUNNER-FULL-SUITE-LINUX | LOCAL_VERIFIED | RND-20260717-016 | architecture activation record reports 39/39 in the Linux sandbox |
+| EVD-RND-20260717-017-CONSUMER-READONLY | LOCAL_VERIFIED | RND-20260717-017 / T-GOV-ARCHITECTURE-V2-READONLY-CONSUMER | temporary queue and byte-identical sentinel acceptance; receipt is SELF-bound |
 
 ## Historical evidence
 

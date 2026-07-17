@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "evidence_id": "EVD-RND-20260717-017-CONSUMER-READONLY",
+  "program_id": "gitlab-ynh-mcp-program",
+  "round_id": "RND-20260717-017",
+  "task_id": "T-GOV-ARCHITECTURE-V2-READONLY-CONSUMER",
+  "repository": "runner",
+  "status": "LOCAL_VERIFIED",
+  "commit_binding": "SELF",
+  "initial_remote_head": "2166387871fa879449b51c00f6e3786088daef27",
+  "implementation": {
+    "temporary_directory": true,
+    "commands": ["refresh-queue", "doctor", "plan"],
+    "queue_argument": "one explicit --queue path per command",
+    "tracked_queue_mutation": "none"
+  },
+  "tests": {
+    "red": "behavioral sentinel test failed before implementation because --queue was absent",
+    "green": "5/5 focused consumer acceptance tests",
+    "py_compile": "pass",
+    "secret_scan": "clean",
+    "full_suite_baseline": "35/39 passed; 3 failed; 1 error, assigned to T-RUN-CI-REPAIR-001"
+  },
+  "lane_wave": {
+    "parallelism_required": true,
+    "parallelism_demonstrated": true,
+    "journal_valid": true,
+    "overlap": true,
+    "lanes": [
+      {
+        "lane_id": "LANE-01-T-GOV-ARCHITECTURE-V2-READONLY-CONSUMER",
+        "worker": "worker-consumer-contract",
+        "workspace": "lane-gov",
+        "artifact": "lane-gov/consumer-contract.json",
+        "artifact_sha256": "4a3e246a71749dd17577d71d565ebc59b7d10068967092c6aee5687fd8dc6a89",
+        "log": "lane-gov/consumer-worker.log",
+        "log_sha256": "bad3ebc72b6b422663cdd3c9b3c49627fd929e3033b7944763351a61211e8f5d",
+        "result": "pass"
+      },
+      {
+        "lane_id": "LANE-02-T-RUN-CI-REPAIR-001",
+        "worker": "worker-runner-ci-baseline",
+        "workspace": "lane-ci",
+        "artifact": "lane-ci/runner-ci-baseline.json",
+        "artifact_sha256": "f61759735dee76625b772e518a7e655166fc7d62b0d7776fe5f0e34bda0cc663",
+        "log": "lane-ci/runner-ci-worker.log",
+        "log_sha256": "88c6fb89a46a9b683b25706dd8c9dcf8522d879b0bb896b875cc23ab747a3087",
+        "result": "baseline-failed"
+      }
+    ]
+  },
+  "protected_hash_after": "8e647ab6830a7861b6eb6c7e1e5e464e4e4861064d3bf32e022f12da3be57054",
+  "claims_not_verified": [
+    "remote CI status for the new commit",
+    "live Runner image candidate and lifecycle execution"
+  ]
+}

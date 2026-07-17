@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import urllib.request
 from pathlib import Path
 from urllib.error import URLError
 from unittest import mock
@@ -46,6 +47,45 @@ class AutoupdateTests(unittest.TestCase):
     def setUp(self) -> None:
         self.payload = json.loads(FIXTURE.read_text(encoding="utf-8"))
 
+    def _api_release(self, self_link: str | None = None) -> dict[str, object]:
+        release = self.payload["releases"][0]
+        links = [
+            {"name": "checksums", "url": release["checksum_url"]},
+            {"name": "checksums GPG signature", "url": release["official_checksums"]["signature"]["url"]},
+        ]
+        links.extend(
+            {"name": f"package: DEB {asset['architecture']}", "url": asset["url"]}
+            for asset in release["runner_assets"]
+        )
+        return {
+            "tag_name": release["tag_name"],
+            "stable": True,
+            "released_at": release["released_at"],
+            "_links": {"self": self_link or release["release_url"]},
+            "assets": {"links": links},
+        }
+
+    def _discover_with_api_release(self, api_release: dict[str, object]) -> dict[str, object]:
+        release = self.payload["releases"][0]
+        checksum_document = "\n".join(
+            f"{digest}  {filename}" for filename, digest in release["official_checksums"]["assets"].items()
+        ).encode()
+        with (
+            mock.patch.object(autoupdate, "fetch_json_pages", return_value=[api_release]),
+            mock.patch.object(
+                autoupdate,
+                "_official_fetch",
+                side_effect=[(checksum_document, {}), (b"signature", {})],
+            ),
+            mock.patch.object(autoupdate, "_probe_size", return_value=1),
+            mock.patch.object(
+                autoupdate,
+                "_signature_status",
+                return_value={"status": "unverified-environment", "method": "test", "key_validity": "unavailable"},
+            ),
+        ):
+            return autoupdate.discover_current(timeout=0.25, retries=0)
+
     def test_resolves_stable_runner_and_helper_set(self) -> None:
         resolved = autoupdate.resolve_release(self.payload)
         self.assertEqual(resolved["release_tag"], "v19.0.1")
@@ -57,6 +97,47 @@ class AutoupdateTests(unittest.TestCase):
         payload = {"source": self.payload["source"], "releases": [self.payload["releases"][1]]}
         with self.assertRaises(autoupdate.ResolutionError):
             autoupdate.resolve_release(payload)
+
+    def test_discovery_requires_canonical_release_self_link(self) -> None:
+        wrong_links = [
+            "https://gitlab.com/attacker/project/-/releases/v19.0.1",
+            "https://gitlab.com/gitlab-org/gitlab-runner/-/releases/v19.0.0",
+        ]
+        for link in wrong_links:
+            with self.subTest(link=link), self.assertRaisesRegex(autoupdate.ResolutionError, "release self-link"):
+                self._discover_with_api_release(self._api_release(link))
+
+        missing = self._api_release()
+        del missing["_links"]
+        with self.assertRaisesRegex(autoupdate.ResolutionError, "release self-link"):
+            self._discover_with_api_release(missing)
+
+    def test_discovery_rejects_noncanonical_checksum_and_asset_paths(self) -> None:
+        cases = [
+            ("checksums", "https://gitlab-runner-downloads.s3.amazonaws.com/elsewhere/v19.0.1/release.sha256"),
+            ("package: DEB amd64", "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/elsewhere/deb/gitlab-runner_amd64.deb"),
+        ]
+        for link_name, url in cases:
+            api_release = self._api_release()
+            for link in api_release["assets"]["links"]:
+                if link["name"] == link_name:
+                    link["url"] = url
+            with self.subTest(link_name=link_name), self.assertRaises(autoupdate.ResolutionError):
+                self._discover_with_api_release(api_release)
+
+    def test_redirect_handler_validates_each_destination_and_enforces_limit(self) -> None:
+        handler = autoupdate._BoundedRedirectHandler(lambda url: url.startswith("https://gitlab.com/"))
+        request = urllib.request.Request("https://gitlab.com/start")
+        with mock.patch.object(urllib.request.HTTPRedirectHandler, "redirect_request", return_value=request):
+            for index in range(autoupdate.MAX_REDIRECTS):
+                self.assertIs(request, handler.redirect_request(request, None, 302, "Found", {}, f"https://gitlab.com/hop/{index}"))
+            with self.assertRaisesRegex(autoupdate.ResolutionError, "redirect limit"):
+                handler.redirect_request(request, None, 302, "Found", {}, "https://gitlab.com/too-far")
+
+        denied = autoupdate._BoundedRedirectHandler(lambda url: url.startswith("https://gitlab.com/"))
+        with mock.patch.object(urllib.request.HTTPRedirectHandler, "redirect_request", return_value=request):
+            with self.assertRaisesRegex(autoupdate.ResolutionError, "unexpected redirect origin"):
+                denied.redirect_request(request, None, 302, "Found", {}, "https://evil.example/hop")
 
     def test_missing_architecture_fails_closed(self) -> None:
         payload = copy.deepcopy(self.payload)

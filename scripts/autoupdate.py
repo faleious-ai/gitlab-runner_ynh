@@ -122,14 +122,14 @@ def _validate_url(value: Any, tag: str, field: str) -> str:
 
 def _validate_checksum_url(value: Any, tag: str, field: str = "checksum_url") -> str:
     url = _validate_url(value, tag, field)
-    if not urllib.parse.unquote(urllib.parse.urlparse(url).path).endswith(f"/{tag}/release.sha256"):
+    if urllib.parse.unquote(urllib.parse.urlparse(url).path) != f"/{tag}/release.sha256":
         raise ResolutionError(f"{field} must point to release.sha256 for {tag}")
     return url
 
 
 def _validate_signature_url(value: Any, tag: str, field: str = "signature_url") -> str:
     url = _validate_url(value, tag, field)
-    if not urllib.parse.unquote(urllib.parse.urlparse(url).path).endswith(f"/{tag}/release.sha256.asc"):
+    if urllib.parse.unquote(urllib.parse.urlparse(url).path) != f"/{tag}/release.sha256.asc":
         raise ResolutionError(f"{field} must point to release.sha256.asc for {tag}")
     return url
 
@@ -140,6 +140,17 @@ def _validate_release_url(value: Any, tag: str) -> str:
     if url != expected:
         raise ResolutionError("release_url must exactly identify the official GitLab Runner release")
     return url
+
+
+def _validate_release_self_link(release: dict[str, Any], tag: str) -> str:
+    links = release.get("_links")
+    self_link = links.get("self") if isinstance(links, dict) else None
+    if not isinstance(self_link, str):
+        raise ResolutionError("release self-link is required")
+    try:
+        return _validate_release_url(self_link, tag)
+    except ResolutionError as error:
+        raise ResolutionError("release self-link is not canonical for the selected project and tag") from error
 
 
 def _validate_hash(value: Any, field: str) -> str:
@@ -197,7 +208,7 @@ def _validate_runner_assets(
         if url in seen_urls:
             raise ResolutionError(f"duplicate runner asset URL: {url}")
         seen_urls.add(url)
-        if not url.endswith(f"/deb/{filename}"):
+        if urllib.parse.unquote(urllib.parse.urlparse(url).path) != f"/{tag}/deb/{filename}":
             raise ResolutionError(f"runner {arch} URL does not point to the expected DEB")
         normalized = {
             "architecture": arch,
@@ -235,7 +246,7 @@ def _validate_helper_images(
     if filename != "gitlab-runner-helper-images.deb":
         raise ResolutionError("unexpected helper image package filename")
     url = _validate_url(helper.get("url"), tag, "helper_images url")
-    if not url.endswith(f"/deb/{filename}"):
+    if urllib.parse.unquote(urllib.parse.urlparse(url).path) != f"/{tag}/deb/{filename}":
         raise ResolutionError("helper image URL does not point to the expected DEB")
     normalized = {
         "version": tag,
@@ -380,17 +391,40 @@ def _read_limited(response: Any, limit: int = MAX_METADATA_BYTES) -> bytes:
     return body
 
 
+class _BoundedRedirectHandler(urllib.request.HTTPRedirectHandler):
+    def __init__(self, validator: Callable[[str], bool]):
+        super().__init__()
+        self._validator = validator
+        self._redirects = 0
+
+    def redirect_request(self, req: Any, fp: Any, code: int, msg: str, headers: Any, newurl: str) -> Any:
+        self._redirects += 1
+        if self._redirects > MAX_REDIRECTS:
+            raise ResolutionError("redirect limit exceeded")
+        if not self._validator(newurl):
+            raise ResolutionError("unexpected redirect origin")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
 def _fetch_raw(
     url: str,
     timeout: float = 10,
     retries: int = 2,
-    opener: Callable[..., Any] = urllib.request.urlopen,
+    opener: Callable[..., Any] | None = None,
     response_validator: Callable[[str], bool] | None = None,
 ) -> tuple[bytes, Any]:
     last_error: Exception | None = None
+    default_opener = opener is None or opener is urllib.request.urlopen
+    bounded_opener = (
+        urllib.request.build_opener(_BoundedRedirectHandler(response_validator or (lambda _url: True))) if default_opener else None
+    )
     for attempt in range(retries + 1):
         try:
-            with opener(url, timeout=timeout) as response:
+            if default_opener:
+                response_context = bounded_opener.open(url, timeout=timeout)
+            else:
+                response_context = opener(url, timeout=timeout)  # type: ignore[misc]
+            with response_context as response:
                 final_url = response.geturl() if callable(getattr(response, "geturl", None)) else url
                 if response_validator and not response_validator(final_url):
                     raise ResolutionError("unexpected redirect origin")
@@ -408,7 +442,7 @@ def fetch_bytes(
     url: str,
     timeout: float = 10,
     retries: int = 2,
-    opener: Callable[..., Any] = urllib.request.urlopen,
+    opener: Callable[..., Any] | None = None,
     response_validator: Callable[[str], bool] | None = None,
 ) -> bytes:
     """Fetch bounded metadata with deterministic retries and redirect checks."""
@@ -420,7 +454,7 @@ def fetch_json(
     url: str,
     timeout: float = 10,
     retries: int = 2,
-    opener: Callable[..., Any] = urllib.request.urlopen,
+    opener: Callable[..., Any] | None = None,
 ) -> dict[str, Any]:
     try:
         payload = json.loads(fetch_bytes(url, timeout=timeout, retries=retries, opener=opener))
@@ -441,9 +475,11 @@ def _official_endpoint(url: str, kind: str) -> bool:
     if kind == "key":
         return url == OFFICIAL_KEY_URL
     if kind == "release":
-        return parsed.hostname == "gitlab.com" and path.startswith("/gitlab-org/gitlab-runner/-/releases/v")
+        return parsed.hostname == "gitlab.com" and bool(re.fullmatch(r"/gitlab-org/gitlab-runner/-/releases/v\d+\.\d+\.\d+(?:[-+][^/]*)?", path))
     if kind == "download":
-        return parsed.hostname in OFFICIAL_DOWNLOAD_HOSTS and "/v" in path
+        return parsed.hostname in OFFICIAL_DOWNLOAD_HOSTS and bool(
+            re.fullmatch(r"/v\d+\.\d+\.\d+(?:[-+][^/]*)?/(?:deb/[^/]+|release\.sha256(?:\.asc)?)", path)
+        )
     return False
 
 
@@ -457,7 +493,7 @@ def _official_fetch(
     if not _official_endpoint(url, kind):
         raise ResolutionError(f"unexpected {kind} origin")
     validator = lambda final_url: _official_endpoint(final_url, kind)
-    return _fetch_raw(url, timeout, retries, opener or urllib.request.urlopen, validator)
+    return _fetch_raw(url, timeout, retries, opener, validator)
 
 
 def fetch_json_pages(
@@ -468,8 +504,8 @@ def fetch_json_pages(
 ) -> list[dict[str, Any]]:
     """Fetch all GitLab Releases API pages and reject changed response shape."""
 
-    if not _official_endpoint(url, "api"):
-        raise ResolutionError("release API origin is not official")
+    if url != OFFICIAL_API:
+        raise ResolutionError("release API URL must be canonical")
     pages: list[dict[str, Any]] = []
     page = 1
     while page <= 100:
@@ -638,10 +674,20 @@ def _probe_size(url: str, timeout: float, retries: int, opener: Callable[..., An
     if not _official_endpoint(url, "download"):
         raise ResolutionError("asset size probe origin is not official")
     last_error: Exception | None = None
+    default_opener = opener is None or opener is urllib.request.urlopen
+    bounded_opener = (
+        urllib.request.build_opener(_BoundedRedirectHandler(lambda final_url: _official_endpoint(final_url, "download")))
+        if default_opener
+        else None
+    )
     for attempt in range(retries + 1):
         try:
             request = urllib.request.Request(url, method="HEAD")
-            with (opener or urllib.request.urlopen)(request, timeout=timeout) as response:
+            if default_opener:
+                response_context = bounded_opener.open(request, timeout=timeout)
+            else:
+                response_context = opener(request, timeout=timeout)  # type: ignore[misc]
+            with response_context as response:
                 final_url = response.geturl() if callable(getattr(response, "geturl", None)) else url
                 if not _official_endpoint(final_url, "download"):
                     raise ResolutionError("unexpected redirect origin")
@@ -683,7 +729,7 @@ def discover_current(
     api_release = stable[0]
     tag = _require_string(api_release.get("tag_name"), "tag_name")
     _version_key(tag)
-    release_url = f"{OFFICIAL_RELEASE_PREFIX}{tag}"
+    release_url = _validate_release_self_link(api_release, tag)
     checksum_url = _release_link(api_release, "checksums")
     signature_url = _release_link(api_release, "checksums GPG signature")
     _validate_checksum_url(checksum_url, tag)

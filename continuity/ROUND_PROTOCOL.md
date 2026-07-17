@@ -28,6 +28,16 @@ Cada tarefa deve declarar:
 6. confirmar charter `READY`, atribuir `Round-ID` e registrar orientação adicional;
 7. decompor DAG, tarefas e paralelismo seguro.
 
+## Adoção da fila canônica
+
+Após `T-GOV-01-program-engine` estar remoto e GREEN no coordenador, o Runner não espera uma rodada isolada: a seleção vem de `PROGRAM_MANDATE.json`, `PROGRAM_QUEUE.json` e `PROGRAM_STATE.json` publicados pelo coordenador. A chamada de referência é:
+
+```text
+python3 scripts/maestro_program.py plan --mandate continuity/PROGRAM_MANDATE.json --queue continuity/PROGRAM_QUEUE.json --state continuity/PROGRAM_STATE.json
+```
+
+O Runner executa somente tarefas com ownership/paths compatíveis, preserva sua própria evidência e publica um commit por tarefa. Limitações de trust, CI ou lifecycle ficam `UNVERIFIED`/`FAILED` sem bloquear trabalho técnico reversível independente.
+
 ## PRE-BUILD CHALLENGE
 
 Para tarefa de alto impacto, antes do primeiro edit:

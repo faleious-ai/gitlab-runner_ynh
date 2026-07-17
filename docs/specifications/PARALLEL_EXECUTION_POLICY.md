@@ -58,6 +58,10 @@ Subagentes não criam commit, branch, PR, worktree ou push. Não editam simultan
 5. criar um único commit da tarefa;
 6. publicar e verificar remotamente antes da próxima tarefa que escreva no repositório.
 
+## Planejamento canônico
+
+Depois do motor de execução ficar GREEN, o plano do coordenador fornece `eligible_tasks`, `blocked_tasks`, lanes e ordem serial. Lanes Runner devem ter ownership e paths exclusivos; evidência de sobreposição demonstra preparação paralela, mas não altera a regra de um commit e push por tarefa.
+
 ## Falha parcial
 
 Uma frente falha não suspende as demais. O Codex tenta alternativas, executa backprop quando aplicável, conclui trabalho independente e só então registra bloqueio válido. Falha de sincronização impede novos commits no mesmo repositório, mas não impede pesquisa ou trabalho independente sem escrita.

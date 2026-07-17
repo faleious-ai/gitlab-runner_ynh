@@ -67,6 +67,10 @@ Nenhum estado é promovido por declaração. A tarefa só fica persistida quando
 
 Arquivos de estado não duplicam especificações; apontam para a autoridade.
 
+## Fila canônica cross-repo
+
+O coordenador mantém o mandato, a fila DAG e o estado canônico em `continuity/PROGRAM_*.json`. O Runner consome o planner publicado para selecionar tarefas com ownership Runner, mas mantém código, testes e evidências próprios. Dependências remotas satisfeitas não autorizam release, registro, promoção ou operação real; cada tarefa permanece reversível, rastreável e publicada em `master`.
+
 ## Unidade de rastreabilidade
 
 A rodada possui `Round-ID` e baseline. Cada tarefa possui `Task-ID` e exatamente um commit por repositório afetado. O commit liga:

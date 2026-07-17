@@ -26,6 +26,7 @@ Orientação adicional deve ser registrada no round record e não expande silenc
 5. Confirme charter `READY`; caso contrário, não implemente.
 6. Carregue somente contexto roteado.
 7. Leia `.agents/skills/README.md` e carregue apenas as skills aplicáveis à tarefa atual.
+8. Depois que o motor do coordenador estiver remoto e GREEN, consuma a fila canônica publicada pelo coordenador; use `scripts/maestro_program.py plan` no repositório coordenador para selecionar trabalho Runner elegível e mantenha o estado local apenas como referência operacional.
 
 ## Roteamento
 

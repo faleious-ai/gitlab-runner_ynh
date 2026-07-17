@@ -1,9 +1,9 @@
 # Handoff atual
 
-Estado: `EXECUTED_AWAITING_REVIEW`
-Charter ativo: `CHR-WP02-003`  
-Revisão anterior: `REV-RND-20260716-007 — CORRECTION_REQUIRED`  
-Processo vigente: `ADR-0006`  
+Estado: `READY_FOR_CODEX_FULL_ROUND`  
+Charter ativo: `CHR-WP02-004`  
+Revisão anterior: `REV-RND-20260716-010 — CORRECTION_REQUIRED`  
+Processo vigente: `ADR-0006` + process backprop `RND-20260717-011`  
 Branch: `master`
 
 ## Prompt
@@ -12,37 +12,33 @@ Branch: `master`
 Leia AGENTS.md e continue.
 ```
 
-## Resultado persistido
+## Retomada
 
-`RND-20260716-010` executou T01–T07 e fechou T08 no Runner/coordenador, com um commit remoto por Task-ID e HEADs reconciliados. A implementação funcional permanece no Runner; este arquivo é o handoff para revisão independente.
+1. Ler `AGENTS.md`.
+2. Reconciliar `origin/master` deste Runner e do coordenador.
+3. Confirmar `CHR-WP02-004 READY` nos dois repositórios.
+4. Ler `continuity/reviews/REV-RND-20260716-010.md`.
+5. Carregar `maestro-research`, `maestro-tdd`, `maestro-check`, `maestro-review`, `maestro-backprop` e `maestro-guardrails` conforme cada tarefa.
+6. Atribuir novo `Round-ID` e executar T01–T07 integralmente.
 
-Runner funcional antes de T08: `2d9cb41f41f292f3b4bd19513b91ca66720457d6`. O commit T08 do Runner será o novo `round_head` após publicação.
+## Findings a resolver
 
-Evidência final: 32 testes locais, secret scan limpo, parsers JSON/TOML, Bash, dry-run e allowlist passam; `manifest.toml` permanece `18.6.2~ynh1`. CI remoto continua `UNVERIFIED` porque o run/status não foi recuperável neste ambiente; lifecycle YunoHost real também não foi observado.
+- P1-F01: o URL oficial da chave redireciona para CloudFront, mas o validator atual rejeita o redirect antes do GPG;
+- P1-F02: evidência histórica recebeu `key_validity=valid` por edição documental, sem nova observação;
+- P2-F03: continuidade T08 contém texto/HEADs pré-publicação;
+- P2-F04: config panel usa `alpine:latest`, divergindo do default versionado do install.
 
-Para a revisão, usar `continuity/rounds/RND-20260716-010.md`, `evidence/EVIDENCE_INDEX.md` e o intervalo completo de commits remotos. Não usar links locais como prova.
+## Invariantes
 
-## Direção funcional
-
-Preservar descoberta, checksums, manifest candidato, pins do workflow e ausência de promoção. Corrigir:
-
-- controlador `run__register()` e entradas efêmeras;
-- interface legada de registro;
-- backup/restore sem re-registro;
-- trust criptográfico fail-closed;
-- self-link e redirects;
-- evidência canônica/portátil;
-- CI remoto verificável ou bloqueio objetivo.
-
-## Disciplina obrigatória
-
-- TDD RED→GREEN por seam para toda mudança comportamental;
-- backprop em falha inesperada;
-- challenge pré-build nas tarefas T01, T03, T04 e T05;
-- revisão interna em dois eixos antes de cada commit;
-- matriz claim→prova e níveis de evidência honestos;
-- nenhum squash, branch, PR, worktree ou force push.
+- preservar correções aceitas de `RND-20260716-010`;
+- nenhum wildcard genérico de origem;
+- GPG/GPGV e fingerprint final são autoridade, não a documentação isolada;
+- novo resultado live gera novo artefato ligado ao commit produtor;
+- não editar semanticamente observação antiga;
+- manifest permanece `18.6.2~ynh1`;
+- não registrar Runner real, usar segredo histórico ou alterar settings do GitHub;
+- um commit remoto por tarefa, sem squash/branch/PR/worktree/force push.
 
 ## Gate
 
-`HG-RUN-SEC-01` permanece risco histórico externo. Não usar nem testar a credencial antiga e não interromper trabalho técnico por esse gate.
+`HG-RUN-SEC-01` permanece risco histórico externo e não bloqueia. Nenhuma pergunta humana está pendente.

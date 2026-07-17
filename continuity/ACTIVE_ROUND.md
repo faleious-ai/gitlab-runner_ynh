@@ -1,201 +1,205 @@
 # Rodada ativa
 
-Charter-ID: `CHR-WP02-003`  
-Estado: `EXECUTED_AWAITING_REVIEW`
-Round-ID: `RND-20260716-010`
-Preparado em: 2026-07-16  
+Charter-ID: `CHR-WP02-004`  
+Estado: `READY`  
+Preparado em: 2026-07-17  
 Orquestrador: ChatGPT com o Maestro Diretor  
 Executor principal: Codex  
-Unidade: `WP-02 Correção final — action, trust fail-closed e lifecycle seguro`
+Unidade: `WP-02E — confiança live, proveniência e fechamento consistente`
 
 ## Autorização
 
-`Leia AGENTS.md e continue` autoriza a execução integral deste charter, tarefa por tarefa, conforme ADR-0006 e as skills locais. Atribua novo `Round-ID`. Cada tarefa concluída gera um commit atômico publicado em `origin/master` antes da próxima tarefa que escreva neste repositório.
+`Leia AGENTS.md e continue` autoriza a execução integral deste charter, tarefa por tarefa, conforme ADR-0006 e as skills locais atualizadas em `RND-20260717-011`.
 
-Baseline: resolver `origin/master` no START e confirmar que contém integralmente `RND-20260716-009`, incluindo este charter, ADR-0006 e `.agents/skills/`.
+Atribua novo `Round-ID`. Cada tarefa concluída gera um commit atômico publicado em `origin/master` antes da próxima tarefa que escreva neste repositório.
+
+Baseline: resolver `origin/master` no START e confirmar que contém:
+
+- revisão `continuity/reviews/REV-RND-20260716-010.md`;
+- process backprop commit `4cefe926732c95344c3d7d129aa9dbe110dcae72`;
+- estado `CHR-WP02-004 READY` nos dois repositórios.
 
 ## Revisão anterior
 
-`CHR-WP02-002`, executado em `RND-20260716-007`, recebeu `CORRECTION_REQUIRED`. Registro: `continuity/reviews/REV-RND-20260716-007.md`.
+`CHR-WP02-003`, executado em `RND-20260716-010`, recebeu `CORRECTION_REQUIRED`.
 
-Preserve descoberta paginada, allowlists de origem, parser/confronto de checksums, manifest candidato completo, diff allowlist, transporte principal por ambiente, SHA pins do workflow e ausência de promoção.
+Preservar integralmente:
 
-## Decisões de processo vigentes
-
-- TDD obrigatório para toda mudança comportamental, inclusive shell/config/lifecycle;
-- backprop técnico automático;
-- challenge adversarial pré-build para tarefas de alto impacto;
-- revisão pré-commit independente em Spec/Charter e Engineering/Security/Lifecycle;
-- um commit remoto por tarefa, sem squash;
-- compressão Caveman apenas em matrizes/ledgers;
-- convergência medida por claims, gates, findings e bloqueios.
+- `run__register()` e inputs efêmeros;
+- credencial fora do argv e redaction;
+- remoção de `scripts/actions/register`;
+- backup/restore sem re-registro;
+- falha fechada para estados GPG/GPGV adversos;
+- self-link e paths exatos de release/assets;
+- manifest candidato completo e diff allowlist;
+- workflow read-only com actions por SHA;
+- `manifest.toml` em `18.6.2~ynh1`.
 
 ## Objetivo
 
-Tornar a action realmente executável pelo YunoHost, eliminar interfaces legadas de credencial, preservar identidade em backup/restore sem senha persistida, fechar a verificação criptográfica, validar a origem canônica e reconciliar evidência/CI sem promover a versão candidata.
+Tornar o caminho live de confiança compatível com a entrega oficial atual sem abrir a fronteira de origem, produzir evidência nova e verificável pelo código corrigido, reparar a semântica dos artefatos históricos, alinhar o default Docker e fechar continuidade/CI sem overclaim.
 
 ## Tarefas
 
-### `T-WP02D-01-config-controller`
+### `T-WP02E-01-official-key-transport`
 
-Resultado: botão YunoHost executa o registro seguro por controlador atual.
+Resultado: o updater consome a chave oficial pela cadeia de entrega atual e continua fail-closed.
 
 - Dependências: nenhuma.
-- Seam: `scripts/config` carregado pelo contrato do config panel; chamada real `run__register()`.
+- Seam: `discover_current()` → `_official_fetch(OFFICIAL_KEY_URL, "key", ...)` → GPG/GPGV.
+- Pesquisa obrigatória: consultar documentação oficial GitLab e observar o redirect atual do URL fixado; registrar host/path final sem copiar query efêmera para documentos permanentes.
 - Claims:
-  - função `run__register()` existe e chama somente `scripts/_register.sh`;
-  - token é entrada efêmera `password` com `bind = "null"`;
-  - URL/imagem são entradas efêmeras ou valores prepopulados com rationale;
-  - nenhum segredo aparece em argv/log/output.
-- RED: harness invoca o botão/controlador atual e falha no baseline pela ausência do caminho executável/inputs.
-- GREEN: mesmo harness confirma helper, env seguro, redaction e erros.
-- Paths: `config_panel.toml`, `scripts/config`, `scripts/_register.sh`, testes focais.
+  - URL inicial permanece exatamente o endpoint oficial `packages.gitlab.com`;
+  - redirects são HTTPS, limitados e aceitos somente em allowlist explícita de host/path oficial observada;
+  - destinos privados, IP literal, host/path divergente e excesso de redirects falham antes do consumo;
+  - bytes finais são confrontados com o fingerprint fixado antes de sustentar confiança;
+  - `gpgv` ainda decide assinatura/expiração/revogação; documentação não substitui o verificador;
+  - diagnósticos não registram conteúdo da chave, query efêmera ou saída sensível.
+- RED: fixture sanitizada da cadeia oficial atual é rejeitada pelo baseline com `unexpected key origin`.
+- GREEN: a mesma cadeia atravessa o transport, fingerprint é conferido e casos adversos falham fechado.
+- Paths: `scripts/autoupdate.py`, fixtures/testes de transport e documentação técnica estritamente necessária.
 - Evidência alvo: `LOCAL_VERIFIED`.
 - Pre-build challenge: obrigatório.
+- Rollback: reverter somente este commit.
 
-### `T-WP02D-02-remove-legacy-register`
+### `T-WP02E-02-live-trust-observation`
 
-Resultado: nenhum entry point legado aceita credencial por argumento.
+Resultado: uma nova observação live é gerada pelo commit funcional T01 já publicado.
 
-- Dependência: `T-WP02D-01-config-controller` remoto.
-- Seam: inventário de entry points + execução controlada dos caminhos remanescentes.
+- Dependência: T01 remoto e `HEAD == origin/master`.
+- Seam: CLI público `scripts/autoupdate.py discover` com rede/GPG reais.
 - Claims:
-  - `scripts/actions/register` e referências associadas são removidos;
-  - nenhum entry point recebe token posicional ou `--token`;
-  - scanner e testes detectam regressão.
-- RED: teste de contrato encontra o script/interface legada no baseline.
-- GREEN: teste comportamental/inventário autorizado não encontra caminho e registro seguro continua funcional.
-- Paths: interface legada, docs e testes correspondentes.
+  - usa exatamente o SHA publicado de T01;
+  - produz novo artefato versionado, sem editar semanticamente relatórios antigos;
+  - registra `producer_commit`, comando, `observed_at`, URL inicial, final host/path sanitizado, hash do documento da chave/checksum, fingerprint, validade/status e limitações;
+  - resultado real pode ser `verified`, `failed` ou `unverified-environment`; nenhum estado é forçado;
+  - chave expirada/revogada, assinatura inválida ou entrega incompatível impede `generate --refresh`;
+  - não promove manifest nem baixa os pacotes completos.
+- TDD: mudança comportamental `NOT_APPLICABLE`; é uma observação pós-commit. Validar schema/proveniência por teste antes de persistir.
+- Paths: novo artefato em `evidence/`, evidence index e teste de schema/proveniência.
+- Evidência alvo: conforme resultado real, nunca acima dele.
+- Rollback: remover somente o novo artefato e sua indexação.
 
-### `T-WP02D-03-lifecycle-identity`
+### `T-WP02E-03-historical-evidence-repair`
 
-Resultado: backup/restore preservam configuração e identidade sem re-registro.
+Resultado: evidência antiga recupera sua semântica original e é supersedida honestamente.
+
+- Dependência: T02 remoto, mesmo que o resultado live seja falha ou limitação.
+- Seam: auditoria de provenance sobre `evidence/*.json` e histórico Git.
+- Claims:
+  - recuperar de Git as versões anteriores a T06 dos relatórios observados em RND-20260716-007, ou preservar cópia histórica equivalente;
+  - remover factualidade acrescentada manualmente sem nova execução;
+  - marcar relatórios anteriores `SUPERSEDED` ou manter seu nível original;
+  - o novo artefato T02 é a única fonte para o estado live atual;
+  - testes falham quando `valid/verified/passed` não possuem produtor, comando e observação correspondentes;
+  - nenhuma evidência histórica é apagada silenciosamente.
+- RED: teste de provenance demonstra que os relatórios atuais contêm campo factual adicionado por tarefa sem rede.
+- GREEN: índice e artefatos distinguem observação antiga, supersessão e nova observação.
+- Paths: `evidence/`, `tests/test_evidence_portability.py` ou teste dedicado, learning ledger somente por novo finding.
+- Evidência alvo: `LOCAL_VERIFIED` para a reparação documental.
+- Rollback: reverter somente este commit.
+
+### `T-WP02E-04-docker-default-consistency`
+
+Resultado: config panel e instalação não divergem silenciosamente no default da imagem Docker.
 
 - Dependências: nenhuma.
-- Seam: invocação real de `scripts/backup` e `scripts/restore` em filesystem/harness temporário.
+- Seam: parser do `manifest.toml` + parser do `config_panel.toml` + controller harness.
+- Decisão técnica autorizada: usar default versionado consistente com o install (`alpine:3.20`) ou remover o default e exigir input explícito; escolher a opção mais simples e justificar no round record.
 - Claims:
-  - `/etc/gitlab-runner/config.toml` e paths necessários são preservados pelo contrato packaging v2;
-  - restore não lê token, não chama register e restaura ownership/permissões adequadas;
-  - install realiza registro inicial; upgrade/restore não regeneram identidade.
-- RED: harness demonstra ausência de backup do config ou tentativa de registro no baseline.
-- GREEN: backup→restore preserva identidade e não executa registro.
-- Paths: `scripts/backup`, `scripts/restore`, install/upgrade somente quando necessário, testes.
-- Pre-build challenge: obrigatório.
+  - nenhum default mutável `latest` é introduzido pelo pacote;
+  - action e install têm comportamento consistente ou diferença explicitamente documentada/testada;
+  - token/argv e controller permanecem inalterados.
+- RED: contrato detecta `alpine:latest` no panel versus `alpine:3.20` no manifest.
+- GREEN: contrato e controller passam com a decisão escolhida.
+- Paths: `config_panel.toml`, testes focais e documentação mínima.
+- Evidência alvo: `LOCAL_VERIFIED`.
+- Rollback: reverter somente este commit.
 
-### `T-WP02D-04-signature-fail-closed`
+### `T-WP02E-05-remote-ci-observation`
 
-Resultado: assinatura/chave inválida nunca é tratada como limitação ambiental.
+Resultado: CI do SHA funcional final é observado ou classificado objetivamente.
 
-- Dependências: nenhuma.
-- Seam: resolver/updater público com adaptador GPG/GPGV controlado.
+- Dependências: T01–T04 publicados.
+- Seam: workflow `Validation` associado ao SHA de T04 ou ao último commit funcional aplicável.
 - Claims:
-  - ferramenta ausente pode produzir `unverified-environment`, nunca `VERIFIED`;
-  - ferramenta presente com retorno não zero, `VALIDSIG` ausente, fingerprint divergente, assinatura/chave expirada ou revogada falha fechado;
-  - fingerprint é campo exato, não substring;
-  - `generate --refresh` exige trust elegível;
-  - validade observada da chave é registrada.
-- RED: casos criptográficos adversos são aceitos/rebaixados no baseline.
-- GREEN: todos falham com diagnóstico não secreto; ferramenta realmente ausente mantém classificação limitada.
-- Paths: updater/resolver, fixtures GPG e testes.
-- Pre-build challenge: obrigatório.
+  - workflow continua read-only e actions permanecem fixadas por SHA;
+  - consultar run/status pelo SHA correto;
+  - se o ambiente não recuperar run, registrar `UNVERIFIED` com mecanismo/limitação exatos;
+  - não criar sucesso presumido, não alterar settings/ruleset e não reexecutar indefinidamente;
+  - executar localmente todos os comandos equivalentes como nível separado.
+- TDD: `NOT_APPLICABLE`, salvo correção real do workflow.
+- Paths: evidência CI e workflow somente se finding demonstrado.
+- Rollback: reverter somente o commit documental ou funcional desta tarefa.
 
-### `T-WP02D-05-source-self-link-redirects`
+### `T-WP02E-06-integration-gates`
 
-Resultado: release e assets permanecem dentro da origem oficial exata.
+Resultado: intervalo funcional corrigido passa os gates integrados sem promoção.
 
-- Dependências: nenhuma.
-- Seam: descoberta HTTP/API por adaptador controlado e live probe separado.
-- Claims:
-  - self-link/projeto/tag canônicos são confrontados;
-  - release page/API oficial é comprovada;
-  - redirects têm limite efetivo e cada destino é validado;
-  - excesso, host/path não permitido e tag divergente falham fechado.
-- RED: fixtures adversas atravessam ou não são rejeitadas pelo baseline.
-- GREEN: matriz negativa é rejeitada e caminho oficial passa.
-- Paths: discovery/network adapter, fixtures e testes.
-- Pre-build challenge: obrigatório.
-
-### `T-WP02D-06-evidence-portability`
-
-Resultado: evidência canônica, portátil e sem overclaim.
-
-- Dependências: T01–T05 publicados ou explicitamente independentes.
-- Seam: `maestro-check` sobre evidence index, relatórios, paths e claims.
-- Claims:
-  - `evidence/EVIDENCE_INDEX.md` é o único índice funcional;
-  - relatórios não contêm paths absolutos locais;
-  - cada claim usa estado estrutural/local/CI/lifecycle correto;
-  - RED/GREEN e backprop são rastreáveis por Task-ID/commit.
-- TDD: contrato documental/parsing; comportamento funcional `NOT_APPLICABLE` com justificativa.
-- Paths: evidence, relatórios, docs e testes de portabilidade.
-
-### `T-WP02D-07-remote-ci`
-
-Resultado: CI remoto do SHA funcional é observado ou bloqueio objetivo é registrado.
-
-- Dependências: T01–T06 publicados.
-- Seam: GitHub Actions run/status associado ao commit HEAD anterior à tarefa.
-- Claims:
-  - workflow permanece read-only e actions fixadas por SHA;
-  - run é associado ao SHA correto e resultado final recuperado;
-  - ausência de Actions/permissão é `UNVERIFIED`/bloqueio ambiental, nunca sucesso presumido.
-- RED/GREEN: não se aplica a mutação comportamental; validar workflow localmente e observar execução remota.
-- Paths: workflow somente se correção necessária, evidência CI e relatório.
-
-### `T-WP02D-08-integration-continuity`
-
-Resultado: rodada integrada, sem promoção e pronta para revisão externa.
-
-- Dependências: T01–T07 concluídos ou bloqueados validamente.
-- Seam: suíte completa, dry-run updater, lifecycle harness e intervalo remoto completo.
+- Dependências: T01–T05 concluídos ou bloqueados validamente.
+- Seam: suíte completa, secret scan, parsers, Bash, updater offline, live result T02, candidate diff e lifecycle harness.
 - Claims:
   - manifest permanece `18.6.2~ynh1`;
   - nenhuma credencial, registro real ou operação destrutiva ocorreu;
-  - todas as tarefas têm commit remoto e rollback conhecido;
-  - status, handoff, active round, learning ledger, evidence index e round record concordam;
-  - matriz task→commit→claim→evidência está completa.
-- Gates: parse/lint, suíte completa, secret scan, dry-run determinístico, lifecycle proporcional, revisão interna integrada e confirmação remota cross-repo.
-- Paths: apenas continuidade/evidência/síntese cross-repo, salvo fix de integração demonstrado e registrado por backprop.
+  - todos os commits de tarefa são lineares, remotos e seletivamente reversíveis;
+  - P1-F01, P1-F02, P2-F03 e P2-F04 possuem resolução rastreável;
+  - nenhum P0/P1 interno permanece aberto.
+- TDD: `NOT_APPLICABLE` para a integração; reexecutar oracles das tarefas.
+- Paths: relatório de integração e, somente se necessário, correção demonstrada via backprop.
+- Rollback: reverter somente este commit de integração.
+
+### `T-WP02E-07-final-continuity`
+
+Resultado: estado final usa somente commits já publicados e fica pronto para revisão externa.
+
+- Dependência: T06 remoto.
+- Seam: reconciliação GitHub dos dois `master` e memória canônica.
+- Claims:
+  - status, handoff, active round, evidence index, learning ledger e round record concordam;
+  - matriz Task-ID→SHA→claim→evidência usa SHAs finais T01–T06;
+  - nenhuma frase future/pending descreve commit já publicado;
+  - o próprio commit T07 pode ser identificado como `this task commit`; o coordenador, publicado depois do Runner, registra o SHA Runner T07 real;
+  - CI/lifecycle permanecem no nível efetivamente observado;
+  - saída é `EXECUTED_AWAITING_REVIEW`, nunca `ACCEPTED`.
+- TDD: contrato documental/parsing e auditoria de contradição.
+- Paths: continuidade/evidência no Runner e síntese no coordenador.
+- Rollback: reverter T07 no coordenador e Runner conforme dependência explícita.
 
 ## DAG
 
-Onda 1 paralela: T01, T03, T04, T05.  
-Onda 2: T02 após T01; T06 após outputs funcionais estáveis.  
-Onda 3: T07 após commits funcionais.  
-Onda 4 sequencial: T08.
+Onda 1 paralela: T01 e T04.  
+Onda 2: T02 após T01.  
+Onda 3: T03 após T02; T05 após T01–T04.  
+Onda 4 sequencial: T06.  
+Onda 5 sequencial: T07 Runner, depois T07 coordenador.
 
-Subagentes recebem ownership exclusivo e não fazem commit. O executor integra e publica uma tarefa por vez.
+Subagentes podem pesquisar/testar frentes independentes, sem commit ou ownership de arquivos canônicos. O Executor integra e publica uma tarefa por vez.
 
 ## Fora de escopo
 
-- promover qualquer candidata;
+- promover qualquer versão candidata;
 - registrar Runner real;
 - usar/testar credencial histórica;
-- reescrever histórico, force push, branch, PR ou worktree;
-- unregister destrutivo;
-- alterar ruleset, visibilidade ou licença;
-- instalar runtime/hooks Cavekit.
+- ampliar hosts/paths por wildcard genérico;
+- confiar em documentação como substituto de GPG/GPGV;
+- editar settings/rulesets do GitHub;
+- branch, PR, worktree, squash, force push ou reescrita;
+- implementação MCP.
 
 ## Gate humano
 
-`HG-RUN-SEC-01` permanece `UNRESOLVED_NO_AUTHORITY`. Não bloqueia nenhuma tarefa técnica. Nunca usar ou testar o valor histórico.
+`HG-RUN-SEC-01` permanece `UNRESOLVED_NO_AUTHORITY` e não bloqueia as tarefas. Nenhuma nova decisão humana é necessária.
 
-## Definition of Done integrada
+## Definition of Done
 
-- T01–T08 concluídas ou bloqueadas conforme protocolo;
-- todos os comportamentos novos demonstram RED→GREEN no seam correto;
-- nenhum P0/P1 interno aberto;
-- commits de tarefa publicados e recuperáveis em ordem;
+- T01–T07 concluídas ou bloqueadas conforme contrato;
+- cadeia oficial da chave coberta por RED/GREEN e resultado live pós-commit;
+- evidência histórica não contém factualidade retrospectiva;
+- default Docker consistente/reproduzível;
 - manifest sem promoção;
-- evidências honestas e portáveis;
-- saída `EXECUTED_AWAITING_REVIEW` ou bloqueio válido após todo trabalho independente.
+- nenhum P0/P1 aberto;
+- commits remotos por tarefa e pacote final revisável.
 
 ## Pacote de revisão
 
-Entregar `baseline_head`, `round_head`, SHAs completos por Task-ID, matriz claim/prova, RED/GREEN, findings internos/resoluções, backprop, gates, lifecycle, CI, riscos, `HG-RUN-SEC-01`, confirmação de HEADs/árvores e paths remotos. Não declarar `ACCEPTED`.
-
-## Fechamento T08
-
-T01–T07 foram publicados e reconciliados no Runner. T08 atualiza continuidade e síntese cross-repo, sem alterar runtime ou promover o manifest. Resultado persistido: `EXECUTED_AWAITING_REVIEW`.
-
-Claims permanecem separados: mudanças funcionais `LOCAL_VERIFIED`; lifecycle real e CI remoto `UNVERIFIED`; síntese cross-repo `LOCAL_VERIFIED` após confirmação dos HEADs. `HG-RUN-SEC-01` permanece `UNRESOLVED_NO_AUTHORITY` e nenhuma credencial foi usada.
+Entregar baselines, SHAs completos por Task-ID, RED/GREEN, live artifact/provenance, resolução de cada finding, gates integrados, CI/lifecycle, riscos, `HG-RUN-SEC-01`, confirmação dos HEADs e paths remotos. Não declarar `ACCEPTED`.

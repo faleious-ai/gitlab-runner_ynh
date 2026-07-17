@@ -43,24 +43,10 @@
 |---|---|---|---|---|
 | EVD-PROC-ADR006 | LOCAL_VERIFIED | T-01 | política de commits por tarefa e decisões D1–D5 | ADR, AGENTS e protocolos publicados nos dois repositórios |
 | EVD-PROC-CAVEKIT-RESEARCH | LOCAL_VERIFIED | T-02 | leitura/adaptação Cavekit | relatório no coordenador; índice e licença no Runner |
-| EVD-PROC-SKILL-SUITE | STRUCTURALLY_OBSERVED | T-03..T-14 | 12 skills MAESTRO | arquivos publicados individualmente; eficácia será testada em `CHR-WP02-003` |
+| EVD-PROC-SKILL-SUITE | STRUCTURALLY_OBSERVED | T-03..T-14 | 12 skills MAESTRO | arquivos publicados individualmente; eficácia testada em RND-20260716-010 e retropropagada em RND-20260717-011 |
 | EVD-PROC-LEARNING-LEDGER | LOCAL_VERIFIED | T-15 | memória de backprop/dead ends | schema append-only publicado |
 | EVD-PROC-ARCHITECTURE | LOCAL_VERIFIED | T-16 | máquina de estados e papéis | tarefa/commit/TDD/review/backprop integrados à arquitetura |
 | EVD-PROC-CHR003-MIGRATION | LOCAL_VERIFIED | T-17 | charter executável | oito Task-IDs com seams, RED/GREEN, gates e dependências |
-
-## Evidências requeridas para CHR-WP02-003
-
-- `EVD-WP02D-YUNOHOST-RUN-CONTROLLER`;
-- `EVD-WP02D-EPHEMERAL-REGISTRATION-INPUTS`;
-- `EVD-WP02D-NO-LEGACY-ARGV`;
-- `EVD-WP02D-LIFECYCLE-IDENTITY`;
-- `EVD-WP02D-SIGNATURE-FAIL-CLOSED`;
-- `EVD-WP02D-SELF-LINK-REDIRECTS`;
-- `EVD-WP02D-CANONICAL-EVIDENCE`;
-- `EVD-WP02D-LOCAL-TESTS`;
-- `EVD-WP02D-REMOTE-CI`;
-- `EVD-WP02D-CROSS-REPO-SYNTHESIS`;
-- `EVD-WP02D-ORCHESTRATOR-REVIEW`.
 
 ## Evidências de CHR-WP02-003 — RND-20260716-010
 
@@ -69,15 +55,37 @@
 | EVD-WP02D-YUNOHOST-RUN-CONTROLLER | LOCAL_VERIFIED | T-WP02D-01 / RND-20260716-010 | `config_panel.toml`, `scripts/config`, `tests/test_config_controller.py`; RED/GREEN no round record | `ada6b78ca4db00c1dcacda4eb01736f123f6040b`; sem host YunoHost real |
 | EVD-WP02D-EPHEMERAL-REGISTRATION-INPUTS | LOCAL_VERIFIED | T-WP02D-01 / RND-20260716-010 | inputs `password`/`url` com `bind = "null"`; harness sem segredo persistido | `ada6b78ca4db00c1dcacda4eb01736f123f6040b`; token real não usado |
 | EVD-WP02D-NO-LEGACY-ARGV | LOCAL_VERIFIED | T-WP02D-02 / RND-20260716-010 | `tests/test_legacy_register_removed.py`, controlador seguro e suíte | `79fb763c6c2d20f9bb1b76e42a266da1b41e8ad9`; referências históricas permanecem documentais |
-| EVD-WP02D-LIFECYCLE-IDENTITY | LOCAL_VERIFIED | T-WP02D-03 / RND-20260716-010 | harness temporário backup→restore; `scripts/backup`, `scripts/restore`, `tests/test_lifecycle_identity.py` | `2f0185cbf8b630f94d9618c9d7afe56cabc434b3`; sem host YunoHost/Docker |
-| EVD-WP02D-SIGNATURE-FAIL-CLOSED | LOCAL_VERIFIED | T-WP02D-04 / RND-20260716-010 | adaptador GPG/GPGV falso; 25 testes; refresh bloqueado sem confiança | `35e8e44dd9fb39b47ad71e6dfb06e854c0029618`; sem chave/assinatura real |
-| EVD-WP02D-SELF-LINK-REDIRECTS | LOCAL_VERIFIED | T-WP02D-05 / RND-20260716-010 | API/HTTP falsos; self-link, paths e `MAX_REDIRECTS` negativos | `51dbb98a7e6de477c4f3234b1c7d40b4ac1a54ac`; sem descoberta online nesta tarefa |
-| EVD-WP02D-CANONICAL-EVIDENCE | LOCAL_VERIFIED | T-WP02D-06 / RND-20260716-010 | `tests/test_evidence_portability.py`, JSONs e este índice; RED/GREEN no round record | `2acc1a3ec1a6c42a81eacea02f7ae093131070de`; sem claim CI/lifecycle |
-| EVD-WP02D-LOCAL-TESTS | LOCAL_VERIFIED | T-WP02D-01..07 / RND-20260716-010 | `python -m unittest discover -s tests -v`; 32 testes na verificação final; scanner, parsers, Bash e dry-run | commits T01–T07 acima; sem claim de CI remoto |
-| EVD-WP02D-REMOTE-CI | UNVERIFIED | T-WP02D-07 / RND-20260716-010 | workflow read-only e actions fixadas; gates locais equivalentes passaram (`32` testes, secret scan, parsers, Bash e dry-run) | run/status remoto para `2acc1a3ec1a6c42a81eacea02f7ae093131070de` não recuperável neste ambiente; não promover para `REMOTE_CI_VERIFIED` |
-| EVD-WP02D-CROSS-REPO-SYNTHESIS | LOCAL_VERIFIED | T-WP02D-08 / RND-20260716-010 | matriz task→commit→claim e HEADs reconciliados no round record | Runner `2d9cb41f41f292f3b4bd19513b91ca66720457d6` + coordenador `6c518802a922bcb50aa9daa33b3424e2e15a00a6` antes de T08; commit T08 será consolidado |
-| EVD-WP02D-ORCHESTRATOR-REVIEW | UNVERIFIED | T-WP02D-08 / RND-20260716-010 | aceite externo não é produzido pelo executor | revisão do ChatGPT pendente; não declarar `ACCEPTED` |
+| EVD-WP02D-LIFECYCLE-IDENTITY | LOCAL_VERIFIED | T-WP02D-03 / RND-20260716-010 | harness temporário backup→restore | `2f0185cbf8b630f94d9618c9d7afe56cabc434b3`; sem host YunoHost/Docker |
+| EVD-WP02D-SIGNATURE-FAIL-CLOSED | LOCAL_VERIFIED | T-WP02D-04 / RND-20260716-010 | adaptador GPG/GPGV falso; refresh bloqueado sem confiança | `35e8e44dd9fb39b47ad71e6dfb06e854c0029618`; lógica local preservada, transport live falha na revisão integrada |
+| EVD-WP02D-SELF-LINK-REDIRECTS | LOCAL_VERIFIED | T-WP02D-05 / RND-20260716-010 | API/HTTP falsos; self-link e paths de release/download | `51dbb98a7e6de477c4f3234b1c7d40b4ac1a54ac`; redirect da chave oficial não coberto |
+| EVD-WP02D-CANONICAL-EVIDENCE | FAILED | T-WP02D-06 / RND-20260716-010 | scanner de portabilidade e artefatos JSON | `2acc1a3ec1a6c42a81eacea02f7ae093131070de`; campo factual live foi acrescentado sem nova observação |
+| EVD-WP02D-LOCAL-TESTS | LOCAL_VERIFIED | T-WP02D-01..07 / RND-20260716-010 | 32 testes, scanner, parsers, Bash e dry-run | nível local somente |
+| EVD-WP02D-REMOTE-CI | UNVERIFIED | T-WP02D-07 / RND-20260716-010 | workflow read-only e actions fixadas | nenhum run/status remoto recuperado; não promover |
+| EVD-WP02D-CROSS-REPO-SYNTHESIS | FAILED | T-WP02D-08 / RND-20260716-010 | continuidade cross-repo | commits existem, porém handoff/index mantiveram referências pré-T08 |
+| EVD-WP02D-ORCHESTRATOR-REVIEW | LOCAL_VERIFIED | RND-20260717-011 | `continuity/reviews/REV-RND-20260716-010.md` | verdict `CORRECTION_REQUIRED`; Runner review commit `dd24f407e8bfcfe84b8b8ed95cfcabc7004a4463` |
+
+## Findings da revisão RND-20260717-011
+
+| ID | Estado | Finding | Evidência | Próxima tarefa |
+|---|---|---|---|---|
+| EVD-WP02E-KEY-TRANSPORT | FAILED | endpoint oficial redireciona para final origin recusada pelo validator da chave | código atual + endpoint oficial; revisão `P1-F01` | `T-WP02E-01` |
+| EVD-WP02E-LIVE-TRUST | UNVERIFIED | código corrigido ainda não produziu nova observação live | relatório antigo não serve como prova do código novo | `T-WP02E-02` |
+| EVD-WP02E-HISTORICAL-PROVENANCE | FAILED | T06 promoveu campo factual sem nova execução | diff T06 + tarefa declarada sem rede | `T-WP02E-03` |
+| EVD-WP02E-DOCKER-DEFAULT | FAILED | panel `alpine:latest` diverge do install `alpine:3.20` sem rationale | config/manifest | `T-WP02E-04` |
+| EVD-WP02E-FINAL-CONTINUITY | FAILED | future/pending e pre-T08 heads no estado final | handoff/index RND-20260716-010 | `T-WP02E-07` |
+| EVD-WP02E-PROCESS-BACKPROP | LOCAL_VERIFIED | imutabilidade de evidência e transport seam incorporados | `.agents/skills/`, `REVIEW_PROTOCOL`, `LEARNING_LEDGER` | commit `4cefe926732c95344c3d7d129aa9dbe110dcae72` |
+
+## Evidências requeridas para CHR-WP02-004
+
+- `EVD-WP02E-KEY-TRANSPORT`;
+- `EVD-WP02E-LIVE-TRUST`;
+- `EVD-WP02E-HISTORICAL-PROVENANCE`;
+- `EVD-WP02E-DOCKER-DEFAULT`;
+- `EVD-WP02E-REMOTE-CI`;
+- `EVD-WP02E-INTEGRATION`;
+- `EVD-WP02E-FINAL-CONTINUITY`;
+- `EVD-WP02E-ORCHESTRATOR-REVIEW`.
 
 ## Regras
 
-Claims apontam para Task-ID, seam, método, comando, resultado, SHA e limitação. Fixture não é autoridade de freshness ou checksum por si só. Busca textual é somente estrutural. O índice funcional canônico é este arquivo. Nunca reproduzir a credencial histórica. Aceite permanece exclusivo do orquestrador.
+Claims apontam para Task-ID, seam, método, comando, resultado, SHA e limitação. Fixture não é autoridade de freshness ou checksum por si só. Busca textual é somente estrutural. Artefato observado é semanticamente imutável; nova factualidade exige nova observação e novo artefato. O índice funcional canônico é este arquivo. Nunca reproduzir a credencial histórica. Aceite permanece exclusivo do orquestrador.

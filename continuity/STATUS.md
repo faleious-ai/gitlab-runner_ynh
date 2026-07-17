@@ -1,57 +1,49 @@
 # Status atual
 
-Atualizado em: 2026-07-16  
+Atualizado em: 2026-07-17  
 Branch autorizada: `master`  
-Última rodada executada pelo Codex: `RND-20260716-010`
-Última rodada do orquestrador: `RND-20260716-010`
+Última rodada executada pelo Codex: `RND-20260716-010`  
+Última rodada do orquestrador: `RND-20260717-011`
 
 ## Fase
 
-`WP02_CHR003_EXECUTED_AWAITING_REVIEW`
+`WP02_CHR003_CORRECTION_REQUIRED_CHR004_READY`
 
-A revisão de `CHR-WP02-002` permanece `CORRECTION_REQUIRED`. O charter corretivo `CHR-WP02-003` continua funcionalmente igual, mas foi decomposto em oito tarefas com seams, RED→GREEN, revisão adversarial, commits remotos por tarefa e rollback seletivo.
+A revisão independente de `CHR-WP02-003` resultou em `CORRECTION_REQUIRED`. Controller, remoção legada, lifecycle local, fail-closed criptográfico, fronteiras de release/download e commits por tarefa foram preservados. Permanecem correções restritas ao transporte live da chave oficial, proveniência de evidência, default Docker e continuidade final.
 
-## Processo incorporado
+Registro: `continuity/reviews/REV-RND-20260716-010.md`.
 
-- ADR-0006 substituiu um commit por rodada por um commit por tarefa;
-- 12 skills MAESTRO adaptadas do Cavekit foram publicadas em `.agents/skills/`;
-- TDD é obrigatório para toda mudança comportamental;
-- backprop técnico é autônomo e registrado em `continuity/LEARNING_LEDGER.md`;
-- revisão interna usa os eixos Spec/Charter e Engineering/Security/Lifecycle;
-- convergência usa claims, gates, findings e bloqueios;
-- compressão Caveman é limitada a matrizes/ledgers.
+## Processo retropropagado
+
+- evidência observada é semanticamente imutável;
+- novo fato exige novo artefato e supersessão do anterior;
+- mocks de transporte não substituem cobertura da cadeia oficial de redirects;
+- live probe ocorre após o commit funcional publicado;
+- continuidade final usa SHAs já publicados;
+- dead ends operacionais do orquestrador nesta revisão foram compensados seletivamente e registrados em `continuity/rounds/RND-20260717-011.md`.
 
 ## Charter ativo
 
-`CHR-WP02-003 — Action, trust fail-closed e lifecycle seguro`  
-Estado: `EXECUTED_AWAITING_REVIEW`.
+`CHR-WP02-004 — confiança live, proveniência e fechamento consistente`  
+Estado: `READY`.
 
 Tarefas:
 
-1. `T-WP02D-01-config-controller`;
-2. `T-WP02D-02-remove-legacy-register`;
-3. `T-WP02D-03-lifecycle-identity`;
-4. `T-WP02D-04-signature-fail-closed`;
-5. `T-WP02D-05-source-self-link-redirects`;
-6. `T-WP02D-06-evidence-portability`;
-7. `T-WP02D-07-remote-ci`;
-8. `T-WP02D-08-integration-continuity`.
+1. `T-WP02E-01-official-key-transport`;
+2. `T-WP02E-02-live-trust-observation`;
+3. `T-WP02E-03-historical-evidence-repair`;
+4. `T-WP02E-04-docker-default-consistency`;
+5. `T-WP02E-05-remote-ci-observation`;
+6. `T-WP02E-06-integration-gates`;
+7. `T-WP02E-07-final-continuity`.
 
-T01–T07 foram publicados em `master`; T07 permanece `UNVERIFIED` somente para CI remoto por bloqueio de observabilidade. T08 fecha a integração cross-repo sem promover esse claim.
+## Estado preservado
 
-## Componentes preservados
-
-- descoberta API paginada e stable-only;
-- parser/confronto de checksums;
-- manifest candidato completo e diff allowlist;
-- ambiente do subprocesso principal sem credencial em argv;
-- workflow read-only com actions por SHA;
-- manifest `18.6.2~ynh1`, sem promoção.
-
-## Gate humano
-
-`HG-RUN-SEC-01` permanece `UNRESOLVED_NO_AUTHORITY`. Não bloqueia `CHR-WP02-003`.
+- manifest `18.6.2~ynh1`, sem promoção;
+- nenhum registro real ou credencial histórica usada;
+- `HG-RUN-SEC-01` permanece `UNRESOLVED_NO_AUTHORITY`, não bloqueante;
+- CI remoto e lifecycle em host real permanecem `UNVERIFIED` até observação correspondente.
 
 ## Próxima ação
 
-Revisão independente do pacote remoto pelo ChatGPT. Não declarar `ACCEPTED` no executor; `HG-RUN-SEC-01` continua não resolvido e não foi usado.
+Executor principal deve ler `AGENTS.md` e executar integralmente `CHR-WP02-004`, usando novo `Round-ID` e um commit remoto por Task-ID.

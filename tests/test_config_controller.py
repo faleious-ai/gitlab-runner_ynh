@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 class ConfigControllerTests(unittest.TestCase):
     def test_panel_declares_ephemeral_inputs_and_register_button(self):
         panel = tomllib.loads((ROOT / "config_panel.toml").read_text(encoding="utf-8"))
+        manifest = tomllib.loads((ROOT / "manifest.toml").read_text(encoding="utf-8"))
         registration = panel["main"]["registration"]
         self.assertEqual(registration["register"]["type"], "button")
         for name, expected_type in {
@@ -22,6 +23,8 @@ class ConfigControllerTests(unittest.TestCase):
         }.items():
             self.assertEqual(registration[name]["type"], expected_type)
             self.assertEqual(registration[name]["bind"], "null")
+        self.assertEqual(registration["docker_image"]["default"], "alpine:3.20")
+        self.assertEqual(registration["docker_image"]["default"], manifest["install"]["docker_image"]["default"])
 
     def test_public_controller_delegates_to_shared_helper_without_secret_argv(self):
         with tempfile.TemporaryDirectory() as directory:

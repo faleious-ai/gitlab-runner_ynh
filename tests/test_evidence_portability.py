@@ -37,7 +37,7 @@ class EvidencePortabilityTests(unittest.TestCase):
             "wp02-online-discovery.json": "285ca22df3d45d6185e5b95a5e5a2bfcef9a4c6993c0aca689f47881b8d4c421",
         }
         index = (EVIDENCE / "EVIDENCE_INDEX.md").read_text(encoding="utf-8")
-        self.assertIn("| EVD-WP02E-HISTORICAL-PROVENANCE | LOCAL_VERIFIED |", index)
+        self.assertIn("| EVD-ARCH-V2-RUNNER | LOCAL_VERIFIED |", index)
         self.assertIn("SUPERSEDED", index)
         for name, expected in expected_sha256.items():
             payload = (EVIDENCE / name).read_bytes()
@@ -50,13 +50,10 @@ class EvidencePortabilityTests(unittest.TestCase):
     def test_current_round_evidence_is_task_and_sha_traceable(self) -> None:
         index = (EVIDENCE / "EVIDENCE_INDEX.md").read_text(encoding="utf-8")
         required = {
-            "EVD-WP02D-YUNOHOST-RUN-CONTROLLER": "ada6b78ca4db00c1dcacda4eb01736f123f6040b",
-            "EVD-WP02D-EPHEMERAL-REGISTRATION-INPUTS": "ada6b78ca4db00c1dcacda4eb01736f123f6040b",
-            "EVD-WP02D-NO-LEGACY-ARGV": "79fb763c6c2d20f9bb1b76e42a266da1b41e8ad9",
-            "EVD-WP02D-LIFECYCLE-IDENTITY": "2f0185cbf8b630f94d9618c9d7afe56cabc434b3",
-            "EVD-WP02D-SIGNATURE-FAIL-CLOSED": "35e8e44dd9fb39b47ad71e6dfb06e854c0029618",
-            "EVD-WP02D-SELF-LINK-REDIRECTS": "51dbb98a7e6de477c4f3234b1c7d40b4ac1a54ac",
-            "EVD-WP02D-CANONICAL-EVIDENCE": "T-WP02D-06",
+            "EVD-ARCH-V2-RUNNER": "7dc24ccb8b539c052966eee4d22820e51e418433",
+            "EVD-ARCH-V2-HARDEN-RUNNER": "dafcac9a26e56d8c3731fae66e9e4cc5f5a0d015",
+            "EVD-RUNNER-DOCKER-DEFAULT": "40e3a0854da387ed51320afa15416abb1747009f",
+            "EVD-RUNNER-FULL-SUITE-LINUX": "7dc24ccb8b539c052966eee4d22820e51e418433",
         }
         for evidence_id, trace in required.items():
             self.assertIn(f"| {evidence_id} |", index)

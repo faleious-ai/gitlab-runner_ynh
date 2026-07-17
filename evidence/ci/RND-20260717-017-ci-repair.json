@@ -1,0 +1,54 @@
+{
+  "artifact_id": "EVD-RND-20260717-017-CI-REPAIR",
+  "artifact_kind": "runner-ci-repair",
+  "schema_version": 1,
+  "round_id": "RND-20260717-017",
+  "charter_id": "CHR-PROGRAM-V2-CONTINUE-001",
+  "task_id": "T-RUN-CI-REPAIR-001",
+  "repository": "runner",
+  "baseline": {
+    "commit": "7dc24ccb8b539c052966eee4d22820e51e418433",
+    "command": "PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v",
+    "tests": 39,
+    "passed": 35,
+    "failed": 3,
+    "errors": 1,
+    "classification": "stale pre-v2 evidence and continuity assertions"
+  },
+  "red": {
+    "result": "fail",
+    "reason": "three historical evidence assertions and one continuity assertion encoded superseded pre-v2 authority"
+  },
+  "change": {
+    "paths": [
+      "tests/test_evidence_portability.py",
+      "tests/test_final_continuity.py"
+    ],
+    "summary": "Align tests with architecture-v2 evidence IDs, current round state and preserved historical evidence semantics."
+  },
+  "green": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v",
+    "result": "pass",
+    "tests": 39,
+    "failures": 0,
+    "errors": 0
+  },
+  "additional_validation": [
+    {"command": "PYTHONDONTWRITEBYTECODE=1 python -m py_compile scripts/program_consumer.py tests/test_evidence_portability.py tests/test_final_continuity.py", "result": "pass"},
+    {"command": "python scripts/secret_scan.py .", "result": "pass", "output": "secret scan: clean"},
+    {"command": "git diff --check", "result": "pass"}
+  ],
+  "lane": {
+    "lane_id": "LANE-01-T-RUN-CI-REPAIR-001",
+    "worker_id": "worker-ci-repair",
+    "workspace": "lane-ci",
+    "artifact": "lane-ci/ci-repair-candidate.json",
+    "command_log": "lane-ci/ci-repair-worker.log",
+    "parallel_wave_validation": "pass"
+  },
+  "claims": {
+    "remote_ci": "UNVERIFIED until a public check is observed for the final commit",
+    "promotion": false,
+    "acceptance": "Orchestrator-owned"
+  }
+}

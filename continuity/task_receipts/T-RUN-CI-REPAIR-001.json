@@ -1,0 +1,54 @@
+{
+  "acceptance": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests -v",
+    "result": "pass"
+  },
+  "changed_paths": [
+    "evidence/ci/RND-20260717-017-ci-repair-engineering-review.md",
+    "evidence/ci/RND-20260717-017-ci-repair-spec-review.md",
+    "evidence/ci/RND-20260717-017-ci-repair.json",
+    "tests/test_evidence_portability.py",
+    "tests/test_final_continuity.py"
+  ],
+  "commit_binding": "SELF",
+  "evidence_paths": [
+    "evidence/ci/RND-20260717-017-ci-repair-engineering-review.md",
+    "evidence/ci/RND-20260717-017-ci-repair-spec-review.md",
+    "evidence/ci/RND-20260717-017-ci-repair.json"
+  ],
+  "gates": [
+    {
+      "name": "full-suite-green:pass",
+      "result": "pass"
+    },
+    {
+      "name": "py-compile:pass",
+      "result": "pass"
+    },
+    {
+      "name": "secret-scan:pass",
+      "result": "pass"
+    },
+    {
+      "name": "lane-wave:pass",
+      "result": "pass"
+    },
+    {
+      "name": "spec-review:pass",
+      "result": "pass"
+    },
+    {
+      "name": "engineering-review:pass",
+      "result": "pass"
+    },
+    {
+      "name": "real-diff-validation:pass",
+      "result": "pass"
+    }
+  ],
+  "prepared_at": "2026-07-17T19:40:33.713350Z",
+  "program_id": "gitlab-ynh-mcp-program",
+  "repository": "runner",
+  "schema_version": 2,
+  "task_id": "T-RUN-CI-REPAIR-001"
+}

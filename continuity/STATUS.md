@@ -3,11 +3,11 @@
 Atualizado em: 2026-07-16  
 Branch autorizada: `master`  
 Última rodada executada pelo Codex: `RND-20260716-010`
-Última rodada do orquestrador: `RND-20260716-009`
+Última rodada do orquestrador: `RND-20260716-010`
 
 ## Fase
 
-`WP02_CHR003_IN_PROGRESS`
+`WP02_CHR003_EXECUTED_AWAITING_REVIEW`
 
 A revisão de `CHR-WP02-002` permanece `CORRECTION_REQUIRED`. O charter corretivo `CHR-WP02-003` continua funcionalmente igual, mas foi decomposto em oito tarefas com seams, RED→GREEN, revisão adversarial, commits remotos por tarefa e rollback seletivo.
 
@@ -24,7 +24,7 @@ A revisão de `CHR-WP02-002` permanece `CORRECTION_REQUIRED`. O charter corretiv
 ## Charter ativo
 
 `CHR-WP02-003 — Action, trust fail-closed e lifecycle seguro`  
-Estado: `READY`.
+Estado: `EXECUTED_AWAITING_REVIEW`.
 
 Tarefas:
 
@@ -37,7 +37,7 @@ Tarefas:
 7. `T-WP02D-07-remote-ci`;
 8. `T-WP02D-08-integration-continuity`.
 
-Tarefa em execução: `T-WP02D-01-config-controller` — RED observado e GREEN local verificado; sincronização remota pendente.
+T01–T07 foram publicados em `master`; T07 permanece `UNVERIFIED` somente para CI remoto por bloqueio de observabilidade. T08 fecha a integração cross-repo sem promover esse claim.
 
 ## Componentes preservados
 
@@ -54,4 +54,4 @@ Tarefa em execução: `T-WP02D-01-config-controller` — RED observado e GREEN l
 
 ## Próxima ação
 
-Codex deve ler `AGENTS.md`, `.agents/skills/README.md` e executar integralmente `CHR-WP02-003` sob o novo protocolo. Nenhuma nova decisão humana está pendente.
+Revisão independente do pacote remoto pelo ChatGPT. Não declarar `ACCEPTED` no executor; `HG-RUN-SEC-01` continua não resolvido e não foi usado.

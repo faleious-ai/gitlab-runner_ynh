@@ -72,10 +72,10 @@
 | EVD-WP02D-LIFECYCLE-IDENTITY | LOCAL_VERIFIED | T-WP02D-03 / RND-20260716-010 | harness temporário backup→restore; `scripts/backup`, `scripts/restore`, `tests/test_lifecycle_identity.py` | `2f0185cbf8b630f94d9618c9d7afe56cabc434b3`; sem host YunoHost/Docker |
 | EVD-WP02D-SIGNATURE-FAIL-CLOSED | LOCAL_VERIFIED | T-WP02D-04 / RND-20260716-010 | adaptador GPG/GPGV falso; 25 testes; refresh bloqueado sem confiança | `35e8e44dd9fb39b47ad71e6dfb06e854c0029618`; sem chave/assinatura real |
 | EVD-WP02D-SELF-LINK-REDIRECTS | LOCAL_VERIFIED | T-WP02D-05 / RND-20260716-010 | API/HTTP falsos; self-link, paths e `MAX_REDIRECTS` negativos | `51dbb98a7e6de477c4f3234b1c7d40b4ac1a54ac`; sem descoberta online nesta tarefa |
-| EVD-WP02D-CANONICAL-EVIDENCE | LOCAL_VERIFIED | T-WP02D-06 / RND-20260716-010 | `tests/test_evidence_portability.py`, JSONs e este índice; RED/GREEN no round record | commit remoto de T06 será consolidado no T08; sem claim CI/lifecycle |
-| EVD-WP02D-LOCAL-TESTS | LOCAL_VERIFIED | T-WP02D-01..05 / RND-20260716-010 | `python3 -m unittest discover -s tests -v`; 28 testes antes do scanner documental | commits T01–T05 acima; sem claim de CI remoto |
+| EVD-WP02D-CANONICAL-EVIDENCE | LOCAL_VERIFIED | T-WP02D-06 / RND-20260716-010 | `tests/test_evidence_portability.py`, JSONs e este índice; RED/GREEN no round record | `2acc1a3ec1a6c42a81eacea02f7ae093131070de`; sem claim CI/lifecycle |
+| EVD-WP02D-LOCAL-TESTS | LOCAL_VERIFIED | T-WP02D-01..07 / RND-20260716-010 | `python -m unittest discover -s tests -v`; 32 testes na verificação final; scanner, parsers, Bash e dry-run | commits T01–T07 acima; sem claim de CI remoto |
 | EVD-WP02D-REMOTE-CI | UNVERIFIED | T-WP02D-07 / RND-20260716-010 | workflow read-only e actions fixadas; gates locais equivalentes passaram (`32` testes, secret scan, parsers, Bash e dry-run) | run/status remoto para `2acc1a3ec1a6c42a81eacea02f7ae093131070de` não recuperável neste ambiente; não promover para `REMOTE_CI_VERIFIED` |
-| EVD-WP02D-CROSS-REPO-SYNTHESIS | UNVERIFIED | T-WP02D-08 / RND-20260716-010 | continuidade cross-repo ainda não fechada | dependente de T07/T08 |
+| EVD-WP02D-CROSS-REPO-SYNTHESIS | LOCAL_VERIFIED | T-WP02D-08 / RND-20260716-010 | matriz task→commit→claim e HEADs reconciliados no round record | Runner `2d9cb41f41f292f3b4bd19513b91ca66720457d6` + coordenador `6c518802a922bcb50aa9daa33b3424e2e15a00a6` antes de T08; commit T08 será consolidado |
 | EVD-WP02D-ORCHESTRATOR-REVIEW | UNVERIFIED | T-WP02D-08 / RND-20260716-010 | aceite externo não é produzido pelo executor | revisão do ChatGPT pendente; não declarar `ACCEPTED` |
 
 ## Regras

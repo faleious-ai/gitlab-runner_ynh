@@ -1,6 +1,6 @@
 # Handoff atual
 
-Estado: `READY_FOR_CODEX_FULL_ROUND`  
+Estado: `EXECUTED_AWAITING_REVIEW`
 Charter ativo: `CHR-WP02-003`  
 Revisão anterior: `REV-RND-20260716-007 — CORRECTION_REQUIRED`  
 Processo vigente: `ADR-0006`  
@@ -12,14 +12,15 @@ Branch: `master`
 Leia AGENTS.md e continue.
 ```
 
-## Retomada mínima
+## Resultado persistido
 
-1. Executar `git fetch origin` e confirmar árvore limpa/HEAD reconciliado.
-2. Ler `AGENTS.md`, `continuity/STATUS.md`, `continuity/ACTIVE_ROUND.md` e `.agents/skills/README.md`.
-3. Confirmar que `origin/master` contém `RND-20260716-009` e as 12 skills.
-4. Atribuir novo `Round-ID`.
-5. Executar `CHR-WP02-003` na ordem do DAG, com um commit remoto por Task-ID.
-6. Após cada commit, confirmar `HEAD == origin/master` antes da próxima escrita.
+`RND-20260716-010` executou T01–T07 e fechou T08 no Runner/coordenador, com um commit remoto por Task-ID e HEADs reconciliados. A implementação funcional permanece no Runner; este arquivo é o handoff para revisão independente.
+
+Runner funcional antes de T08: `2d9cb41f41f292f3b4bd19513b91ca66720457d6`. O commit T08 do Runner será o novo `round_head` após publicação.
+
+Evidência final: 32 testes locais, secret scan limpo, parsers JSON/TOML, Bash, dry-run e allowlist passam; `manifest.toml` permanece `18.6.2~ynh1`. CI remoto continua `UNVERIFIED` porque o run/status não foi recuperável neste ambiente; lifecycle YunoHost real também não foi observado.
+
+Para a revisão, usar `continuity/rounds/RND-20260716-010.md`, `evidence/EVIDENCE_INDEX.md` e o intervalo completo de commits remotos. Não usar links locais como prova.
 
 ## Direção funcional
 

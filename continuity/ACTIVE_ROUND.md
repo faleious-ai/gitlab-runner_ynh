@@ -1,7 +1,7 @@
 # Rodada ativa
 
 Charter-ID: `CHR-WP02-003`  
-Estado: `IN_PROGRESS`
+Estado: `EXECUTED_AWAITING_REVIEW`
 Round-ID: `RND-20260716-010`
 Preparado em: 2026-07-16  
 Orquestrador: ChatGPT com o Maestro Diretor  
@@ -193,3 +193,9 @@ Subagentes recebem ownership exclusivo e não fazem commit. O executor integra e
 ## Pacote de revisão
 
 Entregar `baseline_head`, `round_head`, SHAs completos por Task-ID, matriz claim/prova, RED/GREEN, findings internos/resoluções, backprop, gates, lifecycle, CI, riscos, `HG-RUN-SEC-01`, confirmação de HEADs/árvores e paths remotos. Não declarar `ACCEPTED`.
+
+## Fechamento T08
+
+T01–T07 foram publicados e reconciliados no Runner. T08 atualiza continuidade e síntese cross-repo, sem alterar runtime ou promover o manifest. Resultado persistido: `EXECUTED_AWAITING_REVIEW`.
+
+Claims permanecem separados: mudanças funcionais `LOCAL_VERIFIED`; lifecycle real e CI remoto `UNVERIFIED`; síntese cross-repo `LOCAL_VERIFIED` após confirmação dos HEADs. `HG-RUN-SEC-01` permanece `UNRESOLVED_NO_AUTHORITY` e nenhuma credencial foi usada.

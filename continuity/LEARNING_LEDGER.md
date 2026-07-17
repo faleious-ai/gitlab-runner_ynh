@@ -116,6 +116,22 @@ Append-only registry for failures, dead ends and process lessons that must survi
 | commit | esta retropropagação normativa; SHA mapeado no round record |
 | systemic action | separar integração funcional de fechamento final de continuidade |
 
+### BP-20260717-007
+
+| Field | Value |
+|---|---|
+| Backprop-ID | `BP-20260717-007` |
+| Round/Task | `RND-20260717-015` / `T-RUN-04-ci-alpine-oracle` |
+| classification | `INCOMPLETE_CRITERION` |
+| pattern | stale public oracle after supported-default correction |
+| symptom | Remote run `29581786119` failed in the unit step because `test_panel_declares_ephemeral_inputs_and_register_button` still expected `alpine:3.20` after the protected acceptance required `alpine:3.24.1`. |
+| root cause | The related non-protected unit oracle was not migrated with the manifest/config default correction. |
+| contract change | The unit oracle now asserts the exact supported patch default and remains independent of the protected acceptance oracle. |
+| RED | `PYTHONDONTWRITEBYTECODE=1 python -m unittest tests.test_config_controller.ConfigControllerTests.test_panel_declares_ephemeral_inputs_and_register_button -v` — failed with `alpine:3.24.1 != alpine:3.20`. |
+| GREEN | Same command after the one-line oracle correction — passes. |
+| commit | published Task commit below; no credential or runtime behavior changed. |
+| systemic action | none; final CI observation remains separately tracked as `FAILED`/`UNVERIFIED`. |
+
 ## Rules
 
 - Never delete entries. Corrections append a superseding note.

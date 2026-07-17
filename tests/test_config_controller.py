@@ -23,7 +23,7 @@ class ConfigControllerTests(unittest.TestCase):
         }.items():
             self.assertEqual(registration[name]["type"], expected_type)
             self.assertEqual(registration[name]["bind"], "null")
-        self.assertEqual(registration["docker_image"]["default"], "alpine:3.20")
+        self.assertEqual(registration["docker_image"]["default"], "alpine:3.24.1")
         self.assertEqual(registration["docker_image"]["default"], manifest["install"]["docker_image"]["default"])
 
     def test_public_controller_delegates_to_shared_helper_without_secret_argv(self):

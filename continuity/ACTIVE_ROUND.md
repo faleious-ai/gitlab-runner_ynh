@@ -1,7 +1,7 @@
 # Rodada ativa
 
 Charter-ID: `CHR-GOV-AUTONOMY-001`  
-Estado: `READY`  
+Estado: `EXECUTED_AWAITING_REVIEW`
 Preparado em: 2026-07-17  
 Executor principal: Codex  
 Unidade: `adoção Runner da fila técnica contínua`
@@ -54,5 +54,7 @@ Registrar `Lane-ID`, baseline, ownership, `started_at`, `ready_at`, RED/GREEN, o
 - o Executor não declara `ACCEPTED`.
 
 ## Fechamento
+
+Todos os trabalhos Runner não bloqueados de `RND-20260717-015` foram executados e publicados. Entregar ao Orquestrador os acceptance results, a matriz task→commit→claim→evidência e os HEADs remotos coincidentes. Estado: `EXECUTED_AWAITING_REVIEW`; o Executor não escreve `ACCEPTED`.
 
 Após a adoção do motor, continuar pelas tarefas elegíveis da fila canônica do programa. Entregar commits por tarefa, acceptance results, lanes demonstradas, claims limitados e estado remoto retomável.

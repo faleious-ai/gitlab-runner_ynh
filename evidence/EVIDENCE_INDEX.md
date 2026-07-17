@@ -95,6 +95,15 @@
 | EVD-RND-20260717-015-LIVE-TRUST | LOCAL_VERIFIED | T-RUN-02 / RND-20260717-015 | `evidence/rnd-20260717-015-live-trust-observation.json`; release v19.2.0, checksum/signature HTTP 200, GPG fingerprint observado como válido; sem download/promoção/lifecycle |
 | EVD-RND-20260717-015-REMOTE-CI | FAILED | T-RUN-02 / RND-20260717-015 | `evidence/rnd-20260717-015-remote-ci-observation.json`; run público associado ao SHA terminou failure no passo unitário; logs detalhados 403; CI-success permanece `UNVERIFIED` |
 
+## Evidências de RND-20260717-015 — fechamento Runner
+
+| ID | Estado | Task/round | Resultado e localização |
+|---|---|---|---|
+| EVD-RND-20260717-015-DOCKER-DEFAULT | LOCAL_VERIFIED | T-RUN-01 / RND-20260717-015 | `manifest.toml` e `config_panel.toml` usam `alpine:3.24.1`; `40e3a0854da387ed51320afa15416abb1747009f` |
+| EVD-RND-20260717-015-PROCESS-ADOPTION | LOCAL_VERIFIED | T-RUN-03 / RND-20260717-015 | consumidor da fila publicado em `8a40e1d1bbaab33fb44a7779160855cdc1d374e9` |
+| EVD-RND-20260717-015-CI-ALPINE-ORACLE | LOCAL_VERIFIED | T-RUN-04 / RND-20260717-015 | oracle stale corrigido em `b3f752f4c5b8ace5a224263454eb9fc6220b71a1`; CI remoto posterior continua `FAILED`/`UNVERIFIED` |
+| EVD-RND-20260717-015-RUNNER-FINAL-CONTINUITY | LOCAL_VERIFIED | T-GOV-03 / RND-20260717-015 | status, handoff, active round e índice reconciliados; SHA final consta no pacote remoto |
+
 ## Regras
 
 Claims apontam para Task-ID, seam, método, comando, resultado, SHA e limitação. Fixture não é autoridade de freshness ou checksum por si só. Busca textual é somente estrutural. Artefato observado é semanticamente imutável; nova factualidade exige nova observação e novo artefato. O índice funcional canônico é este arquivo. Nunca reproduzir a credencial histórica. Aceite permanece exclusivo do orquestrador.

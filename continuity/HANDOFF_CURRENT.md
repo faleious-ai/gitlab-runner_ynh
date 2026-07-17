@@ -1,27 +1,23 @@
 # Handoff atual
 
-Estado: `READY_FOR_CODEX_CONTINUOUS_ROUND`  
+Estado: `EXECUTED_AWAITING_REVIEW`
 Charter: `CHR-GOV-AUTONOMY-001`  
+Round: `RND-20260717-015`
 Branch: `master`
 
-## Prompt
+## Pacote remoto
 
-```text
-Leia AGENTS.md e continue.
-```
+- Repositório: `faleious-ai/gitlab-runner_ynh`.
+- O coordenador publicou a última síntese anterior ao fechamento em `faleious-ai/gitlab_ynh` SHA `b1c083cf59d7dc903c08905ec6e0be643805bc87`.
+- Este Runner publicou os resultados no round record e no índice de evidências; o SHA final deste repositório é o HEAD remoto confirmado no fechamento.
 
-## Retomada
+## Claims
 
-1. Reconciliar este Runner e o coordenador.
-2. Ler o charter canônico no coordenador commit `e6e0a4c201cdfc1106fa0c060b502c7bc0a5135a`.
-3. Atribuir novo `Round-ID`.
-4. Iniciar T-RUN-01 e T-RUN-02 em lanes independentes e sobrepostas.
-5. Preservar `tests/acceptance/test_supported_docker_default.py`.
-6. Integrar e publicar uma tarefa por vez.
-7. Após o motor do coordenador ficar GREEN, executar T-RUN-03 e continuar pela fila canônica.
+- Runner Docker default: `LOCAL_VERIFIED`, `alpine:3.24.1` coerente em manifest/config.
+- Trust live: `LOCAL_VERIFIED` no artefato versionado, sem instalação ou promoção.
+- CI remoto: `FAILED` para o run observado; sucesso permanece `UNVERIFIED` porque logs detalhados não foram recuperados.
+- Lifecycle real e full-suite fora do acceptance focal: não promovidos; limitações ambientais estão documentadas.
 
-## Baseline
+## Revisão
 
-Runner acceptance head: `17be5e890010c2eb96d857713f2bc0164092b943`.
-
-Não promover versão, não alterar ambiente real e não declarar `ACCEPTED`.
+Usar `continuity/rounds/RND-20260717-015.md`, `continuity/STATUS.md` e `evidence/EVIDENCE_INDEX.md` como pacote retomável. O Executor não declara `ACCEPTED`; o Orquestrador decide aceite, correção ou escalonamento.

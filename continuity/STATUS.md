@@ -1,6 +1,7 @@
-# Status Runner
+# Runner status
 
-Estado: `ARCHITECTURE_V2_READY`
+State: `ARCHITECTURE_V2_HARDENED_READY`
 Branch: `master`
+Charter: `CHR-PROGRAM-V2-CONTINUE-001`
 
-A arquitetura v2 substitui a queue manual. O Runner mantém `18.6.2~ynh1`; CI/lifecycle pendentes permanecem tasks no backlog. A próxima ação é executar `scripts/program_consumer.py` após fast-forward dos dois repos.
+The consumer includes static tasks and dynamic correction tasks and rejects unknown eligible identifiers. Lane evidence requires isolated workspaces, artifacts and logs. Runner remains `18.6.2~ynh1`; CI repair, live updater candidate and Linux lifecycle remain represented in the canonical backlog.

@@ -1,5 +1,5 @@
-# Paralelismo Runner v2
+# Runner parallel execution contract
 
-Tarefas Runner podem ser preparadas em paralelo somente quando ownership prefix-aware é disjunto. `tests/` conflita com `tests/lifecycle/`; paths diferentes por string não bastam.
+Task ownership is prefix-aware, so parent and descendant paths conflict. A valid parallel wave contains distinct worker identities, distinct isolated workspaces, matching task and baseline identity, nonempty artifacts, nonempty command logs, verified hashes and real interval overlap.
 
-Workers distintos usam o journal hash-chained do coordenador, artifacts e command logs hashados. Subagentes não editam manifest, state, handoff ou outros arquivos canônicos simultaneamente. O Executor integra, valida, prepara receipt, commita e publica uma tarefa por vez.
+The coordinator journal records lane start and finish events. Subagent outputs are preparation artifacts only; canonical integration, validation, receipt creation and publication remain serial per task.

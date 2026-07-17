@@ -1,8 +1,8 @@
-# Rodada ativa Runner
+# Active Runner round
 
 Charter-ID: `CHR-PROGRAM-V2-CONTINUE-001`
-Estado: `READY`
-Round inicial esperado: `RND-20260717-017`
-Autoridade: coordenador `faleious-ai/gitlab_ynh`
+State: `READY`
+Expected initial round: `RND-20260717-017`
+Authority: coordinator `faleious-ai/gitlab_ynh`
 
-O Executor deve atualizar ambos os repos, executar o consumer v2 e consumir todas as tasks Runner elegíveis. O charter não limita a uma task. Sem promoção, release, registro real, credencial, branch, PR, worktree ou force push.
+Planner-selected Runner tasks use distinct worker workspaces when parallel preparation is required. Lane evidence is verifiable, while integration and publication remain serial per task. The program gates define the boundary for work outside the technical preparation scope.

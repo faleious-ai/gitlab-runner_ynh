@@ -12,17 +12,7 @@ from typing import Any
 
 def run_engine(engine: Path, coordinator: Path, runner: Path, command: str) -> dict[str, Any]:
     completed = subprocess.run(
-        [
-            sys.executable,
-            str(engine),
-            command,
-            "--root",
-            str(coordinator),
-            "--repo",
-            f"coordinator={coordinator}",
-            "--repo",
-            f"runner={runner}",
-        ],
+        [sys.executable, str(engine), command, "--root", str(coordinator), "--repo", f"coordinator={coordinator}", "--repo", f"runner={runner}"],
         text=True,
         capture_output=True,
         check=False,
@@ -36,6 +26,26 @@ def run_engine(engine: Path, coordinator: Path, runner: Path, command: str) -> d
     return payload
 
 
+def task_index(backlog: dict[str, Any], findings: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    result: dict[str, dict[str, Any]] = {}
+    for task in backlog.get("tasks", []):
+        if not isinstance(task, dict) or not isinstance(task.get("id"), str):
+            raise RuntimeError("invalid coordinator backlog task")
+        result[task["id"]] = task
+    for finding in findings.get("findings", []):
+        if not isinstance(finding, dict):
+            raise RuntimeError("invalid coordinator finding")
+        correction = finding.get("correction_task")
+        if correction is None:
+            continue
+        if not isinstance(correction, dict) or not isinstance(correction.get("id"), str):
+            raise RuntimeError("invalid dynamic correction task")
+        if correction["id"] in result:
+            raise RuntimeError(f"duplicate task id: {correction['id']}")
+        result[correction["id"]] = correction
+    return result
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--coordinator-root", required=True)
@@ -45,18 +55,22 @@ def main(argv: list[str] | None = None) -> int:
     runner = Path(args.runner_root).resolve()
     engine = coordinator / "scripts" / "maestro_program.py"
     backlog_path = coordinator / "continuity" / "PROGRAM_BACKLOG.json"
-    if not engine.is_file() or not backlog_path.is_file():
+    findings_path = coordinator / "continuity" / "PROGRAM_FINDINGS.json"
+    if not engine.is_file() or not backlog_path.is_file() or not findings_path.is_file():
         print(json.dumps({"valid": False, "reasons": ["COORDINATOR_PROGRAM_NOT_AVAILABLE"]}, sort_keys=True))
         return 2
     refresh = run_engine(engine, coordinator, runner, "refresh-queue")
     doctor = run_engine(engine, coordinator, runner, "doctor")
     plan = run_engine(engine, coordinator, runner, "plan")
     backlog = json.loads(backlog_path.read_text(encoding="utf-8"))
-    by_id = {task["id"]: task for task in backlog["tasks"]}
-    runner_tasks = [task_id for task_id in plan.get("eligible_tasks", []) if "runner" in by_id[task_id]["repositories"]]
-    runner_lanes = [
-        lane for lane in plan.get("lanes", []) if any(task_id in runner_tasks for task_id in lane.get("task_ids", []))
-    ]
+    findings = json.loads(findings_path.read_text(encoding="utf-8"))
+    by_id = task_index(backlog, findings)
+    unknown = [task_id for task_id in plan.get("eligible_tasks", []) if task_id not in by_id]
+    if unknown:
+        print(json.dumps({"valid": False, "reasons": [f"ELIGIBLE_TASK_NOT_CANONICAL:{unknown[0]}"]}, sort_keys=True))
+        return 2
+    runner_tasks = [task_id for task_id in plan.get("eligible_tasks", []) if "runner" in by_id[task_id].get("repositories", [])]
+    runner_lanes = [lane for lane in plan.get("lanes", []) if any(task_id in runner_tasks for task_id in lane.get("task_ids", []))]
     result = {
         "valid": bool(refresh.get("derived")) and doctor.get("valid") is True and plan.get("valid") is True,
         "eligible_runner_tasks": runner_tasks,

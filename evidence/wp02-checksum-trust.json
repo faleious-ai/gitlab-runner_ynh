@@ -14,7 +14,6 @@
   },
   "catalog_confrontation": "PASS",
   "signature": {
-    "key_validity": "valid",
     "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/release.sha256.asc",
     "status": "verified",
     "key_fingerprint": "931DA69CFA3AFEBBC97DAA8C6C57C29C6BA75A4E",

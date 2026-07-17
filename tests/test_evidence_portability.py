@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import unittest
@@ -30,21 +31,21 @@ class EvidencePortabilityTests(unittest.TestCase):
                 if "://" not in value:
                     self.assertIsNone(ABSOLUTE_LOCAL_PATH.search(value), f"{report_path}:{path}: {value}")
 
-    def test_verified_reports_record_observed_key_validity(self) -> None:
-        expected_fingerprint = "931DA69CFA3AFEBBC97DAA8C6C57C29C6BA75A4E"
-        for name in ("wp02-checksum-trust.json", "wp02-online-discovery.json"):
-            payload = json.loads((EVIDENCE / name).read_text(encoding="utf-8"))
-            signatures = []
-            if "signature" in payload:
-                signatures.append(payload["signature"])
-            if "discovery" in payload:
-                signatures.append(payload["discovery"]["signature"])
-            if "release" in payload:
-                signatures.append(payload["release"]["checksum_trust"]["signature"])
-            for signature in signatures:
-                if signature.get("status") == "verified":
-                    self.assertEqual(signature.get("key_fingerprint"), expected_fingerprint, name)
-                    self.assertEqual(signature.get("key_validity"), "valid", name)
+    def test_historical_reports_preserve_pre_t06_semantics_and_are_superseded(self) -> None:
+        expected_sha256 = {
+            "wp02-checksum-trust.json": "3c0b97751115896db04adaeef42e39d4008b29c94117665002edd695e750c4ed",
+            "wp02-online-discovery.json": "285ca22df3d45d6185e5b95a5e5a2bfcef9a4c6993c0aca689f47881b8d4c421",
+        }
+        index = (EVIDENCE / "EVIDENCE_INDEX.md").read_text(encoding="utf-8")
+        self.assertIn("| EVD-WP02E-HISTORICAL-PROVENANCE | LOCAL_VERIFIED |", index)
+        self.assertIn("SUPERSEDED", index)
+        for name, expected in expected_sha256.items():
+            payload = (EVIDENCE / name).read_bytes()
+            self.assertEqual(hashlib.sha256(payload).hexdigest(), expected, name)
+
+        live = json.loads((EVIDENCE / "wp02e-live-trust-observation.json").read_text(encoding="utf-8"))
+        self.assertEqual(live["result"], "failed")
+        self.assertEqual(live["trust"]["status"], "not-observed")
 
     def test_current_round_evidence_is_task_and_sha_traceable(self) -> None:
         index = (EVIDENCE / "EVIDENCE_INDEX.md").read_text(encoding="utf-8")

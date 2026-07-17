@@ -7,8 +7,6 @@
     "pagination": "GitLab X-Next-Page with per_page=100",
     "selected_tag": "v19.2.0",
     "signature": {
-      "key_fingerprint": "931DA69CFA3AFEBBC97DAA8C6C57C29C6BA75A4E",
-      "key_validity": "valid",
       "method": "official checksum document over pinned HTTPS; exact required asset records parsed and confronted; GPG verification requires the documented GitLab Runner signing key; trusted fingerprint matched",
       "status": "verified",
       "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/release.sha256.asc"
@@ -27,8 +25,6 @@
       },
       "document_sha256": "fa973abe3dedf3dd8a2670e497d99b2e58c79fb76678a0fd6bba6d0c3849a32b",
       "signature": {
-        "key_fingerprint": "931DA69CFA3AFEBBC97DAA8C6C57C29C6BA75A4E",
-        "key_validity": "valid",
         "method": "official checksum document over pinned HTTPS; exact required asset records parsed and confronted; GPG verification requires the documented GitLab Runner signing key; trusted fingerprint matched",
         "status": "verified",
         "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/release.sha256.asc"

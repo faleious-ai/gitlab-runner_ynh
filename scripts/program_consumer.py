@@ -6,14 +6,13 @@ import argparse
 import json
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 from typing import Any
 
 
-def run_engine(engine: Path, coordinator: Path, runner: Path, command: str, queue: Path) -> dict[str, Any]:
+def run_engine(engine: Path, coordinator: Path, runner: Path, command: str) -> dict[str, Any]:
     completed = subprocess.run(
-        [sys.executable, str(engine), command, "--root", str(coordinator), "--queue", str(queue), "--repo", f"coordinator={coordinator}", "--repo", f"runner={runner}"],
+        [sys.executable, str(engine), command, "--root", str(coordinator), "--repo", f"coordinator={coordinator}", "--repo", f"runner={runner}"],
         text=True,
         capture_output=True,
         check=False,
@@ -60,11 +59,9 @@ def main(argv: list[str] | None = None) -> int:
     if not engine.is_file() or not backlog_path.is_file() or not findings_path.is_file():
         print(json.dumps({"valid": False, "reasons": ["COORDINATOR_PROGRAM_NOT_AVAILABLE"]}, sort_keys=True))
         return 2
-    with tempfile.TemporaryDirectory(prefix="maestro-runner-consumer-") as temp:
-        queue = Path(temp) / "PROGRAM_QUEUE.json"
-        refresh = run_engine(engine, coordinator, runner, "refresh-queue", queue)
-        doctor = run_engine(engine, coordinator, runner, "doctor", queue)
-        plan = run_engine(engine, coordinator, runner, "plan", queue)
+    refresh = run_engine(engine, coordinator, runner, "refresh-queue")
+    doctor = run_engine(engine, coordinator, runner, "doctor")
+    plan = run_engine(engine, coordinator, runner, "plan")
     backlog = json.loads(backlog_path.read_text(encoding="utf-8"))
     findings = json.loads(findings_path.read_text(encoding="utf-8"))
     by_id = task_index(backlog, findings)

@@ -1,0 +1,36 @@
+{
+  "artifact_kind": "live-observation-failure",
+  "schema_version": 1,
+  "round_id": "RND-20260717-012",
+  "charter_id": "CHR-WP02-004",
+  "task_id": "T-WP02E-02-live-trust-observation",
+  "producer_commit": "6fb500ec3474c07137fcb8962512ed0adc59a9bb",
+  "observed_at": "2026-07-17",
+  "command": "PYTHONDONTWRITEBYTECODE=1 python3 scripts/autoupdate.py discover --manifest manifest.toml --report evidence/wp02e-live-trust-observation.json --timeout 5 --retries 0",
+  "source": {
+    "kind": "current-online",
+    "api": "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-runner/releases",
+    "selected_tag": "v19.2.0",
+    "checksum_url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/release.sha256"
+  },
+  "result": "failed",
+  "failure": {
+    "stage": "official-checksum-fetch",
+    "return_code": 2,
+    "message": "autoupdate: source fetch failed after 1 attempts: https://gitlab-runner-downloads.s3.amazonaws.com/v19.2.0/release.sha256"
+  },
+  "trust": {
+    "status": "not-observed",
+    "key_validity": "not-observed"
+  },
+  "manifest": {
+    "path": "manifest.toml",
+    "version": "18.6.2~ynh1",
+    "promoted": false
+  },
+  "limitations": [
+    "The live command stopped before the official key endpoint and GPG/GPGV were reached.",
+    "The CLI did not emit its normal discovery report because the source fetch failed.",
+    "No package was downloaded and no credential or external registration was used."
+  ]
+}

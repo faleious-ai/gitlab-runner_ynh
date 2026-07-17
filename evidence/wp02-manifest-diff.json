@@ -59,7 +59,7 @@
     " "
   ],
   "diff_guard": "allowlist-only",
-  "manifest_candidate": "C:\\Users\\LEIVIS~1\\AppData\\Local\\Temp\\gitlab-runner-candidate-153d00cb-d36c-404f-af03-51241dac63af.toml",
+  "manifest_candidate": "external-staging/gitlab-runner-candidate.toml",
   "mode": "write",
   "observed_at": "2026-07-16T00:00:00Z",
   "promoted": false,
@@ -73,6 +73,7 @@
       },
       "document_sha256": "25d364afef5c62656f0976b5c99b672b77aa29473dc12e66bc3b3125c29e384a",
       "signature": {
+        "key_validity": "not-observed",
         "method": "official checksum document digest recorded; required catalog records parsed and confronted; GPG key verification is an explicit online-environment step",
         "status": "equivalent-recomputation",
         "url": "https://gitlab-runner-downloads.s3.amazonaws.com/v19.0.1/release.sha256.asc"

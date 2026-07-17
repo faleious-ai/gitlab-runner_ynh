@@ -52,6 +52,22 @@ Append-only registry for failures, dead ends and process lessons that must survi
 | commit | pendente até a publicação de T01 |
 | systemic action | nenhuma; auditar seams herdados nas tarefas seguintes |
 
+### BP-20260716-003
+
+| Field | Value |
+|---|---|
+| Backprop-ID | `BP-20260716-003` |
+| Round/Task | `RND-20260716-010` / `T-WP02D-06-evidence-portability` |
+| classification | `INCOMPLETE_CRITERION` |
+| pattern | heterogeneous evidence report schema |
+| symptom | O primeiro teste de portabilidade levantou `KeyError: 'release'` ao tratar `wp02-checksum-trust.json`, que é um relatório resumido sem o objeto `release`. |
+| root cause | O oracle assumiu que todos os JSONs de evidência compartilhavam o schema de relatório completo do updater; o índice contém artefatos completos e resumidos. |
+| contract change | O scanner deve percorrer campos opcionais por schema e validar cada assinatura disponível, sem exigir estrutura de relatório que o artefato não declara. |
+| RED | `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_evidence_portability -v` — erro `KeyError: 'release'` antes dos asserts de confiança. |
+| GREEN | `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_evidence_portability -v` — 4 testes passaram após tratar schemas resumidos e corrigir os artefatos portáveis. |
+| commit | pendente até a publicação de T06 |
+| systemic action | nenhuma; manter testes schema-aware para evidência |
+
 ## Rules
 
 - Never delete entries. Corrections append a superseding note.

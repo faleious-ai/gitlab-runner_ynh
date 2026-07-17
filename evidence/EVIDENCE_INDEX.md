@@ -62,6 +62,22 @@
 - `EVD-WP02D-CROSS-REPO-SYNTHESIS`;
 - `EVD-WP02D-ORCHESTRATOR-REVIEW`.
 
+## Evidências de CHR-WP02-003 — RND-20260716-010
+
+| ID | Estado | Task/round | Seam e localização | Commit remoto ou limitação |
+|---|---|---|---|---|
+| EVD-WP02D-YUNOHOST-RUN-CONTROLLER | LOCAL_VERIFIED | T-WP02D-01 / RND-20260716-010 | `config_panel.toml`, `scripts/config`, `tests/test_config_controller.py`; RED/GREEN no round record | `ada6b78ca4db00c1dcacda4eb01736f123f6040b`; sem host YunoHost real |
+| EVD-WP02D-EPHEMERAL-REGISTRATION-INPUTS | LOCAL_VERIFIED | T-WP02D-01 / RND-20260716-010 | inputs `password`/`url` com `bind = "null"`; harness sem segredo persistido | `ada6b78ca4db00c1dcacda4eb01736f123f6040b`; token real não usado |
+| EVD-WP02D-NO-LEGACY-ARGV | LOCAL_VERIFIED | T-WP02D-02 / RND-20260716-010 | `tests/test_legacy_register_removed.py`, controlador seguro e suíte | `79fb763c6c2d20f9bb1b76e42a266da1b41e8ad9`; referências históricas permanecem documentais |
+| EVD-WP02D-LIFECYCLE-IDENTITY | LOCAL_VERIFIED | T-WP02D-03 / RND-20260716-010 | harness temporário backup→restore; `scripts/backup`, `scripts/restore`, `tests/test_lifecycle_identity.py` | `2f0185cbf8b630f94d9618c9d7afe56cabc434b3`; sem host YunoHost/Docker |
+| EVD-WP02D-SIGNATURE-FAIL-CLOSED | LOCAL_VERIFIED | T-WP02D-04 / RND-20260716-010 | adaptador GPG/GPGV falso; 25 testes; refresh bloqueado sem confiança | `35e8e44dd9fb39b47ad71e6dfb06e854c0029618`; sem chave/assinatura real |
+| EVD-WP02D-SELF-LINK-REDIRECTS | LOCAL_VERIFIED | T-WP02D-05 / RND-20260716-010 | API/HTTP falsos; self-link, paths e `MAX_REDIRECTS` negativos | `51dbb98a7e6de477c4f3234b1c7d40b4ac1a54ac`; sem descoberta online nesta tarefa |
+| EVD-WP02D-CANONICAL-EVIDENCE | LOCAL_VERIFIED | T-WP02D-06 / RND-20260716-010 | `tests/test_evidence_portability.py`, JSONs e este índice; RED/GREEN no round record | commit remoto de T06 será consolidado no T08; sem claim CI/lifecycle |
+| EVD-WP02D-LOCAL-TESTS | LOCAL_VERIFIED | T-WP02D-01..05 / RND-20260716-010 | `python3 -m unittest discover -s tests -v`; 28 testes antes do scanner documental | commits T01–T05 acima; sem claim de CI remoto |
+| EVD-WP02D-REMOTE-CI | UNVERIFIED | T-WP02D-07 / RND-20260716-010 | workflow read-only e actions fixadas; execução remota ainda não observada | bloqueio/observação será registrado em T07 |
+| EVD-WP02D-CROSS-REPO-SYNTHESIS | UNVERIFIED | T-WP02D-08 / RND-20260716-010 | continuidade cross-repo ainda não fechada | dependente de T07/T08 |
+| EVD-WP02D-ORCHESTRATOR-REVIEW | UNVERIFIED | T-WP02D-08 / RND-20260716-010 | aceite externo não é produzido pelo executor | revisão do ChatGPT pendente; não declarar `ACCEPTED` |
+
 ## Regras
 
 Claims apontam para Task-ID, seam, método, comando, resultado, SHA e limitação. Fixture não é autoridade de freshness ou checksum por si só. Busca textual é somente estrutural. O índice funcional canônico é este arquivo. Nunca reproduzir a credencial histórica. Aceite permanece exclusivo do orquestrador.

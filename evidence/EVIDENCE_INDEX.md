@@ -74,7 +74,7 @@
 | EVD-WP02D-SELF-LINK-REDIRECTS | LOCAL_VERIFIED | T-WP02D-05 / RND-20260716-010 | API/HTTP falsos; self-link, paths e `MAX_REDIRECTS` negativos | `51dbb98a7e6de477c4f3234b1c7d40b4ac1a54ac`; sem descoberta online nesta tarefa |
 | EVD-WP02D-CANONICAL-EVIDENCE | LOCAL_VERIFIED | T-WP02D-06 / RND-20260716-010 | `tests/test_evidence_portability.py`, JSONs e este índice; RED/GREEN no round record | commit remoto de T06 será consolidado no T08; sem claim CI/lifecycle |
 | EVD-WP02D-LOCAL-TESTS | LOCAL_VERIFIED | T-WP02D-01..05 / RND-20260716-010 | `python3 -m unittest discover -s tests -v`; 28 testes antes do scanner documental | commits T01–T05 acima; sem claim de CI remoto |
-| EVD-WP02D-REMOTE-CI | UNVERIFIED | T-WP02D-07 / RND-20260716-010 | workflow read-only e actions fixadas; execução remota ainda não observada | bloqueio/observação será registrado em T07 |
+| EVD-WP02D-REMOTE-CI | UNVERIFIED | T-WP02D-07 / RND-20260716-010 | workflow read-only e actions fixadas; gates locais equivalentes passaram (`32` testes, secret scan, parsers, Bash e dry-run) | run/status remoto para `2acc1a3ec1a6c42a81eacea02f7ae093131070de` não recuperável neste ambiente; não promover para `REMOTE_CI_VERIFIED` |
 | EVD-WP02D-CROSS-REPO-SYNTHESIS | UNVERIFIED | T-WP02D-08 / RND-20260716-010 | continuidade cross-repo ainda não fechada | dependente de T07/T08 |
 | EVD-WP02D-ORCHESTRATOR-REVIEW | UNVERIFIED | T-WP02D-08 / RND-20260716-010 | aceite externo não é produzido pelo executor | revisão do ChatGPT pendente; não declarar `ACCEPTED` |
 
